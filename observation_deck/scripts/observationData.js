@@ -3,6 +3,6 @@
  * 23JAN14
  * observationData.js contains observation data on samples/patients over various features/events.
  */
-function observationData(data) {
+function observationData(data, settings) {
     this.data = data;
 }
