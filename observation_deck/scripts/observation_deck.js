@@ -55,12 +55,19 @@ function setObservationData(url) {
         return rowData;
     });
 
-    console.log("parsedResponse->" + prettyJson(parsedResponse));
+    var matrixData = new Array();
+    for (var i in parsedResponse) {
+        matrixData.push.apply(matrixData, parsedResponse[i]);
+    }
+
+    return new observationData(matrixData);
 }
 
 // TODO onload
 window.onload = function() {
     console.log("Page loaded. Start onload.");
 
-    setObservationData(countsUrl);
+    var data = setObservationData(countsUrl);
+
+    console.log(prettyJson(data));
 };
