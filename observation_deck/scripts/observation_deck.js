@@ -115,7 +115,7 @@ window.onload = function() {
     // document.documentElement.clientWidth
     var fullWidth = document.documentElement.clientWidth;
     // document.documentElement.clientHeight
-    var fullHeight = document.documentElement.clientHeight;
+    var fullHeight = 1200;
     var width = fullWidth - margin.left - margin.right;
     var height = fullHeight - margin.top - margin.bottom;
     var denom = (colNames.length > rowNames.length) ? colNames.length : rowNames.length;
@@ -144,8 +144,11 @@ window.onload = function() {
         "class" : function(d, i) {
             return "rowLabel mono axis axis-row";
         }
-    }).style("text-anchor", "end").on("click", function(d) {
+    }).style("text-anchor", "end").on("click", function(d, i) {
         console.log("clicked row name: " + d);
+    }).on("contextmenu", function(d, i) {
+        console.log("right-clicked row name: " + d);
+        d3.event.preventDefault();
     });
 
     // col labels
@@ -163,8 +166,11 @@ window.onload = function() {
         "class" : function(d, i) {
             return "colLabel mono axis axis-col";
         }
-    }).style("text-anchor", "start").on("click", function(d) {
+    }).style("text-anchor", "start").on("click", function(d, i) {
         console.log("clicked column name: " + d);
+    }).on("contextmenu", function(d, i) {
+        console.log("right-clicked column name: " + d);
+        d3.event.preventDefault();
     });
 
     // heatmap SVG elements
@@ -188,6 +194,9 @@ window.onload = function() {
     // TODO heatmap click event
     heatMap.on("click", function(d, i) {
         console.log("clicked cell: r" + d.getRow() + " c" + d.getColumn() + " name" + d.getName() + " val" + d.getValue());
+    }).on("contextmenu", function(d, i) {
+        console.log("right-clicked cell: r" + d.getRow() + " c" + d.getColumn() + " name" + d.getName() + " val" + d.getValue());
+        d3.event.preventDefault();
     });
 
     // heatmap transition/animation
