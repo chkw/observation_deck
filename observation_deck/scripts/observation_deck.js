@@ -11,18 +11,21 @@ var panelUrl = "observation_deck/data/gene.tab";
  * Synchronous GET
  */
 function getResponse(url) {
+    var status = null;
     var xhr = null;
     xhr = new XMLHttpRequest();
     xhr.open("GET", url, false);
     xhr.onload = function() {
-        var status = xhr.status;
+        status = xhr.status;
         if (status != 200) {
-            console.log("xhr error: " + status);
+            console.log("xhr status: " + status + " for " + url);
         }
     };
     xhr.send(null);
-    var response = xhr.responseText;
-
+    var response = null;
+    if (status == 200) {
+        response = xhr.responseText;
+    }
     return response;
 }
 
@@ -64,7 +67,27 @@ function setObservationData(url) {
         "rowFeature" : "event",
         "columnFeature" : "sample",
         "valueFeature" : "value",
-        "nameFeature" : "sample"
+        "nameFeature" : "sample",
+        // "colorMapper" : function(d, i) {
+        // color = "darkgrey";
+        // if (d.toLowerCase() == "error") {
+        // color = "red";
+        // } else if (d.toLowerCase() == "pending") {
+        // color = "goldenrod";
+        // } else if (d.toLowerCase() == "ready") {
+        // color = "green";
+        // }
+        // return color;
+        // },
+        "rowClickback" : function(d, i) {
+            console.log("rowClickback: " + d);
+        },
+        "columnClickback" : function(d, i) {
+            console.log("columnClickback: " + d);
+        },
+        "cellClickback" : function(d, i) {
+            console.log("cellClickback: r" + d.getRow() + " c" + d.getColumn() + " name" + d.getName() + " val" + d.getValue());
+        }
     };
 
     var dataObj = new heatmapData(matrixData, settings);
@@ -115,17 +138,21 @@ window.onload = function() {
     // document.documentElement.clientWidth
     var fullWidth = document.documentElement.clientWidth;
     // document.documentElement.clientHeight
-    var fullHeight = 1200;
     var width = fullWidth - margin.left - margin.right;
-    var height = fullHeight - margin.top - margin.bottom;
     var denom = (colNames.length > rowNames.length) ? colNames.length : rowNames.length;
     var gridSize = Math.floor(width / denom);
+
+    var fullHeight = (margin.top + margin.bottom) + (gridSize * rowNames.length);
+    var height = fullHeight - margin.top - margin.bottom;
+
     var legendElementWidth = gridSize * 2;
 
     // SVG canvas
     var svg = d3.select("#chart").append("svg").attr({
         "width" : fullWidth,
-        "height" : fullHeight
+        "height" : fullHeight,
+        "viewBox" : "0 0 " + fullWidth + " " + fullHeight,
+        "perserveAspectRatio" : "xMinYMin meet"
     }).append("g").attr({
         "transform" : "translate(" + margin.left + "," + margin.top + ")"
     });
@@ -144,9 +171,7 @@ window.onload = function() {
         "class" : function(d, i) {
             return "rowLabel mono axis axis-row";
         }
-    }).style("text-anchor", "end").on("click", function(d, i) {
-        console.log("clicked row name: " + d);
-    }).on("contextmenu", function(d, i) {
+    }).style("text-anchor", "end").on("click", dataObj.getRowClickback()).on("contextmenu", function(d, i) {
         console.log("right-clicked row name: " + d);
         d3.event.preventDefault();
     });
@@ -166,9 +191,7 @@ window.onload = function() {
         "class" : function(d, i) {
             return "colLabel mono axis axis-col";
         }
-    }).style("text-anchor", "start").on("click", function(d, i) {
-        console.log("clicked column name: " + d);
-    }).on("contextmenu", function(d, i) {
+    }).style("text-anchor", "start").on("click", dataObj.getColumnClickback()).on("contextmenu", function(d, i) {
         console.log("right-clicked column name: " + d);
         d3.event.preventDefault();
     });
@@ -192,9 +215,7 @@ window.onload = function() {
     }).style("fill", "#ffffd9");
 
     // TODO heatmap click event
-    heatMap.on("click", function(d, i) {
-        console.log("clicked cell: r" + d.getRow() + " c" + d.getColumn() + " name" + d.getName() + " val" + d.getValue());
-    }).on("contextmenu", function(d, i) {
+    heatMap.on("click", dataObj.getCellClickback()).on("contextmenu", function(d, i) {
         console.log("right-clicked cell: r" + d.getRow() + " c" + d.getColumn() + " name" + d.getName() + " val" + d.getValue());
         d3.event.preventDefault();
     });
