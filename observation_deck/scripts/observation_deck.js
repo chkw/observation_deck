@@ -87,11 +87,22 @@ function setObservationData(url) {
         },
         "cellClickback" : function(d, i) {
             console.log("cellClickback: r" + d.getRow() + " c" + d.getColumn() + " name" + d.getName() + " val" + d.getValue());
+        },
+        "rowRightClickback" : function(d, i) {
+            console.log("rowRightClickback: " + d);
+            d3.event.preventDefault();
+        },
+        "columnRightClickback" : function(d, i) {
+            console.log("columnRightClickback: " + d);
+            d3.event.preventDefault();
+        },
+        "cellRightClickback" : function(d, i) {
+            console.log("cellRightClickback: r" + d.getRow() + " c" + d.getColumn() + " name" + d.getName() + " val" + d.getValue());
+            d3.event.preventDefault();
         }
     };
 
     var dataObj = new heatmapData(matrixData, settings);
-    dataObj.setQuantileColorMapper();
 
     return dataObj;
 }
@@ -166,10 +177,7 @@ window.onload = function() {
         "class" : function(d, i) {
             return "rowLabel mono axis axis-row";
         }
-    }).style("text-anchor", "end").on("click", dataObj.getRowClickback()).on("contextmenu", function(d, i) {
-        console.log("right-clicked row name: " + d);
-        d3.event.preventDefault();
-    });
+    }).style("text-anchor", "end").on("click", dataObj.getRowClickback()).on("contextmenu", dataObj.getRowRightClickback());
 
     // col labels
     var rotationDegrees = -90;
@@ -186,10 +194,7 @@ window.onload = function() {
         "class" : function(d, i) {
             return "colLabel mono axis axis-col";
         }
-    }).style("text-anchor", "start").on("click", dataObj.getColumnClickback()).on("contextmenu", function(d, i) {
-        console.log("right-clicked column name: " + d);
-        d3.event.preventDefault();
-    });
+    }).style("text-anchor", "start").on("click", dataObj.getColumnClickback()).on("contextmenu", dataObj.getColumnRightClickback());
 
     // heatmap SVG elements
     var heatMap = svg.selectAll(".hour").data(dataObj.getData()).enter().append("rect").attr({
@@ -210,10 +215,7 @@ window.onload = function() {
     }).style("fill", "#ffffd9");
 
     // TODO heatmap click event
-    heatMap.on("click", dataObj.getCellClickback()).on("contextmenu", function(d, i) {
-        console.log("right-clicked cell: r" + d.getRow() + " c" + d.getColumn() + " name" + d.getName() + " val" + d.getValue());
-        d3.event.preventDefault();
-    });
+    heatMap.on("click", dataObj.getCellClickback()).on("contextmenu", dataObj.getCellRightClickback());
 
     // heatmap transition/animation
     heatMap.transition().duration(1000).style("fill", function(d) {
