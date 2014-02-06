@@ -1,3 +1,25 @@
 html {
     font-family: Verdana;
 }
+rect.bordered {
+    cursor: pointer;
+    stroke: #E6E6E6;
+    stroke-width: 2px;
+}
+
+text.mono {
+    cursor: pointer;
+    font-size: 9pt;
+    font-family: Consolas, courier;
+    fill: #aaa;
+}
+
+text.axis-col {
+    cursor: pointer;
+    fill: #000;
+}
+
+text.axis-row {
+    cursor: pointer;
+    fill: #000;
+}
