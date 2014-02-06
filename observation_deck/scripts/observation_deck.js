@@ -36,6 +36,12 @@ function prettyJson(object) {
     return JSON.stringify(object, null, '\t');
 }
 
+function getEventList(url) {
+    var response = getResponse(url);
+    var rows = response.trim().split("\n");
+    return rows;
+}
+
 /**
  * get the JSON data to create a heatmapData object.
  */
@@ -111,8 +117,15 @@ function setObservationData(url) {
 window.onload = function() {
     console.log("Page loaded. Start onload.");
 
+    var eventList = getEventList(panelUrl);
+    // var eventList = ["TP53", "aaa", "EGFR"];
+    console.log(eventList);
+
     var dataObj = setObservationData(countsUrl);
 
+    dataObj.setRows(eventList);
+
+    // map column names to column numbers
     var colNames = dataObj.getColumnNames().sort();
 
     var colNameMapping = new Object();
@@ -121,7 +134,9 @@ window.onload = function() {
         colNameMapping[name] = i;
     }
 
-    var rowNames = dataObj.getRowNames().sort();
+    // map row names to row numbers
+    // var rowNames = dataObj.getRowNames().sort();
+    var rowNames = eventList;
 
     var rowNameMapping = new Object();
     for (var i in rowNames) {
@@ -219,7 +234,11 @@ window.onload = function() {
 
     // heatmap transition/animation
     heatMap.transition().duration(1000).style("fill", function(d) {
-        return dataObj.getColorMapper()(d.getValue());
+        if (d.getValue() == null) {
+            return "lightgrey";
+        } else {
+            return dataObj.getColorMapper()(d.getValue());
+        }
     });
 
     // heatmap titles
