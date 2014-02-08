@@ -70,6 +70,7 @@ function setObservationData(url) {
     }
 
     var settings = {
+        "datatype" : "mutation",
         "rowFeature" : "event",
         "columnFeature" : "sample",
         "valueFeature" : "value",
@@ -108,7 +109,8 @@ function setObservationData(url) {
         }
     };
 
-    var dataObj = new heatmapData(matrixData, settings);
+    var dataObj = new heatmapData();
+    dataObj.addData(matrixData, settings);
 
     return dataObj;
 }
@@ -143,8 +145,6 @@ window.onload = function() {
         var name = rowNames[i] + "QQ";
         rowNameMapping[name] = i;
     }
-
-    // dataObj.setQuantileColorMapper();
 
     var longestColumnName = lengthOfLongestString(dataObj.getColumnNames());
     var longestRowName = lengthOfLongestString(dataObj.getRowNames());
@@ -237,7 +237,9 @@ window.onload = function() {
         if (d.getValue() == null) {
             return "lightgrey";
         } else {
-            return dataObj.getColorMapper()(d.getValue());
+            var datatype = d.getDatatype();
+            var colorMapper = dataObj.getColorMapper(datatype);
+            return colorMapper(d.getValue());
         }
     });
 
