@@ -115,16 +115,18 @@ function setObservationData(url) {
     return dataObj;
 }
 
-// TODO onload
-window.onload = function() {
-    console.log("Page loaded. Start onload.");
-
-    var eventList = getEventList(panelUrl);
-    // var eventList = ["TP53", "aaa", "EGFR"];
-    console.log(eventList);
-
-    var dataObj = setObservationData(countsUrl);
-
+/**
+ * Settings = {"eventList":Array}
+ * @param {Object} dataObj
+ * @param {Object} settings
+ */
+function drawMatrix(dataObj, settings) {
+    var eventList = null;
+    if (("eventList" in settings) && (settings["eventList"] != null)) {
+        eventList = settings["eventList"];
+    } else {
+        eventList = dataObj.getRowNames().sort();
+    }
     dataObj.setRows(eventList);
 
     // map column names to column numbers
@@ -137,7 +139,6 @@ window.onload = function() {
     }
 
     // map row names to row numbers
-    // var rowNames = dataObj.getRowNames().sort();
     var rowNames = eventList;
 
     var rowNameMapping = new Object();
@@ -247,4 +248,22 @@ window.onload = function() {
     heatMap.append("title").text(function(d) {
         return d.getName();
     });
+}
+
+// TODO onload
+window.onload = function() {
+    console.log("Page loaded. Start onload.");
+
+    // GET DATA
+
+    var dataObj = setObservationData(countsUrl);
+
+    var settings = {
+        "eventList" : getEventList(panelUrl),
+        // "eventList" : ["TP53", "aaa", "EGFR"],
+    };
+
+    // DRAWING
+
+    drawMatrix(dataObj, settings);
 };
