@@ -130,7 +130,8 @@ function drawMatrix(dataObj, settings) {
     dataObj.setRows(eventList);
 
     // map column names to column numbers
-    var colNames = dataObj.getColumnNames().sort();
+    // var colNames = dataObj.getColumnNames();
+    var colNames = dataObj.sortColumns("TP53", "mutation").reverse();
 
     var colNameMapping = new Object();
     for (var i in colNames) {
