@@ -214,7 +214,7 @@ function drawMatrix(dataObj, settings) {
     }).style("text-anchor", "start").on("click", dataObj.getColumnClickback()).on("contextmenu", dataObj.getColumnRightClickback());
 
     // heatmap SVG elements
-    var heatMap = svg.selectAll(".hour").data(dataObj.getData()).enter().append("rect").attr({
+    var heatMap = svg.selectAll(".cell").data(dataObj.getData()).enter().append("rect").attr({
         "x" : function(d) {
             var colName = d.getColumn();
             var colNum = colNameMapping[d.getColumn() + "QQ"];
@@ -226,7 +226,7 @@ function drawMatrix(dataObj, settings) {
         },
         "rx" : 4,
         "ry" : 4,
-        "class" : "hour bordered",
+        "class" : "cell bordered",
         "width" : gridSize,
         "height" : gridSize
     }).style("fill", "#ffffd9");
@@ -249,6 +249,8 @@ function drawMatrix(dataObj, settings) {
     heatMap.append("title").text(function(d) {
         return d.getName();
     });
+
+    return svg;
 }
 
 // TODO onload
@@ -266,5 +268,6 @@ window.onload = function() {
 
     // DRAWING
 
-    drawMatrix(dataObj, settings);
+    var heatmapSvg = drawMatrix(dataObj, settings);
+    console.log(heatmapSvg);
 };
