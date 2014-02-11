@@ -109,7 +109,7 @@ function setObservationData(url) {
         }
     };
 
-    var dataObj = new heatmapData();
+    var dataObj = new observationData();
     dataObj.addData(matrixData, settings);
 
     return dataObj;
