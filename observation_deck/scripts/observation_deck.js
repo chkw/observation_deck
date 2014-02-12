@@ -217,15 +217,41 @@ function drawMatrix(dataObj, settings) {
 
     // heatmap SVG elements
     var heatMap = svg.selectAll(".cell").data(dataObj.getData()).enter().append(function(d) {
-        var newElement = document.createElementNS(svgNamespaceUri, "rect");
-        newElement.setAttributeNS(null, "x", colNameMapping[d.getColumn() + "QQ"] * gridSize);
-        newElement.setAttributeNS(null, "y", rowNameMapping[d.getRow() + "QQ"] * gridSize);
-        newElement.setAttributeNS(null, "rx", 4);
-        newElement.setAttributeNS(null, "ry", 4);
-        newElement.setAttributeNS(null, "class", "cell bordered");
-        newElement.setAttributeNS(null, "width", gridSize);
-        newElement.setAttributeNS(null, "height", gridSize);
-        return newElement;
+        var type = d.getDatatype();
+        if (type == null) {
+            console.log("null");
+            var newElement = document.createElementNS(svgNamespaceUri, "rect");
+            newElement.setAttributeNS(null, "x", colNameMapping[d.getColumn() + "QQ"] * gridSize);
+            newElement.setAttributeNS(null, "y", rowNameMapping[d.getRow() + "QQ"] * gridSize);
+            newElement.setAttributeNS(null, "rx", 4);
+            newElement.setAttributeNS(null, "ry", 4);
+            newElement.setAttributeNS(null, "class", "cell bordered");
+            newElement.setAttributeNS(null, "width", gridSize);
+            newElement.setAttributeNS(null, "height", gridSize);
+            return newElement;
+        } else if (type.toLowerCase() == "mutation") {
+            console.log("mutation");
+            var newElement = document.createElementNS(svgNamespaceUri, "rect");
+            newElement.setAttributeNS(null, "x", colNameMapping[d.getColumn() + "QQ"] * gridSize);
+            newElement.setAttributeNS(null, "y", rowNameMapping[d.getRow() + "QQ"] * gridSize);
+            newElement.setAttributeNS(null, "rx", 4);
+            newElement.setAttributeNS(null, "ry", 4);
+            newElement.setAttributeNS(null, "class", "cell bordered");
+            newElement.setAttributeNS(null, "width", gridSize);
+            newElement.setAttributeNS(null, "height", gridSize);
+            return newElement;
+        } else {
+            console.log("other");
+            var newElement = document.createElementNS(svgNamespaceUri, "rect");
+            newElement.setAttributeNS(null, "x", colNameMapping[d.getColumn() + "QQ"] * gridSize);
+            newElement.setAttributeNS(null, "y", rowNameMapping[d.getRow() + "QQ"] * gridSize);
+            newElement.setAttributeNS(null, "rx", 4);
+            newElement.setAttributeNS(null, "ry", 4);
+            newElement.setAttributeNS(null, "class", "cell bordered");
+            newElement.setAttributeNS(null, "width", gridSize);
+            newElement.setAttributeNS(null, "height", gridSize);
+            return newElement;
+        }
     }).style("fill", "#ffffd9");
 
     // TODO heatmap click event
