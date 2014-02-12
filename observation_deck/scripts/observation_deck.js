@@ -4,6 +4,8 @@
  * observation_deck.js
  */
 
+var svgNamespaceUri = 'http://www.w3.org/2000/svg';
+
 var countsUrl = "observation_deck/data/gene_count.tab";
 var panelUrl = "observation_deck/data/gene.tab";
 
@@ -214,21 +216,16 @@ function drawMatrix(dataObj, settings) {
     }).style("text-anchor", "start").on("click", dataObj.getColumnClickback()).on("contextmenu", dataObj.getColumnRightClickback());
 
     // heatmap SVG elements
-    var heatMap = svg.selectAll(".cell").data(dataObj.getData()).enter().append("rect").attr({
-        "x" : function(d) {
-            var colName = d.getColumn();
-            var colNum = colNameMapping[d.getColumn() + "QQ"];
-            var val = colNum * gridSize;
-            return val;
-        },
-        "y" : function(d) {
-            return (rowNameMapping[d.getRow() + "QQ"]) * gridSize;
-        },
-        "rx" : 4,
-        "ry" : 4,
-        "class" : "cell bordered",
-        "width" : gridSize,
-        "height" : gridSize
+    var heatMap = svg.selectAll(".cell").data(dataObj.getData()).enter().append(function(d) {
+        var newElement = document.createElementNS(svgNamespaceUri, "rect");
+        newElement.setAttributeNS(null, "x", colNameMapping[d.getColumn() + "QQ"] * gridSize);
+        newElement.setAttributeNS(null, "y", rowNameMapping[d.getRow() + "QQ"] * gridSize);
+        newElement.setAttributeNS(null, "rx", 4);
+        newElement.setAttributeNS(null, "ry", 4);
+        newElement.setAttributeNS(null, "class", "cell bordered");
+        newElement.setAttributeNS(null, "width", gridSize);
+        newElement.setAttributeNS(null, "height", gridSize);
+        return newElement;
     }).style("fill", "#ffffd9");
 
     // TODO heatmap click event
