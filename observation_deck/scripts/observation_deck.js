@@ -135,8 +135,8 @@ function drawMatrix(dataObj, settings) {
     dataObj.setRows(eventList);
 
     // map column names to column numbers
-    var colNames = dataObj.getColumnNames();
-    // var colNames = dataObj.sortColumns("TP53", "mutation").reverse();
+    // var colNames = dataObj.getColumnNames();
+    var colNames = dataObj.sortColumns("TP53", "mutation").reverse();
 
     var colNameMapping = new Object();
     for (var i in colNames) {
@@ -199,7 +199,9 @@ function drawMatrix(dataObj, settings) {
         "class" : function(d, i) {
             return "rowLabel mono axis";
         }
-    }).style("text-anchor", "end").on("click", dataObj.getRowClickback()).on("contextmenu", dataObj.getRowRightClickback());
+    }).style("text-anchor", "end");
+    rowLabels.on("click", dataObj.getRowClickback());
+    // rowLabels.on("contextmenu", dataObj.getRowRightClickback());
 
     // col labels
     var rotationDegrees = -90;
@@ -216,7 +218,9 @@ function drawMatrix(dataObj, settings) {
         "class" : function(d, i) {
             return "colLabel mono axis";
         }
-    }).style("text-anchor", "start").on("click", dataObj.getColumnClickback()).on("contextmenu", dataObj.getColumnRightClickback());
+    }).style("text-anchor", "start");
+    colLabels.on("click", dataObj.getColumnClickback());
+    colLabels.on("contextmenu", dataObj.getColumnRightClickback());
 
     // TODO SVG elements for heatmap cells
     var heatMap = svg.selectAll(".cell").data(dataObj.getData()).enter().append(function(d) {
@@ -261,7 +265,7 @@ function drawMatrix(dataObj, settings) {
                 "stroke" : colorMapper(d.getValue()),
                 "stroke-width" : "2"
             };
-            group.appendChild(createSvgRingPath(cx, cy, r, attributes));
+            group.appendChild(createSvgRingElement(cx, cy, r, attributes));
         }
 
         if (type.toLowerCase() == "rectangle") {
@@ -306,7 +310,7 @@ function drawMatrix(dataObj, settings) {
             var y = rowNameMapping[d.getRow() + "QQ"] * gridSize;
             var width = gridSize;
             var height = gridSize;
-            group.appendChild(createImageElement(url, x, y, width, height));
+            group.appendChild(createSvgImageElement(url, x, y, width, height));
         }
 
         return group;
@@ -336,7 +340,7 @@ function drawMatrix(dataObj, settings) {
     return svg;
 }
 
-function createSvgRingPath(cx, cy, r, attributes) {
+function createSvgRingElement(cx, cy, r, attributes) {
     // https://stackoverflow.com/questions/5736398/how-to-calculate-the-svg-path-for-an-arc-of-a-circle
     // (rx ry x-axis-rotation large-arc-flag sweep-flag x y)+
 
@@ -398,7 +402,7 @@ function createSvgRectElement(x, y, rx, ry, width, height, attributes) {
     return e;
 }
 
-function createImageElement(imageUrl, x, y, width, height, attributes) {
+function createSvgImageElement(imageUrl, x, y, width, height, attributes) {
     var e = document.createElementNS(svgNamespaceUri, "image");
     e.setAttributeNS(xlinkUri, "href", imageUrl);
     e.setAttributeNS(null, "x", x);
@@ -416,6 +420,47 @@ function createImageElement(imageUrl, x, y, width, height, attributes) {
 // TODO onload
 window.onload = function() {
     console.log("Page loaded. Start onload.");
+
+    // TODO context menu
+    $(function() {
+        $.contextMenu({
+            selector : ".rowLabel",
+            callback : function(key, options) {
+                var textContent = this[0].textContent;
+
+                // var axis = this[0].getAttribute("class").indexOf("axis") >= 0 ? true : false;
+                // if (axis) {
+                // axis = this[0].getAttribute("class").indexOf("rowLabel") >= 0 ? "row" : "column";
+                // }
+                // console.log(key, textContent, axis);
+
+                if (key == 'sort') {
+                    console.log(key, textContent);
+                } else if (key == 'expand') {
+                    console.log(key, textContent);
+                } else if (key == 'collapse') {
+                    console.log(key, textContent);
+                } else {
+                    console.log(key, textContent);
+                }
+            },
+            items : {
+                "sort" : {
+                    name : "sort",
+                    icon : null
+                },
+                "expand" : {
+                    name : "expand",
+                    icon : null
+                },
+                "sep1" : "---------",
+                "collapse" : {
+                    name : "collapse",
+                    icon : null
+                }
+            }
+        });
+    });
 
     // GET DATA
 
