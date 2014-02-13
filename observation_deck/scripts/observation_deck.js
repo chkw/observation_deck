@@ -220,20 +220,20 @@ function drawMatrix(dataObj, settings) {
         var type = d.getDatatype();
         if (type == null) {
             console.log("null");
-            var newElement = document.createElementNS(svgNamespaceUri, "rect");
-            newElement.setAttributeNS(null, "x", colNameMapping[d.getColumn() + "QQ"] * gridSize);
-            newElement.setAttributeNS(null, "y", rowNameMapping[d.getRow() + "QQ"] * gridSize);
-            newElement.setAttributeNS(null, "rx", 4);
-            newElement.setAttributeNS(null, "ry", 4);
-            newElement.setAttributeNS(null, "class", "cell bordered");
-            newElement.setAttributeNS(null, "width", gridSize);
-            newElement.setAttributeNS(null, "height", gridSize);
+            var cx = ((colNameMapping[d.getColumn() + "QQ"]) * gridSize) + (gridSize / 2);
+            var cy = ((rowNameMapping[d.getRow() + "QQ"]) * gridSize) + (gridSize / 2);
+            var newElement = document.createElementNS(svgNamespaceUri, "circle");
+            newElement.setAttributeNS(null, "cx", cx);
+            newElement.setAttributeNS(null, "cy", cy);
+            newElement.setAttributeNS(null, 'r', gridSize / 4);
             return newElement;
         } else if (type.toLowerCase() == "mutation") {
             console.log("mutation");
+            var x = colNameMapping[d.getColumn() + "QQ"] * gridSize;
+            var y = rowNameMapping[d.getRow() + "QQ"] * gridSize;
             var newElement = document.createElementNS(svgNamespaceUri, "rect");
-            newElement.setAttributeNS(null, "x", colNameMapping[d.getColumn() + "QQ"] * gridSize);
-            newElement.setAttributeNS(null, "y", rowNameMapping[d.getRow() + "QQ"] * gridSize);
+            newElement.setAttributeNS(null, "x", x);
+            newElement.setAttributeNS(null, "y", y);
             newElement.setAttributeNS(null, "rx", 4);
             newElement.setAttributeNS(null, "ry", 4);
             newElement.setAttributeNS(null, "class", "cell bordered");
@@ -253,6 +253,7 @@ function drawMatrix(dataObj, settings) {
             return newElement;
         }
     }).style("fill", "#ffffd9");
+    // initial cell color
 
     // TODO heatmap click event
     heatMap.on("click", dataObj.getCellClickback()).on("contextmenu", dataObj.getCellRightClickback());
