@@ -223,20 +223,32 @@ function drawMatrix(dataObj, settings) {
         var group = document.createElementNS(svgNamespaceUri, "g");
         group.setAttributeNS(null, "class", "cell");
 
+        var x = (colNameMapping[d.getColumn() + "QQ"] * gridSize);
+        var y = (rowNameMapping[d.getRow() + "QQ"] * gridSize);
+        var rx = 4;
+        var ry = 4;
+        var width = gridSize;
+        var height = gridSize;
+        var attributes = {
+            // "fill" : "lightgrey",
+            "class" : "bordered"
+        };
         var type = d.getDatatype();
         if ((type == null) || (d.getValue() == null)) {
-            var x = (colNameMapping[d.getColumn() + "QQ"] * gridSize);
-            var y = (rowNameMapping[d.getRow() + "QQ"] * gridSize);
-            var rx = 4;
-            var ry = 4;
-            var width = gridSize;
-            var height = gridSize;
-            var attributes = {
-                "fill" : "lightgrey",
-                "class" : "bordered"
-            };
-            group.appendChild(createSvgRectElement(x, y, rx, ry, width, height, attributes));
-        } else if (type.toLowerCase() == "ring") {
+            // final rectangle for null values
+            attributes["fill"] = "lightgrey";
+        } else {
+            // background for icons
+            attributes["fill"] = "white";
+        }
+        group.appendChild(createSvgRectElement(x, y, rx, ry, width, height, attributes));
+
+        // draw icons .. possibly multiple ones
+        if ((type == null) || (d.getValue() == null)) {
+            return group;
+        }
+
+        if ((type.toLowerCase() == "ring") || (type.toLowerCase() == "mutation")) {
             var cx = ((colNameMapping[d.getColumn() + "QQ"]) * gridSize) + (gridSize / 2);
             var cy = ((rowNameMapping[d.getRow() + "QQ"]) * gridSize) + (gridSize / 2);
             var r = gridSize / 4;
@@ -250,7 +262,9 @@ function drawMatrix(dataObj, settings) {
                 "stroke-width" : "2"
             };
             group.appendChild(createSvgRingPath(cx, cy, r, attributes));
-        } else if (type.toLowerCase() == "rectangle") {
+        }
+
+        if (type.toLowerCase() == "rectangle") {
             var x = (colNameMapping[d.getColumn() + "QQ"] * gridSize);
             var y = (rowNameMapping[d.getRow() + "QQ"] * gridSize);
             var rx = 4;
@@ -262,12 +276,16 @@ function drawMatrix(dataObj, settings) {
                 "stroke-width" : "2px"
             };
             group.appendChild(createSvgRectElement(x, y, rx, ry, width, height, attributes));
-        } else if (type.toLowerCase() == "dot") {
+        }
+
+        if (type.toLowerCase() == "dot") {
             var cx = ((colNameMapping[d.getColumn() + "QQ"]) * gridSize) + (gridSize / 2);
             var cy = ((rowNameMapping[d.getRow() + "QQ"]) * gridSize) + (gridSize / 2);
             var r = gridSize / 4;
             group.appendChild(createSvgCircleElement(cx, cy, r));
-        } else if (type.toLowerCase() == "mutation") {
+        }
+
+        if (type.toLowerCase() == "mutation") {
             var cx = ((colNameMapping[d.getColumn() + "QQ"]) * gridSize) + (gridSize / 2);
             var cy = ((rowNameMapping[d.getRow() + "QQ"]) * gridSize) + (gridSize / 2);
             var r = gridSize / 8;
@@ -280,7 +298,9 @@ function drawMatrix(dataObj, settings) {
             };
 
             group.appendChild(createSvgCircleElement(cx, cy, r, attributes));
-        } else if (type.toLowerCase() == "image") {
+        }
+
+        if (type.toLowerCase() == "image") {
             var url = "observation_deck/images/favicon.ico";
             var x = colNameMapping[d.getColumn() + "QQ"] * gridSize;
             var y = rowNameMapping[d.getRow() + "QQ"] * gridSize;
@@ -288,6 +308,7 @@ function drawMatrix(dataObj, settings) {
             var height = gridSize;
             group.appendChild(createImageElement(url, x, y, width, height));
         }
+
         return group;
     });
     // heatMap.style("fill", "#ffffd9");
