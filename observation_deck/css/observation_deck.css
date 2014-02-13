@@ -17,5 +17,6 @@ text.mono {
 }
 
 text.axis {
+    cursor: pointer;
     fill: #000;
 }
