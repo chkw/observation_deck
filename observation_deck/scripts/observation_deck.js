@@ -6,6 +6,9 @@
 
 var svgNamespaceUri = 'http://www.w3.org/2000/svg';
 
+// use with "xlink:href" for images in svg as in <http://www.w3.org/Graphics/SVG/WG/wiki/Href>
+var xlinkUri = "http://www.w3.org/1999/xlink";
+
 var countsUrl = "observation_deck/data/gene_count.tab";
 var panelUrl = "observation_deck/data/gene.tab";
 
@@ -219,45 +222,35 @@ function drawMatrix(dataObj, settings) {
     var heatMap = svg.selectAll(".cell").data(dataObj.getData()).enter().append("g").append(function(d) {
         var type = d.getDatatype();
         if (type == null) {
-            console.log("null");
-            var x = colNameMapping[d.getColumn() + "QQ"] * gridSize;
-            var y = rowNameMapping[d.getRow() + "QQ"] * gridSize;
-            var newElement = document.createElementNS(svgNamespaceUri, "rect");
-            newElement.setAttributeNS(null, "x", x);
-            newElement.setAttributeNS(null, "y", y);
-            newElement.setAttributeNS(null, "rx", 4);
-            newElement.setAttributeNS(null, "ry", 4);
-            newElement.setAttributeNS(null, "class", "cell bordered");
-            newElement.setAttributeNS(null, "width", gridSize);
-            newElement.setAttributeNS(null, "height", gridSize);
-            return newElement;
+            var x = (colNameMapping[d.getColumn() + "QQ"] * gridSize);
+            var y = (rowNameMapping[d.getRow() + "QQ"] * gridSize);
+            var rx = 4;
+            var ry = 4;
+            var width = gridSize;
+            var height = gridSize;
+            var style = "cursor: pointer; stroke: #E6E6E6; stroke-width: 2px";
+            var e = createSvgRectElement(x, y, rx, ry, width, height, style);
+            return e;
         } else if (type.toLowerCase() == "dot") {
             var cx = ((colNameMapping[d.getColumn() + "QQ"]) * gridSize) + (gridSize / 2);
             var cy = ((rowNameMapping[d.getRow() + "QQ"]) * gridSize) + (gridSize / 2);
-            var newElement = document.createElementNS(svgNamespaceUri, "circle");
-            newElement.setAttributeNS(null, "cx", cx);
-            newElement.setAttributeNS(null, "cy", cy);
-            newElement.setAttributeNS(null, 'r', gridSize / 4);
-            return newElement;
+            var r = gridSize / 4;
+            var e = createSvgCircleElement(cx, cy, r, style);
+            return e;
         } else if (type.toLowerCase() == "mutation") {
             var cx = ((colNameMapping[d.getColumn() + "QQ"]) * gridSize) + (gridSize / 2);
             var cy = ((rowNameMapping[d.getRow() + "QQ"]) * gridSize) + (gridSize / 2);
-            var newElement = document.createElementNS(svgNamespaceUri, "circle");
-            newElement.setAttributeNS(null, "cx", cx);
-            newElement.setAttributeNS(null, "cy", cy);
-            newElement.setAttributeNS(null, 'r', gridSize / 4);
-            return newElement;
+            var r = gridSize / 4;
+            var e = createSvgCircleElement(cx, cy, r, style);
+            return e;
         } else {
-            console.log("other");
-            var newElement = document.createElementNS(svgNamespaceUri, "rect");
-            newElement.setAttributeNS(null, "x", colNameMapping[d.getColumn() + "QQ"] * gridSize);
-            newElement.setAttributeNS(null, "y", rowNameMapping[d.getRow() + "QQ"] * gridSize);
-            newElement.setAttributeNS(null, "rx", 4);
-            newElement.setAttributeNS(null, "ry", 4);
-            newElement.setAttributeNS(null, "class", "cell bordered");
-            newElement.setAttributeNS(null, "width", gridSize);
-            newElement.setAttributeNS(null, "height", gridSize);
-            return newElement;
+            var url = "observation_deck/images/favicon.ico";
+            var x = colNameMapping[d.getColumn() + "QQ"] * gridSize;
+            var y = rowNameMapping[d.getRow() + "QQ"] * gridSize;
+            var width = gridSize;
+            var height = gridSize;
+            var e = createImageElement(url, x, y, width, height);
+            return e;
         }
     }).style("fill", "#ffffd9");
     // initial cell color
@@ -282,6 +275,44 @@ function drawMatrix(dataObj, settings) {
     });
 
     return svg;
+}
+
+function createSvgCircleElement(cx, cy, r, style) {
+    var e = document.createElementNS(svgNamespaceUri, "circle");
+    e.setAttributeNS(null, "cx", cx);
+    e.setAttributeNS(null, "cy", cy);
+    e.setAttributeNS(null, 'r', r);
+    if (style != null) {
+        e.setAttributeNS(null, "style", style);
+    }
+    return e;
+}
+
+function createSvgRectElement(x, y, rx, ry, width, height, style) {
+    var e = document.createElementNS(svgNamespaceUri, "rect");
+    e.setAttributeNS(null, "x", x);
+    e.setAttributeNS(null, "y", y);
+    e.setAttributeNS(null, "rx", rx);
+    e.setAttributeNS(null, "ry", ry);
+    e.setAttributeNS(null, "width", width);
+    e.setAttributeNS(null, "height", height);
+    if (style != null) {
+        e.setAttributeNS(null, "style", style);
+    }
+    return e;
+}
+
+function createImageElement(imageUrl, x, y, width, height, style) {
+    var e = document.createElementNS(svgNamespaceUri, "image");
+    e.setAttributeNS(xlinkUri, "href", imageUrl);
+    e.setAttributeNS(null, "x", x);
+    e.setAttributeNS(null, "y", y);
+    e.setAttributeNS(null, "width", width);
+    e.setAttributeNS(null, "height", height);
+    if (style != null) {
+        e.setAttributeNS(null, "style", style);
+    }
+    return e;
 }
 
 // TODO onload
