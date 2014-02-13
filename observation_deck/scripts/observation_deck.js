@@ -132,8 +132,8 @@ function drawMatrix(dataObj, settings) {
     dataObj.setRows(eventList);
 
     // map column names to column numbers
-    // var colNames = dataObj.getColumnNames();
-    var colNames = dataObj.sortColumns("TP53", "mutation").reverse();
+    var colNames = dataObj.getColumnNames();
+    // var colNames = dataObj.sortColumns("TP53", "mutation").reverse();
 
     var colNameMapping = new Object();
     for (var i in colNames) {
@@ -216,19 +216,10 @@ function drawMatrix(dataObj, settings) {
     }).style("text-anchor", "start").on("click", dataObj.getColumnClickback()).on("contextmenu", dataObj.getColumnRightClickback());
 
     // heatmap SVG elements
-    var heatMap = svg.selectAll(".cell").data(dataObj.getData()).enter().append(function(d) {
+    var heatMap = svg.selectAll(".cell").data(dataObj.getData()).enter().append("g").append(function(d) {
         var type = d.getDatatype();
         if (type == null) {
             console.log("null");
-            var cx = ((colNameMapping[d.getColumn() + "QQ"]) * gridSize) + (gridSize / 2);
-            var cy = ((rowNameMapping[d.getRow() + "QQ"]) * gridSize) + (gridSize / 2);
-            var newElement = document.createElementNS(svgNamespaceUri, "circle");
-            newElement.setAttributeNS(null, "cx", cx);
-            newElement.setAttributeNS(null, "cy", cy);
-            newElement.setAttributeNS(null, 'r', gridSize / 4);
-            return newElement;
-        } else if (type.toLowerCase() == "mutation") {
-            console.log("mutation");
             var x = colNameMapping[d.getColumn() + "QQ"] * gridSize;
             var y = rowNameMapping[d.getRow() + "QQ"] * gridSize;
             var newElement = document.createElementNS(svgNamespaceUri, "rect");
@@ -239,6 +230,22 @@ function drawMatrix(dataObj, settings) {
             newElement.setAttributeNS(null, "class", "cell bordered");
             newElement.setAttributeNS(null, "width", gridSize);
             newElement.setAttributeNS(null, "height", gridSize);
+            return newElement;
+        } else if (type.toLowerCase() == "dot") {
+            var cx = ((colNameMapping[d.getColumn() + "QQ"]) * gridSize) + (gridSize / 2);
+            var cy = ((rowNameMapping[d.getRow() + "QQ"]) * gridSize) + (gridSize / 2);
+            var newElement = document.createElementNS(svgNamespaceUri, "circle");
+            newElement.setAttributeNS(null, "cx", cx);
+            newElement.setAttributeNS(null, "cy", cy);
+            newElement.setAttributeNS(null, 'r', gridSize / 4);
+            return newElement;
+        } else if (type.toLowerCase() == "mutation") {
+            var cx = ((colNameMapping[d.getColumn() + "QQ"]) * gridSize) + (gridSize / 2);
+            var cy = ((rowNameMapping[d.getRow() + "QQ"]) * gridSize) + (gridSize / 2);
+            var newElement = document.createElementNS(svgNamespaceUri, "circle");
+            newElement.setAttributeNS(null, "cx", cx);
+            newElement.setAttributeNS(null, "cy", cy);
+            newElement.setAttributeNS(null, 'r', gridSize / 4);
             return newElement;
         } else {
             console.log("other");
