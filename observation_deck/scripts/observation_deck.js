@@ -231,7 +231,7 @@ function drawMatrix(dataObj, settings) {
             var width = gridSize;
             var height = gridSize;
             var attributes = {
-                "style" : "fill: lightgrey; stroke: #E6E6E6; stroke-width: 2",
+                "fill" : "lightgrey",
                 "class" : "bordered"
             };
             return createSvgRectElement(x, y, rx, ry, width, height, attributes);
@@ -240,7 +240,9 @@ function drawMatrix(dataObj, settings) {
             var cy = ((rowNameMapping[d.getRow() + "QQ"]) * gridSize) + (gridSize / 2);
             var r = gridSize / 4;
             var attributes = {
-                "style" : "fill:none; stroke:red; stroke-width:2"
+                "fill" : "none",
+                "stroke" : "red",
+                "stroke-width" : "2"
             };
             return createSvgRingPath(cx, cy, r, attributes);
         } else if (type.toLowerCase() == "rectangle") {
@@ -251,7 +253,8 @@ function drawMatrix(dataObj, settings) {
             var width = gridSize;
             var height = gridSize;
             var attributes = {
-                "style" : "cursor: pointer; stroke: #E6E6E6; stroke-width: 2px"
+                "stroke" : "#E6E6E6",
+                "stroke-width" : "2px"
             };
             return createSvgRectElement(x, y, rx, ry, width, height, attributes);
         } else if (type.toLowerCase() == "dot") {
@@ -326,6 +329,7 @@ function createSvgRingPath(cx, cy, r, attributes) {
         return d;
     }
 
+    // TODO somehow the circle becomes invisible if using 0 to 360 degrees
     var arcPath = describeArc(cx, cy, r, 0, 359.9);
 
     var e = document.createElementNS(svgNamespaceUri, "path");
