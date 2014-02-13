@@ -222,6 +222,20 @@ function drawMatrix(dataObj, settings) {
     var heatMap = svg.selectAll(".cell").data(dataObj.getData()).enter().append("g").append(function(d) {
         var type = d.getDatatype();
         if (type == null) {
+            var cx = ((colNameMapping[d.getColumn() + "QQ"]) * gridSize) + (gridSize / 2);
+            var cy = ((rowNameMapping[d.getRow() + "QQ"]) * gridSize) + (gridSize / 2);
+            var r = gridSize / 4;
+            var style = "fill:none; stroke:red; stroke-width:2";
+            var e = createSvgRingPath(cx, cy, r, style);
+            return e;
+        } else if (type.toLowerCase() == "ring") {
+            var cx = ((colNameMapping[d.getColumn() + "QQ"]) * gridSize) + (gridSize / 2);
+            var cy = ((rowNameMapping[d.getRow() + "QQ"]) * gridSize) + (gridSize / 2);
+            var r = gridSize / 4;
+            var style = "fill:none; stroke:red; stroke-width:2";
+            var e = createSvgRingPath(cx, cy, r, style);
+            return e;
+        } else if (type.toLowerCase() == "rectangle") {
             var x = (colNameMapping[d.getColumn() + "QQ"] * gridSize);
             var y = (rowNameMapping[d.getRow() + "QQ"] * gridSize);
             var rx = 4;
@@ -235,15 +249,15 @@ function drawMatrix(dataObj, settings) {
             var cx = ((colNameMapping[d.getColumn() + "QQ"]) * gridSize) + (gridSize / 2);
             var cy = ((rowNameMapping[d.getRow() + "QQ"]) * gridSize) + (gridSize / 2);
             var r = gridSize / 4;
-            var e = createSvgCircleElement(cx, cy, r, style);
+            var e = createSvgCircleElement(cx, cy, r);
             return e;
         } else if (type.toLowerCase() == "mutation") {
             var cx = ((colNameMapping[d.getColumn() + "QQ"]) * gridSize) + (gridSize / 2);
             var cy = ((rowNameMapping[d.getRow() + "QQ"]) * gridSize) + (gridSize / 2);
-            var r = gridSize / 4;
-            var e = createSvgCircleElement(cx, cy, r, style);
+            var r = gridSize / 8;
+            var e = createSvgCircleElement(cx, cy, r);
             return e;
-        } else {
+        } else if (type.toLowerCase() == "image") {
             var url = "observation_deck/images/favicon.ico";
             var x = colNameMapping[d.getColumn() + "QQ"] * gridSize;
             var y = rowNameMapping[d.getRow() + "QQ"] * gridSize;
@@ -275,6 +289,36 @@ function drawMatrix(dataObj, settings) {
     });
 
     return svg;
+}
+
+function createSvgRingPath(cx, cy, r, style) {
+    // https://stackoverflow.com/questions/5736398/how-to-calculate-the-svg-path-for-an-arc-of-a-circle
+    // (rx ry x-axis-rotation large-arc-flag sweep-flag x y)+
+
+    function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
+        var angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
+        return {
+            x : centerX + (radius * Math.cos(angleInRadians)),
+            y : centerY + (radius * Math.sin(angleInRadians))
+        };
+    }
+
+    function describeArc(x, y, radius, startAngle, endAngle) {
+        var start = polarToCartesian(x, y, radius, endAngle);
+        var end = polarToCartesian(x, y, radius, startAngle);
+        var arcSweep = endAngle - startAngle <= 180 ? "0" : "1";
+        var d = ["M", start.x, start.y, "A", radius, radius, 0, arcSweep, 0, end.x, end.y].join(" ");
+        return d;
+    }
+
+    var arcPath = describeArc(cx, cy, r, 0, 359.9);
+
+    var e = document.createElementNS(svgNamespaceUri, "path");
+    e.setAttributeNS(null, "d", arcPath);
+    if (style != null) {
+        e.setAttributeNS(null, "style", style);
+    }
+    return e;
 }
 
 function createSvgCircleElement(cx, cy, r, style) {
