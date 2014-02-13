@@ -218,7 +218,7 @@ function drawMatrix(dataObj, settings) {
         }
     }).style("text-anchor", "start").on("click", dataObj.getColumnClickback()).on("contextmenu", dataObj.getColumnRightClickback());
 
-    // heatmap SVG elements
+    // TODO SVG elements for heatmap cells
     var heatMap = svg.selectAll(".cell").data(dataObj.getData()).enter().append("g").attr({
         "class" : "cell"
     }).append(function(d) {
@@ -239,9 +239,13 @@ function drawMatrix(dataObj, settings) {
             var cx = ((colNameMapping[d.getColumn() + "QQ"]) * gridSize) + (gridSize / 2);
             var cy = ((rowNameMapping[d.getRow() + "QQ"]) * gridSize) + (gridSize / 2);
             var r = gridSize / 4;
+
+            var datatype = d.getDatatype();
+            var colorMapper = dataObj.getColorMapper(datatype);
+
             var attributes = {
                 "fill" : "none",
-                "stroke" : "red",
+                "stroke" : colorMapper(d.getValue()),
                 "stroke-width" : "2"
             };
             return createSvgRingPath(cx, cy, r, attributes);
