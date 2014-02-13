@@ -219,9 +219,10 @@ function drawMatrix(dataObj, settings) {
     }).style("text-anchor", "start").on("click", dataObj.getColumnClickback()).on("contextmenu", dataObj.getColumnRightClickback());
 
     // TODO SVG elements for heatmap cells
-    var heatMap = svg.selectAll(".cell").data(dataObj.getData()).enter().append("g").attr({
-        "class" : "cell"
-    }).append(function(d) {
+    var heatMap = svg.selectAll(".cell").data(dataObj.getData()).enter().append(function(d) {
+        var group = document.createElementNS(svgNamespaceUri, "g");
+        group.setAttributeNS(null, "class", "cell");
+
         var type = d.getDatatype();
         if ((type == null) || (d.getValue() == null)) {
             var x = (colNameMapping[d.getColumn() + "QQ"] * gridSize);
@@ -234,7 +235,7 @@ function drawMatrix(dataObj, settings) {
                 "fill" : "lightgrey",
                 "class" : "bordered"
             };
-            return createSvgRectElement(x, y, rx, ry, width, height, attributes);
+            group.appendChild(createSvgRectElement(x, y, rx, ry, width, height, attributes));
         } else if (type.toLowerCase() == "ring") {
             var cx = ((colNameMapping[d.getColumn() + "QQ"]) * gridSize) + (gridSize / 2);
             var cy = ((rowNameMapping[d.getRow() + "QQ"]) * gridSize) + (gridSize / 2);
@@ -248,7 +249,7 @@ function drawMatrix(dataObj, settings) {
                 "stroke" : colorMapper(d.getValue()),
                 "stroke-width" : "2"
             };
-            return createSvgRingPath(cx, cy, r, attributes);
+            group.appendChild(createSvgRingPath(cx, cy, r, attributes));
         } else if (type.toLowerCase() == "rectangle") {
             var x = (colNameMapping[d.getColumn() + "QQ"] * gridSize);
             var y = (rowNameMapping[d.getRow() + "QQ"] * gridSize);
@@ -260,12 +261,12 @@ function drawMatrix(dataObj, settings) {
                 "stroke" : "#E6E6E6",
                 "stroke-width" : "2px"
             };
-            return createSvgRectElement(x, y, rx, ry, width, height, attributes);
+            group.appendChild(createSvgRectElement(x, y, rx, ry, width, height, attributes));
         } else if (type.toLowerCase() == "dot") {
             var cx = ((colNameMapping[d.getColumn() + "QQ"]) * gridSize) + (gridSize / 2);
             var cy = ((rowNameMapping[d.getRow() + "QQ"]) * gridSize) + (gridSize / 2);
             var r = gridSize / 4;
-            return createSvgCircleElement(cx, cy, r);
+            group.appendChild(createSvgCircleElement(cx, cy, r));
         } else if (type.toLowerCase() == "mutation") {
             var cx = ((colNameMapping[d.getColumn() + "QQ"]) * gridSize) + (gridSize / 2);
             var cy = ((rowNameMapping[d.getRow() + "QQ"]) * gridSize) + (gridSize / 2);
@@ -278,15 +279,16 @@ function drawMatrix(dataObj, settings) {
                 "fill" : colorMapper(d.getValue())
             };
 
-            return createSvgCircleElement(cx, cy, r, attributes);
+            group.appendChild(createSvgCircleElement(cx, cy, r, attributes));
         } else if (type.toLowerCase() == "image") {
             var url = "observation_deck/images/favicon.ico";
             var x = colNameMapping[d.getColumn() + "QQ"] * gridSize;
             var y = rowNameMapping[d.getRow() + "QQ"] * gridSize;
             var width = gridSize;
             var height = gridSize;
-            return createImageElement(url, x, y, width, height);
+            group.appendChild(createImageElement(url, x, y, width, height));
         }
+        return group;
     });
     // heatMap.style("fill", "#ffffd9");
     // initial cell color
