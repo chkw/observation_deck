@@ -197,7 +197,7 @@ function drawMatrix(dataObj, settings) {
         },
         "transform" : "translate(" + translateX + ", " + translateY + ")",
         "class" : function(d, i) {
-            return "rowLabel mono axis axis-row";
+            return "rowLabel mono axis";
         }
     }).style("text-anchor", "end").on("click", dataObj.getRowClickback()).on("contextmenu", dataObj.getRowRightClickback());
 
@@ -214,27 +214,35 @@ function drawMatrix(dataObj, settings) {
         "x" : 0,
         "transform" : "rotate(" + rotationDegrees + ") translate(" + translateX + ", " + translateY + ")",
         "class" : function(d, i) {
-            return "colLabel mono axis axis-col";
+            return "colLabel mono axis";
         }
     }).style("text-anchor", "start").on("click", dataObj.getColumnClickback()).on("contextmenu", dataObj.getColumnRightClickback());
 
     // heatmap SVG elements
-    var heatMap = svg.selectAll(".cell").data(dataObj.getData()).enter().append("g").append(function(d) {
+    var heatMap = svg.selectAll(".cell").data(dataObj.getData()).enter().append("g").attr({
+        "class" : "cell"
+    }).append(function(d) {
         var type = d.getDatatype();
-        if (type == null) {
-            var cx = ((colNameMapping[d.getColumn() + "QQ"]) * gridSize) + (gridSize / 2);
-            var cy = ((rowNameMapping[d.getRow() + "QQ"]) * gridSize) + (gridSize / 2);
-            var r = gridSize / 4;
-            var style = "fill:none; stroke:red; stroke-width:2";
-            var e = createSvgRingPath(cx, cy, r, style);
-            return e;
+        if ((type == null) || (d.getValue() == null)) {
+            var x = (colNameMapping[d.getColumn() + "QQ"] * gridSize);
+            var y = (rowNameMapping[d.getRow() + "QQ"] * gridSize);
+            var rx = 4;
+            var ry = 4;
+            var width = gridSize;
+            var height = gridSize;
+            var attributes = {
+                "style" : "fill: lightgrey; stroke: #E6E6E6; stroke-width: 2",
+                "class" : "bordered"
+            };
+            return createSvgRectElement(x, y, rx, ry, width, height, attributes);
         } else if (type.toLowerCase() == "ring") {
             var cx = ((colNameMapping[d.getColumn() + "QQ"]) * gridSize) + (gridSize / 2);
             var cy = ((rowNameMapping[d.getRow() + "QQ"]) * gridSize) + (gridSize / 2);
             var r = gridSize / 4;
-            var style = "fill:none; stroke:red; stroke-width:2";
-            var e = createSvgRingPath(cx, cy, r, style);
-            return e;
+            var attributes = {
+                "style" : "fill:none; stroke:red; stroke-width:2"
+            };
+            return createSvgRingPath(cx, cy, r, attributes);
         } else if (type.toLowerCase() == "rectangle") {
             var x = (colNameMapping[d.getColumn() + "QQ"] * gridSize);
             var y = (rowNameMapping[d.getRow() + "QQ"] * gridSize);
@@ -242,46 +250,53 @@ function drawMatrix(dataObj, settings) {
             var ry = 4;
             var width = gridSize;
             var height = gridSize;
-            var style = "cursor: pointer; stroke: #E6E6E6; stroke-width: 2px";
-            var e = createSvgRectElement(x, y, rx, ry, width, height, style);
-            return e;
+            var attributes = {
+                "style" : "cursor: pointer; stroke: #E6E6E6; stroke-width: 2px"
+            };
+            return createSvgRectElement(x, y, rx, ry, width, height, attributes);
         } else if (type.toLowerCase() == "dot") {
             var cx = ((colNameMapping[d.getColumn() + "QQ"]) * gridSize) + (gridSize / 2);
             var cy = ((rowNameMapping[d.getRow() + "QQ"]) * gridSize) + (gridSize / 2);
             var r = gridSize / 4;
-            var e = createSvgCircleElement(cx, cy, r);
-            return e;
+            return createSvgCircleElement(cx, cy, r);
         } else if (type.toLowerCase() == "mutation") {
             var cx = ((colNameMapping[d.getColumn() + "QQ"]) * gridSize) + (gridSize / 2);
             var cy = ((rowNameMapping[d.getRow() + "QQ"]) * gridSize) + (gridSize / 2);
             var r = gridSize / 8;
-            var e = createSvgCircleElement(cx, cy, r);
-            return e;
+
+            var datatype = d.getDatatype();
+            var colorMapper = dataObj.getColorMapper(datatype);
+
+            var attributes = {
+                "fill" : colorMapper(d.getValue())
+            };
+
+            return createSvgCircleElement(cx, cy, r, attributes);
         } else if (type.toLowerCase() == "image") {
             var url = "observation_deck/images/favicon.ico";
             var x = colNameMapping[d.getColumn() + "QQ"] * gridSize;
             var y = rowNameMapping[d.getRow() + "QQ"] * gridSize;
             var width = gridSize;
             var height = gridSize;
-            var e = createImageElement(url, x, y, width, height);
-            return e;
+            return createImageElement(url, x, y, width, height);
         }
-    }).style("fill", "#ffffd9");
+    });
+    // heatMap.style("fill", "#ffffd9");
     // initial cell color
 
     // TODO heatmap click event
     heatMap.on("click", dataObj.getCellClickback()).on("contextmenu", dataObj.getCellRightClickback());
 
     // heatmap transition/animation
-    heatMap.transition().duration(1000).style("fill", function(d) {
-        if (d.getValue() == null) {
-            return "lightgrey";
-        } else {
-            var datatype = d.getDatatype();
-            var colorMapper = dataObj.getColorMapper(datatype);
-            return colorMapper(d.getValue());
-        }
-    });
+    // heatMap.transition().duration(1000).style("fill", function(d) {
+    // if (d.getValue() == null) {
+    // return "lightgrey";
+    // } else {
+    // var datatype = d.getDatatype();
+    // var colorMapper = dataObj.getColorMapper(datatype);
+    // return colorMapper(d.getValue());
+    // }
+    // });
 
     // heatmap titles
     heatMap.append("title").text(function(d) {
@@ -291,7 +306,7 @@ function drawMatrix(dataObj, settings) {
     return svg;
 }
 
-function createSvgRingPath(cx, cy, r, style) {
+function createSvgRingPath(cx, cy, r, attributes) {
     // https://stackoverflow.com/questions/5736398/how-to-calculate-the-svg-path-for-an-arc-of-a-circle
     // (rx ry x-axis-rotation large-arc-flag sweep-flag x y)+
 
@@ -315,24 +330,28 @@ function createSvgRingPath(cx, cy, r, style) {
 
     var e = document.createElementNS(svgNamespaceUri, "path");
     e.setAttributeNS(null, "d", arcPath);
-    if (style != null) {
-        e.setAttributeNS(null, "style", style);
+    if (attributes != null) {
+        for (var attribute in attributes) {
+            e.setAttributeNS(null, attribute, attributes[attribute]);
+        }
     }
     return e;
 }
 
-function createSvgCircleElement(cx, cy, r, style) {
+function createSvgCircleElement(cx, cy, r, attributes) {
     var e = document.createElementNS(svgNamespaceUri, "circle");
     e.setAttributeNS(null, "cx", cx);
     e.setAttributeNS(null, "cy", cy);
     e.setAttributeNS(null, 'r', r);
-    if (style != null) {
-        e.setAttributeNS(null, "style", style);
+    if (attributes != null) {
+        for (var attribute in attributes) {
+            e.setAttributeNS(null, attribute, attributes[attribute]);
+        }
     }
     return e;
 }
 
-function createSvgRectElement(x, y, rx, ry, width, height, style) {
+function createSvgRectElement(x, y, rx, ry, width, height, attributes) {
     var e = document.createElementNS(svgNamespaceUri, "rect");
     e.setAttributeNS(null, "x", x);
     e.setAttributeNS(null, "y", y);
@@ -340,21 +359,25 @@ function createSvgRectElement(x, y, rx, ry, width, height, style) {
     e.setAttributeNS(null, "ry", ry);
     e.setAttributeNS(null, "width", width);
     e.setAttributeNS(null, "height", height);
-    if (style != null) {
-        e.setAttributeNS(null, "style", style);
+    if (attributes != null) {
+        for (var attribute in attributes) {
+            e.setAttributeNS(null, attribute, attributes[attribute]);
+        }
     }
     return e;
 }
 
-function createImageElement(imageUrl, x, y, width, height, style) {
+function createImageElement(imageUrl, x, y, width, height, attributes) {
     var e = document.createElementNS(svgNamespaceUri, "image");
     e.setAttributeNS(xlinkUri, "href", imageUrl);
     e.setAttributeNS(null, "x", x);
     e.setAttributeNS(null, "y", y);
     e.setAttributeNS(null, "width", width);
     e.setAttributeNS(null, "height", height);
-    if (style != null) {
-        e.setAttributeNS(null, "style", style);
+    if (attributes != null) {
+        for (var attribute in attributes) {
+            e.setAttributeNS(null, attribute, attributes[attribute]);
+        }
     }
     return e;
 }
