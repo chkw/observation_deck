@@ -417,46 +417,50 @@ function createSvgImageElement(imageUrl, x, y, width, height, attributes) {
     return e;
 }
 
+var dataObj = null;
+
 // TODO onload
 window.onload = function() {
     console.log("Page loaded. Start onload.");
 
-    // TODO context menu
+    // TODO context menu uses http://medialize.github.io/jQuery-contextMenu
     $(function() {
         $.contextMenu({
             selector : ".rowLabel",
             callback : function(key, options) {
+                // default callback
                 var textContent = this[0].textContent;
-
-                // var axis = this[0].getAttribute("class").indexOf("axis") >= 0 ? true : false;
-                // if (axis) {
-                // axis = this[0].getAttribute("class").indexOf("rowLabel") >= 0 ? "row" : "column";
-                // }
-                // console.log(key, textContent, axis);
-
-                if (key == 'sort') {
-                    console.log(key, textContent);
-                } else if (key == 'expand') {
-                    console.log(key, textContent);
-                } else if (key == 'collapse') {
-                    console.log(key, textContent);
-                } else {
-                    console.log(key, textContent);
+                var axis = this[0].getAttribute("class").indexOf("axis") >= 0 ? true : false;
+                if (axis) {
+                    axis = this[0].getAttribute("class").indexOf("rowLabel") >= 0 ? "row" : "column";
                 }
+                console.log(key, textContent, axis);
             },
             items : {
+                "test" : {
+                    name : "test",
+                    icon : null,
+                    disabled : false,
+                    callback : function(key, opt) {
+                        var textContent = this[0].textContent;
+                        console.log(key, textContent);
+                    }
+                },
                 "sort" : {
                     name : "sort",
-                    icon : null
-                },
-                "expand" : {
-                    name : "expand",
-                    icon : null
+                    icon : null,
+                    disabled : true
                 },
                 "sep1" : "---------",
+                "expand" : {
+                    name : "expand",
+                    icon : null,
+                    disabled : true
+                },
                 "collapse" : {
                     name : "collapse",
-                    icon : null
+                    icon : null,
+                    disabled : true
                 }
             }
         });
@@ -464,7 +468,7 @@ window.onload = function() {
 
     // GET DATA
 
-    var dataObj = setObservationData(countsUrl);
+    dataObj = setObservationData(countsUrl);
 
     var settings = {
         "eventList" : getEventList(panelUrl),
