@@ -197,7 +197,7 @@ function drawMatrix(dataObj, settings) {
         },
         "transform" : "translate(" + translateX + ", " + translateY + ")",
         "class" : function(d, i) {
-            return "rowLabel mono axis";
+            return "rowLabel mono axis unselectable";
         }
     }).style("text-anchor", "end");
     rowLabels.on("click", dataObj.getRowClickback());
@@ -216,7 +216,7 @@ function drawMatrix(dataObj, settings) {
         "x" : 0,
         "transform" : "rotate(" + rotationDegrees + ") translate(" + translateX + ", " + translateY + ")",
         "class" : function(d, i) {
-            return "colLabel mono axis";
+            return "colLabel mono axis unselectable";
         }
     }).style("text-anchor", "start");
     colLabels.on("click", dataObj.getColumnClickback());
