@@ -417,11 +417,28 @@ function createSvgImageElement(imageUrl, x, y, width, height, attributes) {
     return e;
 }
 
+/**
+ * Get an object with UrlQueryString data.
+ */
+function getQueryObj() {
+    var result = {}, keyValuePairs = location.search.slice(1).split('&');
+
+    keyValuePairs.forEach(function(keyValuePair) {
+        keyValuePair = keyValuePair.split('=');
+        result[keyValuePair[0]] = keyValuePair[1] || '';
+    });
+
+    return result;
+}
+
 var dataObj = null;
 
 // TODO onload
 window.onload = function() {
     console.log("Page loaded. Start onload.");
+
+    var queryObj = getQueryObj();
+    console.log("queryObj->", queryObj);
 
     // TODO context menu uses http://medialize.github.io/jQuery-contextMenu
     $(function() {
