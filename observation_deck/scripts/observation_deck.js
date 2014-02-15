@@ -135,8 +135,17 @@ function drawMatrix(dataObj, settings) {
     dataObj.setRows(eventList);
 
     // map column names to column numbers
-    // var colNames = dataObj.getColumnNames();
-    var colNames = dataObj.sortColumns("TP53", "mutation").reverse();
+    var colNames = null;
+    if ("colSort" in settings) {
+        console.log("colSort specified");
+        colNames = dataObj.sortColumns(settings["colSort"], "mutation").reverse();
+    } else {
+        colNames = dataObj.getColumnNames();
+    }
+
+    if ("colSortReverse" in settings) {
+        colNames.reverse();
+    }
 
     var colNameMapping = new Object();
     for (var i in colNames) {
@@ -461,12 +470,25 @@ window.onload = function() {
                     callback : function(key, opt) {
                         var textContent = this[0].textContent;
                         console.log(key, textContent);
+                        console.log("href", window.location.href);
+                        console.log("pathname", window.location.pathname);
                     }
                 },
                 "sort" : {
                     name : "sort",
                     icon : null,
-                    disabled : true
+                    disabled : false,
+                    callback : function(key, opt) {
+                        var textContent = this[0].textContent;
+                        var url = window.location.pathname + "?colSort=" + textContent;
+                        if (("colSort" in queryObj) && (queryObj["colSort"] == textContent)) {
+                            if ("colSortReverse" in queryObj) {
+                            } else {
+                                url += "&colSortReverse=true";
+                            }
+                        }
+                        window.open(url, "_self");
+                    }
                 },
                 "sep1" : "---------",
                 "expand" : {
@@ -491,6 +513,9 @@ window.onload = function() {
         "eventList" : getEventList(panelUrl),
         // "eventList" : ["TP53", "aaa", "EGFR"],
     };
+    for (var key in queryObj) {
+        settings[key] = queryObj[key];
+    }
 
     // DRAWING
 
