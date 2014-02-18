@@ -134,16 +134,17 @@ function drawMatrix(dataObj, settings) {
     }
     dataObj.setRows(eventList);
 
+    var queryObj = settings["querySettings"];
+
     // map column names to column numbers
     var colNames = null;
-    if ("colSort" in settings) {
-        console.log("colSort specified");
-        colNames = dataObj.sortColumns(settings["colSort"], "mutation").reverse();
+    if ("colSort" in queryObj) {
+        colNames = dataObj.sortColumns(queryObj["colSort"], "mutation");
     } else {
         colNames = dataObj.getColumnNames();
     }
 
-    if ("colSortReverse" in settings) {
+    if (("colSortReverse" in queryObj) && (queryObj["colSortReverse"] == true)) {
         colNames.reverse();
     }
 
@@ -430,11 +431,12 @@ function createSvgImageElement(imageUrl, x, y, width, height, attributes) {
  * Get an object with UrlQueryString data.
  */
 function getQueryObj() {
-    var result = {}, keyValuePairs = location.search.slice(1).split('&');
+    var result = {};
+    var keyValuePairs = location.search.slice(1).split('&');
 
     keyValuePairs.forEach(function(keyValuePair) {
         keyValuePair = keyValuePair.split('=');
-        result[keyValuePair[0]] = keyValuePair[1] || '';
+        result[keyValuePair[0]] = decodeURIComponent(keyValuePair[1]) || '';
     });
 
     return result;
@@ -447,7 +449,10 @@ window.onload = function() {
     console.log("Page loaded. Start onload.");
 
     var queryObj = getQueryObj();
-    console.log("queryObj->", queryObj);
+    var querySettings = {};
+    if ("query" in queryObj) {
+        querySettings = JSON && JSON.parse(queryObj["query"]) || $.parseJSON(queryObj["query"]);
+    }
 
     // TODO context menu uses http://medialize.github.io/jQuery-contextMenu
     $(function() {
@@ -472,6 +477,7 @@ window.onload = function() {
                         console.log(key, textContent);
                         console.log("href", window.location.href);
                         console.log("pathname", window.location.pathname);
+                        console.log("search", window.location.search);
                     }
                 },
                 "sort" : {
@@ -480,13 +486,15 @@ window.onload = function() {
                     disabled : false,
                     callback : function(key, opt) {
                         var textContent = this[0].textContent;
-                        var url = window.location.pathname + "?colSort=" + textContent;
-                        if (("colSort" in queryObj) && (queryObj["colSort"] == textContent)) {
-                            if ("colSortReverse" in queryObj) {
+                        querySettings["colSort"] = textContent;
+                        if (("colSort" in querySettings) && (querySettings["colSort"] == textContent)) {
+                            if (!"colSortReverse" in querySettings) {
+                                querySettings["colSortReverse"] = true;
                             } else {
-                                url += "&colSortReverse=true";
+                                querySettings["colSortReverse"] = !querySettings["colSortReverse"];
                             }
                         }
+                        var url = window.location.pathname + "?query=" + JSON.stringify(querySettings);
                         window.open(url, "_self");
                     }
                 },
@@ -513,12 +521,10 @@ window.onload = function() {
         "eventList" : getEventList(panelUrl),
         // "eventList" : ["TP53", "aaa", "EGFR"],
     };
-    for (var key in queryObj) {
-        settings[key] = queryObj[key];
-    }
+
+    settings["querySettings"] = querySettings;
 
     // DRAWING
 
     var heatmapSvg = drawMatrix(dataObj, settings);
-    console.log(heatmapSvg);
 };
