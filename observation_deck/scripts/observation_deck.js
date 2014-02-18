@@ -476,6 +476,7 @@ window.onload = function() {
                         var textContent = this[0].textContent;
                         console.log(key, textContent);
                         console.log("href", window.location.href);
+                        console.log("host", window.location.host);
                         console.log("pathname", window.location.pathname);
                         console.log("search", window.location.search);
                     }
@@ -486,14 +487,19 @@ window.onload = function() {
                     disabled : false,
                     callback : function(key, opt) {
                         var textContent = this[0].textContent;
-                        querySettings["colSort"] = textContent;
                         if (("colSort" in querySettings) && (querySettings["colSort"] == textContent)) {
+                            // same row got clicked
+                            console.log(textContent + " got clicked again");
                             if (!"colSortReverse" in querySettings) {
                                 querySettings["colSortReverse"] = true;
                             } else {
                                 querySettings["colSortReverse"] = !querySettings["colSortReverse"];
                             }
+                        } else {
+                            // different row got clicked
+                            delete querySettings["colSortReverse"];
                         }
+                        querySettings["colSort"] = textContent;
                         var url = window.location.pathname + "?query=" + JSON.stringify(querySettings);
                         window.open(url, "_self");
                     }
@@ -508,6 +514,15 @@ window.onload = function() {
                     name : "collapse",
                     icon : null,
                     disabled : true
+                },
+                "reset" : {
+                    name : "reset",
+                    icon : null,
+                    disabled : false,
+                    callback : function(key, opt) {
+                        var url = window.location.pathname;
+                        window.open(url, "_self");
+                    }
                 }
             }
         });
