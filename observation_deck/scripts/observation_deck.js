@@ -139,7 +139,12 @@ function drawMatrix(dataObj, settings) {
     // map column names to column numbers
     var colNames = null;
     if ("colSort" in queryObj) {
-        colNames = dataObj.sortColumns(queryObj["colSort"], "mutation");
+        if ("instructions" in queryObj["colSort"]) {
+            console.log("use multiSortColumns!");
+            colNames = dataObj.multiSortColumns(queryObj["colSort"].getInstructions());
+        } else {
+            colNames = dataObj.sortColumns(queryObj["colSort"], "mutation");
+        }
     } else {
         colNames = dataObj.getColumnNames();
     }
@@ -481,8 +486,25 @@ window.onload = function() {
                         console.log("search", window.location.search);
                     }
                 },
-                "sort" : {
-                    name : "sort",
+                "new sort" : {
+                    name : "new sort",
+                    icon : null,
+                    disabled : false,
+                    callback : function(key, opt) {
+                        var textContent = this[0].textContent;
+                        if ("colSort" in querySettings) {
+                        } else {
+                            querySettings["colSort"] = new sortingInstructions();
+                        }
+                        querySettings["colSort"].addInstruction(textContent);
+
+                        var url = window.location.pathname + "?query=" + JSON.stringify(querySettings);
+                        console.log(url);
+                        // window.open(url, "_self");
+                    }
+                },
+                "old sort" : {
+                    name : "old sort",
                     icon : null,
                     disabled : false,
                     callback : function(key, opt) {
@@ -490,10 +512,10 @@ window.onload = function() {
                         if (("colSort" in querySettings) && (querySettings["colSort"] == textContent)) {
                             // same row got clicked
                             console.log(textContent + " got clicked again");
-                            if (!"colSortReverse" in querySettings) {
-                                querySettings["colSortReverse"] = true;
-                            } else {
+                            if ("colSortReverse" in querySettings) {
                                 querySettings["colSortReverse"] = !querySettings["colSortReverse"];
+                            } else {
+                                querySettings["colSortReverse"] = true;
                             }
                         } else {
                             // different row got clicked
