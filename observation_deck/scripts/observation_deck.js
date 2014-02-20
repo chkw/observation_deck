@@ -139,12 +139,8 @@ function drawMatrix(dataObj, settings) {
     // map column names to column numbers
     var colNames = null;
     if ("colSort" in queryObj) {
-        if ("instructions" in queryObj["colSort"]) {
-            console.log("use multiSortColumns!");
-            colNames = dataObj.multiSortColumns(queryObj["colSort"].getInstructions());
-        } else {
-            colNames = dataObj.sortColumns(queryObj["colSort"], "mutation");
-        }
+        var sortSteps = new sortingSteps(queryObj["colSort"]["steps"]);
+        colNames = dataObj.multiSortColumns(sortSteps);
     } else {
         colNames = dataObj.getColumnNames();
     }
@@ -492,15 +488,18 @@ window.onload = function() {
                     disabled : false,
                     callback : function(key, opt) {
                         var textContent = this[0].textContent;
+                        var sortSteps = null;
                         if ("colSort" in querySettings) {
+                            sortSteps = new sortingSteps(querySettings["colSort"]["steps"]);
                         } else {
-                            querySettings["colSort"] = new sortingInstructions();
+                            sortSteps = new sortingSteps();
                         }
-                        querySettings["colSort"].addInstruction(textContent);
+                        sortSteps.addStep(textContent);
+                        querySettings["colSort"] = sortSteps;
 
                         var url = window.location.pathname + "?query=" + JSON.stringify(querySettings);
                         console.log(url);
-                        // window.open(url, "_self");
+                        window.open(url, "_self");
                     }
                 },
                 "old sort" : {
