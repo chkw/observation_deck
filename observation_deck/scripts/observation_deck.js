@@ -482,8 +482,8 @@ window.onload = function() {
                         console.log("search", window.location.search);
                     }
                 },
-                "new sort" : {
-                    name : "new sort",
+                "sort" : {
+                    name : "sort",
                     icon : null,
                     disabled : false,
                     callback : function(key, opt) {
@@ -499,29 +499,6 @@ window.onload = function() {
 
                         var url = window.location.pathname + "?query=" + JSON.stringify(querySettings);
                         console.log(url);
-                        window.open(url, "_self");
-                    }
-                },
-                "old sort" : {
-                    name : "old sort",
-                    icon : null,
-                    disabled : false,
-                    callback : function(key, opt) {
-                        var textContent = this[0].textContent;
-                        if (("colSort" in querySettings) && (querySettings["colSort"] == textContent)) {
-                            // same row got clicked
-                            console.log(textContent + " got clicked again");
-                            if ("colSortReverse" in querySettings) {
-                                querySettings["colSortReverse"] = !querySettings["colSortReverse"];
-                            } else {
-                                querySettings["colSortReverse"] = true;
-                            }
-                        } else {
-                            // different row got clicked
-                            delete querySettings["colSortReverse"];
-                        }
-                        querySettings["colSort"] = textContent;
-                        var url = window.location.pathname + "?query=" + JSON.stringify(querySettings);
                         window.open(url, "_self");
                     }
                 },
