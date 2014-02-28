@@ -126,6 +126,10 @@ function setObservationData(url) {
  * @param {Object} settings
  */
 function drawMatrix(dataObj, settings) {
+
+    // testing transpose
+    // dataObj.transpose();
+
     var eventList = null;
     if (("eventList" in settings) && (settings["eventList"] != null)) {
         eventList = settings["eventList"];
@@ -531,7 +535,7 @@ window.onload = function() {
     dataObj = setObservationData(countsUrl);
 
     var settings = {
-        "eventList" : getEventList(panelUrl),
+        // "eventList" : getEventList(panelUrl),
         // "eventList" : ["TP53", "aaa", "EGFR"],
     };
 
