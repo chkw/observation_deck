@@ -12,6 +12,11 @@ var xlinkUri = "http://www.w3.org/1999/xlink";
 var countsUrl = "observation_deck/data/gene_count.tab";
 var panelUrl = "observation_deck/data/gene.tab";
 
+var urlMap = {
+    "mutation panel" : "observation_deck/data/gene_count.tab",
+    "pancan signatures" : "observation_deck/data/pancan-score_t.tab"
+};
+
 /*
  * Synchronous GET
  */
@@ -449,14 +454,35 @@ function getQueryObj() {
 
 var dataObj = null;
 
+function loadNewSettings(querySettings) {
+    var url = window.location.pathname + "?query=" + JSON.stringify(querySettings);
+    window.open(url, "_self");
+}
+
 // TODO onload
 window.onload = function() {
     console.log("Page loaded. Start onload.");
 
+    // get settings from query string
     var queryObj = getQueryObj();
     var querySettings = {};
     if ("query" in queryObj) {
         querySettings = JSON && JSON.parse(queryObj["query"]) || $.parseJSON(queryObj["query"]);
+    }
+
+    // http://elegantcode.com/2009/07/01/jquery-playing-with-select-dropdownlistcombobox/
+    $("#selectDataset").change(function() {
+        var val = $("#selectDataset option:selected").val();
+        querySettings["dataset"] = val;
+        loadNewSettings(querySettings);
+    });
+
+    // set data url
+    var dataUrl = null;
+    if ("dataset" in querySettings) {
+        dataUrl = urlMap[querySettings["dataset"]];
+    } else {
+        return;
     }
 
     // TODO context menu uses http://medialize.github.io/jQuery-contextMenu
@@ -501,9 +527,7 @@ window.onload = function() {
                         sortSteps.addStep(textContent);
                         querySettings["colSort"] = sortSteps;
 
-                        var url = window.location.pathname + "?query=" + JSON.stringify(querySettings);
-                        console.log(url);
-                        window.open(url, "_self");
+                        loadNewSettings(querySettings);
                     }
                 },
                 "sep1" : "---------",
@@ -532,7 +556,7 @@ window.onload = function() {
 
     // GET DATA
 
-    dataObj = setObservationData(countsUrl);
+    dataObj = setObservationData(dataUrl);
 
     var settings = {
         // "eventList" : getEventList(panelUrl),
