@@ -16,6 +16,7 @@ var datasetSettings = {
     "mutation panel" : {
         "url" : "observation_deck/data/gene_count.tab",
         "datatype" : "mutation",
+        "colorMapper" : "quantile",
         "rowFeature" : "event",
         "columnFeature" : "sample",
         "valueFeature" : "value",
@@ -24,6 +25,7 @@ var datasetSettings = {
     "pancan signatures" : {
         "url" : "observation_deck/data/pancan-score_t.tab",
         "datatype" : "signature",
+        "colorMapper" : "centered",
         "rowFeature" : "event",
         "columnFeature" : "sample",
         "valueFeature" : "value",
@@ -97,17 +99,18 @@ function setObservationData(settings) {
         matrixData.push.apply(matrixData, parsedResponse[i]);
     }
 
-    settings["colorMapper"] = function(d, i) {
-        color = "darkgrey";
-        if (d > 0) {
-            color = "red";
-        } else if (d < 0) {
-            color = "blue";
-        } else if (d == 0) {
-            color = "white";
-        }
-        return color;
-    };
+    // 0-centered color mapping
+    // settings["colorMapper"] = function(d, i) {
+    // color = "darkgrey";
+    // if (d > 0) {
+    // color = "rgba(255,0,0,1)";
+    // } else if (d < 0) {
+    // color = "rgba(0,0,255,1)";
+    // } else if (d == 0) {
+    // color = "rgb(255,255,255)";
+    // }
+    // return color;
+    // };
 
     settings["rowClickback"] = function(d, i) {
         console.log("rowClickback: " + d);
@@ -135,8 +138,6 @@ function setObservationData(settings) {
         console.log("cellRightClickback: r" + d.getRow() + " c" + d.getColumn() + " name" + d.getName() + " val" + d.getValue());
         d3.event.preventDefault();
     };
-
-    console.log("settings", settings);
 
     var dataObj = new observationData();
     dataObj.addData(matrixData, settings);
@@ -373,7 +374,8 @@ function drawMatrix(dataObj, settings) {
 
     // heatmap titles
     heatMap.append("title").text(function(d) {
-        return d.getName();
+        var s = "r:" + d.getRow() + "\n\nc:" + d.getColumn() + "\n\nval:" + d.getValue();
+        return s;
     });
 
     return svg;
@@ -504,7 +506,6 @@ window.onload = function() {
     // set dataset settings
     var datasetSettingsObj = null;
     if ("dataset" in querySettings) {
-        console.log(datasetSettings);
         datasetSettingsObj = datasetSettings[querySettings["dataset"]];
     } else {
         return;
