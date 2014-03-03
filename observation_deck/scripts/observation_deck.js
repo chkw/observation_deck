@@ -58,10 +58,14 @@ function getEventList(url) {
 function setObservationData(url) {
     var response = getResponse(url);
     var parsedResponse = d3.tsv.parse(response, function(d) {
-        var event = d["#GENE"].trim();
+        var event = d["#GENE"];
+        if (event == null) {
+            event = d["id"];
+        }
+        event = event.trim();
         var rowData = new Array();
         for (var sample in d) {
-            if (sample != "#GENE") {
+            if ((sample != "#GENE") && (sample != "id")) {
                 var value = d[sample].trim();
                 var data = {
                     "sample" : sample.trim(),
@@ -454,6 +458,10 @@ function getQueryObj() {
 
 var dataObj = null;
 
+/**
+ * querySettings is an object to be stringified into the query string.
+ * @param {Object} querySettings
+ */
 function loadNewSettings(querySettings) {
     var url = window.location.pathname + "?query=" + JSON.stringify(querySettings);
     window.open(url, "_self");
@@ -473,8 +481,9 @@ window.onload = function() {
     // http://elegantcode.com/2009/07/01/jquery-playing-with-select-dropdownlistcombobox/
     $("#selectDataset").change(function() {
         var val = $("#selectDataset option:selected").val();
-        querySettings["dataset"] = val;
-        loadNewSettings(querySettings);
+        loadNewSettings({
+            "dataset" : val
+        });
     });
 
     // set data url
