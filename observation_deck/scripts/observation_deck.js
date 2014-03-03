@@ -12,9 +12,23 @@ var xlinkUri = "http://www.w3.org/1999/xlink";
 var countsUrl = "observation_deck/data/gene_count.tab";
 var panelUrl = "observation_deck/data/gene.tab";
 
-var urlMap = {
-    "mutation panel" : "observation_deck/data/gene_count.tab",
-    "pancan signatures" : "observation_deck/data/pancan-score_t.tab"
+var datasetSettings = {
+    "mutation panel" : {
+        "url" : "observation_deck/data/gene_count.tab",
+        "datatype" : "mutation",
+        "rowFeature" : "event",
+        "columnFeature" : "sample",
+        "valueFeature" : "value",
+        "nameFeature" : "sample",
+    },
+    "pancan signatures" : {
+        "url" : "observation_deck/data/pancan-score_t.tab",
+        "datatype" : "signature",
+        "rowFeature" : "event",
+        "columnFeature" : "sample",
+        "valueFeature" : "value",
+        "nameFeature" : "sample",
+    }
 };
 
 /*
@@ -55,8 +69,8 @@ function getEventList(url) {
 /**
  * get the JSON data to create a heatmapData object.
  */
-function setObservationData(url) {
-    var response = getResponse(url);
+function setObservationData(settings) {
+    var response = getResponse(settings["url"]);
     var parsedResponse = d3.tsv.parse(response, function(d) {
         var event = d["#GENE"];
         if (event == null) {
@@ -83,45 +97,46 @@ function setObservationData(url) {
         matrixData.push.apply(matrixData, parsedResponse[i]);
     }
 
-    var settings = {
-        "datatype" : "mutation",
-        "rowFeature" : "event",
-        "columnFeature" : "sample",
-        "valueFeature" : "value",
-        "nameFeature" : "sample",
-        // "colorMapper" : function(d, i) {
-        // color = "darkgrey";
-        // if (d.toLowerCase() == "error") {
-        // color = "red";
-        // } else if (d.toLowerCase() == "pending") {
-        // color = "goldenrod";
-        // } else if (d.toLowerCase() == "ready") {
-        // color = "green";
-        // }
-        // return color;
-        // },
-        "rowClickback" : function(d, i) {
-            console.log("rowClickback: " + d);
-        },
-        "columnClickback" : function(d, i) {
-            console.log("columnClickback: " + d);
-        },
-        "cellClickback" : function(d, i) {
-            console.log("cellClickback: r" + d.getRow() + " c" + d.getColumn() + " name" + d.getName() + " val" + d.getValue());
-        },
-        "rowRightClickback" : function(d, i) {
-            console.log("rowRightClickback: " + d);
-            d3.event.preventDefault();
-        },
-        "columnRightClickback" : function(d, i) {
-            console.log("columnRightClickback: " + d);
-            d3.event.preventDefault();
-        },
-        "cellRightClickback" : function(d, i) {
-            console.log("cellRightClickback: r" + d.getRow() + " c" + d.getColumn() + " name" + d.getName() + " val" + d.getValue());
-            d3.event.preventDefault();
+    settings["colorMapper"] = function(d, i) {
+        color = "darkgrey";
+        if (d > 0) {
+            color = "red";
+        } else if (d < 0) {
+            color = "blue";
+        } else if (d == 0) {
+            color = "white";
         }
+        return color;
     };
+
+    settings["rowClickback"] = function(d, i) {
+        console.log("rowClickback: " + d);
+    };
+
+    settings["columnClickback"] = function(d, i) {
+        console.log("columnClickback: " + d);
+    };
+
+    settings["cellClickback"] = function(d, i) {
+        console.log("cellClickback: r" + d.getRow() + " c" + d.getColumn() + " name" + d.getName() + " val" + d.getValue());
+    };
+
+    settings["rowRightClickback"] = function(d, i) {
+        console.log("rowRightClickback: " + d);
+        d3.event.preventDefault();
+    };
+
+    settings["columnRightClickback"] = function(d, i) {
+        console.log("columnRightClickback: " + d);
+        d3.event.preventDefault();
+    };
+
+    settings["cellRightClickback"] = function(d, i) {
+        console.log("cellRightClickback: r" + d.getRow() + " c" + d.getColumn() + " name" + d.getName() + " val" + d.getValue());
+        d3.event.preventDefault();
+    };
+
+    console.log("settings", settings);
 
     var dataObj = new observationData();
     dataObj.addData(matrixData, settings);
@@ -276,7 +291,7 @@ function drawMatrix(dataObj, settings) {
             return group;
         }
 
-        if ((type.toLowerCase() == "ring") || (type.toLowerCase() == "mutation")) {
+        if ((type.toLowerCase() == "ring") || (type.toLowerCase() == "signature")) {
             var cx = ((colNameMapping[d.getColumn() + "QQ"]) * gridSize) + (gridSize / 2);
             var cy = ((rowNameMapping[d.getRow() + "QQ"]) * gridSize) + (gridSize / 2);
             var r = gridSize / 4;
@@ -486,10 +501,11 @@ window.onload = function() {
         });
     });
 
-    // set data url
-    var dataUrl = null;
+    // set dataset settings
+    var datasetSettingsObj = null;
     if ("dataset" in querySettings) {
-        dataUrl = urlMap[querySettings["dataset"]];
+        console.log(datasetSettings);
+        datasetSettingsObj = datasetSettings[querySettings["dataset"]];
     } else {
         return;
     }
@@ -565,7 +581,7 @@ window.onload = function() {
 
     // GET DATA
 
-    dataObj = setObservationData(dataUrl);
+    dataObj = setObservationData(datasetSettingsObj);
 
     var settings = {
         // "eventList" : getEventList(panelUrl),
