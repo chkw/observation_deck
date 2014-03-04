@@ -174,10 +174,6 @@ function drawMatrix(dataObj, settings) {
         colNames = dataObj.getColumnNames();
     }
 
-    if (("colSortReverse" in queryObj) && (queryObj["colSortReverse"] == true)) {
-        colNames.reverse();
-    }
-
     var colNameMapping = new Object();
     for (var i in colNames) {
         var name = colNames[i] + "QQ";
@@ -496,6 +492,7 @@ window.onload = function() {
     }
 
     // http://elegantcode.com/2009/07/01/jquery-playing-with-select-dropdownlistcombobox/
+    // http://www.tizag.com/htmlT/htmlselect.php
     $("#selectDataset").change(function() {
         var val = $("#selectDataset option:selected").val();
         loadNewSettings({
@@ -514,7 +511,7 @@ window.onload = function() {
     // TODO context menu uses http://medialize.github.io/jQuery-contextMenu
     $(function() {
         $.contextMenu({
-            selector : ".rowLabel",
+            selector : ".axis",
             callback : function(key, options) {
                 // default callback
                 var textContent = this[0].textContent;
@@ -544,14 +541,30 @@ window.onload = function() {
                     disabled : false,
                     callback : function(key, opt) {
                         var textContent = this[0].textContent;
+
+                        var axis = this[0].getAttribute("class").indexOf("axis") >= 0 ? true : false;
+                        if (axis) {
+                            axis = this[0].getAttribute("class").indexOf("rowLabel") >= 0 ? "row" : "column";
+                        } else {
+                            console.log("exit out because not a row or a column");
+                            return;
+                        }
+
+                        var sortType = "colSort";
+                        if (axis == "row") {
+                            // do nothing, colSort is the default.
+                        } else {
+                            sortType = "rowSort";
+                        }
+
                         var sortSteps = null;
-                        if ("colSort" in querySettings) {
-                            sortSteps = new sortingSteps(querySettings["colSort"]["steps"]);
+                        if ( sortType in querySettings) {
+                            sortSteps = new sortingSteps(querySettings[sortType]["steps"]);
                         } else {
                             sortSteps = new sortingSteps();
                         }
                         sortSteps.addStep(textContent);
-                        querySettings["colSort"] = sortSteps;
+                        querySettings[sortType] = sortSteps;
 
                         loadNewSettings(querySettings);
                     }
