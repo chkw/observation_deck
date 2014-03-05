@@ -165,6 +165,23 @@ function drawMatrix(dataObj, settings) {
 
     var queryObj = settings["querySettings"];
 
+    // map row names to row numbers
+    var rowNames = eventList;
+
+    rowNames = null;
+    if ("rowSort" in queryObj) {
+        var sortSteps = new sortingSteps(queryObj["rowSort"]["steps"]);
+        rowNames = dataObj.multiSortRows(sortSteps);
+    } else {
+        rowNames = dataObj.getRowNames();
+    }
+
+    var rowNameMapping = new Object();
+    for (var i in rowNames) {
+        var name = rowNames[i] + "QQ";
+        rowNameMapping[name] = i;
+    }
+
     // map column names to column numbers
     var colNames = null;
     if ("colSort" in queryObj) {
@@ -178,15 +195,6 @@ function drawMatrix(dataObj, settings) {
     for (var i in colNames) {
         var name = colNames[i] + "QQ";
         colNameMapping[name] = i;
-    }
-
-    // map row names to row numbers
-    var rowNames = eventList;
-
-    var rowNameMapping = new Object();
-    for (var i in rowNames) {
-        var name = rowNames[i] + "QQ";
-        rowNameMapping[name] = i;
     }
 
     var longestColumnName = lengthOfLongestString(dataObj.getColumnNames());
