@@ -15,6 +15,7 @@ var panelUrl = "observation_deck/data/gene.tab";
 var datasetSettings = {
     "mutation panel" : {
         "url" : "observation_deck/data/gene_count.tab",
+        "eventColHeader" : "#GENE",
         "datatype" : "mutation",
         "colorMapper" : "quantile",
         "rowFeature" : "event",
@@ -24,6 +25,7 @@ var datasetSettings = {
     },
     "pancan signatures" : {
         "url" : "observation_deck/data/pancan-score_t.tab",
+        "eventColHeader" : "id",
         "datatype" : "signature",
         "colorMapper" : "centered",
         "rowFeature" : "event",
@@ -74,14 +76,12 @@ function getEventList(url) {
 function setObservationData(settings) {
     var response = getResponse(settings["url"]);
     var parsedResponse = d3.tsv.parse(response, function(d) {
-        var event = d["#GENE"];
-        if (event == null) {
-            event = d["id"];
-        }
+        var eventColHeader = settings["eventColHeader"];
+        var event = d[eventColHeader];
         event = event.trim();
         var rowData = new Array();
         for (var sample in d) {
-            if ((sample != "#GENE") && (sample != "id")) {
+            if (sample != eventColHeader) {
                 var value = d[sample].trim();
                 var data = {
                     "sample" : sample.trim(),
