@@ -22,6 +22,7 @@ var datasetSettings = {
         "columnFeature" : "sample",
         "valueFeature" : "value",
         "nameFeature" : "sample",
+        "eventList" : getEventList(panelUrl)
     },
     "pancan signatures" : {
         "url" : "observation_deck/data/pancan-score_t.tab",
