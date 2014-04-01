@@ -82,6 +82,110 @@ function getEventList(url) {
     return rows;
 }
 
+function setObservationData2(settingsList) {
+    var dataObj = new observationData();
+
+    for (var i = 0; i < settingsList.length; i++) {
+        var settings = settingsList[i];
+
+        // TODO create matrixData object
+        var response = getResponse(settings["url"]);
+        var parsedResponse = null;
+
+        if (endsWith(settings["url"], ".json")) {
+            parsedResponse = JSON && JSON.parse(response) || $.parseJSON(response);
+            console.log(prettyJson(parsedResponse));
+            var rows = parsedResponse["rows"];
+            parsedResponse = [];
+            var numRows = rows.length;
+            var rowData = [];
+            for (var i = 0; i < rows.length; i++) {
+                var row = rows[i];
+                var id = row["patient_url"].trim().replace("/patient/WCDT/", "");
+                var eventName = row["gene_url"].trim().replace("/gene/", "");
+                var eventVal = row["value"];
+                rowData.push({
+                    "sample" : id,
+                    "event" : eventName,
+                    "value" : +eventVal
+                });
+            }
+            parsedResponse.push(rowData);
+        } else {
+            parsedResponse = d3.tsv.parse(response, function(d) {
+                var eventColHeader = settings["eventColHeader"];
+                var event = d[eventColHeader];
+                event = event.trim();
+                var rowData = new Array();
+                for (var sample in d) {
+                    if (sample != eventColHeader) {
+                        var value = d[sample].trim();
+                        var data = {
+                            "sample" : sample.trim(),
+                            "event" : event,
+                            "value" : +value
+                        };
+                        rowData.push(data);
+                    }
+                }
+                return rowData;
+            });
+        }
+
+        console.log("parsedResponse", prettyJson(parsedResponse));
+
+        var matrixData = new Array();
+        for (var i in parsedResponse) {
+            matrixData.push.apply(matrixData, parsedResponse[i]);
+        }
+
+        console.log("matrixData", prettyJson(matrixData));
+
+        // 0-centered color mapping
+        // settings["colorMapper"] = function(d, i) {
+        // color = "darkgrey";
+        // if (d > 0) {
+        // color = "rgba(255,0,0,1)";
+        // } else if (d < 0) {
+        // color = "rgba(0,0,255,1)";
+        // } else if (d == 0) {
+        // color = "rgb(255,255,255)";
+        // }
+        // return color;
+        // };
+
+        settings["rowClickback"] = function(d, i) {
+            console.log("rowClickback: " + d);
+        };
+
+        settings["columnClickback"] = function(d, i) {
+            console.log("columnClickback: " + d);
+        };
+
+        settings["cellClickback"] = function(d, i) {
+            console.log("cellClickback: r" + d.getRow() + " c" + d.getColumn() + " name" + d.getName() + " val" + d.getValue());
+        };
+
+        settings["rowRightClickback"] = function(d, i) {
+            console.log("rowRightClickback: " + d);
+            d3.event.preventDefault();
+        };
+
+        settings["columnRightClickback"] = function(d, i) {
+            console.log("columnRightClickback: " + d);
+            d3.event.preventDefault();
+        };
+
+        settings["cellRightClickback"] = function(d, i) {
+            console.log("cellRightClickback: r" + d.getRow() + " c" + d.getColumn() + " name" + d.getName() + " val" + d.getValue());
+            d3.event.preventDefault();
+        };
+
+        dataObj.addData(matrixData, settings);
+    }
+    return dataObj;
+}
+
 /**
  * get the JSON data to create a heatmapData object.
  */
@@ -553,7 +657,7 @@ window.onload = function() {
     if ("dataset" in querySettings) {
         datasetSettingsObj = datasetSettings[querySettings["dataset"]];
     } else {
-        return;
+        // return;
     }
 
     // TODO context menu uses http://medialize.github.io/jQuery-contextMenu
@@ -643,7 +747,9 @@ window.onload = function() {
 
     // GET DATA
 
-    dataObj = setObservationData(datasetSettingsObj);
+    // dataObj = setObservationData(datasetSettingsObj);
+    var dataObj2 = setObservationData2([datasetSettings["pancan signatures"], datasetSettings["mutation facts"]]);
+    console.log("dataObj2", prettyJson(dataObj2));
 
     var settings = {
         // "eventList" : getEventList(panelUrl),
