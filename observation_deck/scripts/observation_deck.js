@@ -85,8 +85,8 @@ function getEventList(url) {
 function setObservationData2(settingsList) {
     var dataObj = new observationData();
 
-    for (var i = 0; i < settingsList.length; i++) {
-        var settings = settingsList[i];
+    for (var j = 0; j < settingsList.length; j++) {
+        var settings = settingsList[j];
 
         // TODO create matrixData object
         var response = getResponse(settings["url"]);
@@ -100,7 +100,7 @@ function setObservationData2(settingsList) {
             var rowData = [];
             for (var i = 0; i < rows.length; i++) {
                 var row = rows[i];
-                var id = row["patient_url"].trim().replace("/patient/WCDT/", "");
+                var id = row["patient_url"].trim().replace("/patient/WCDT/", "").replace(/-OH-/, "-").replace(/-SF-/, "-").replace(/-LA-/, "-");
                 var eventName = row["gene_url"].trim().replace("/gene/", "");
                 var eventVal = row["value"];
                 rowData.push({
@@ -743,8 +743,11 @@ window.onload = function() {
     // GET DATA
 
     // dataObj = setObservationData(datasetSettingsObj);
-    var dataObj2 = setObservationData2([datasetSettings["pancan signatures"], datasetSettings["mutation facts"]]);
-    console.log("dataObj2", (dataObj2));
+    var a = [];
+    a.push(datasetSettings["pancan signatures"]);
+    a.push(datasetSettings["mutation facts"]);
+    var dataObj = setObservationData2(a);
+    // console.log("dataObj", (dataObj));
 
     var settings = {
         // "eventList" : getEventList(panelUrl),
