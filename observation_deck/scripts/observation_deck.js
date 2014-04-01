@@ -178,6 +178,7 @@ function setObservationData2(settingsList) {
 
         dataObj.addData(matrixData, settings);
     }
+    dataObj.fillBlankCells();
     return dataObj;
 }
 
