@@ -26,6 +26,17 @@ var datasetSettings = {
     },
     "pancan signatures" : {
         "url" : "observation_deck/data/pancan-score_t.tab",
+        // "url" : "/api/medbook/fact/WCDT/mutationsBook/fact1.db&sql=select * from Fact",
+        "eventColHeader" : "id",
+        "datatype" : "signature",
+        "colorMapper" : "centered",
+        "rowFeature" : "event",
+        "columnFeature" : "sample",
+        "valueFeature" : "value",
+        "nameFeature" : "sample",
+    },
+    "fact table" : {
+        "url" : "observation_deck/data/fact1.db_test.json",
         "eventColHeader" : "id",
         "datatype" : "signature",
         "colorMapper" : "centered",
@@ -76,24 +87,46 @@ function getEventList(url) {
  */
 function setObservationData(settings) {
     var response = getResponse(settings["url"]);
-    var parsedResponse = d3.tsv.parse(response, function(d) {
-        var eventColHeader = settings["eventColHeader"];
-        var event = d[eventColHeader];
-        event = event.trim();
-        var rowData = new Array();
-        for (var sample in d) {
-            if (sample != eventColHeader) {
-                var value = d[sample].trim();
-                var data = {
-                    "sample" : sample.trim(),
-                    "event" : event,
-                    "value" : +value
-                };
-                rowData.push(data);
+
+    var parsedResponse = null;
+
+    if (endsWith(settings["url"], ".json")) {
+        console.log("JSON!!!");
+        parsedResponse = JSON && JSON.parse(response) || $.parseJSON(response);
+        console.log(prettyJson(parsedResponse));
+        var rows = parsedResponse["rows"];
+        var numRows = rows.length;
+        console.log('numRows', numRows);
+        var patientIds = [];
+        for (var i = 0; i < rows.length; i++) {
+            var row = rows[i];
+            var id = row["patient_url"];
+            if (patientIds.indexOf(id) == -1) {
+                patientIds.push(id);
             }
         }
-        return rowData;
-    });
+        console.log(patientIds.length, patientIds);
+
+    } else {
+        parsedResponse = d3.tsv.parse(response, function(d) {
+            var eventColHeader = settings["eventColHeader"];
+            var event = d[eventColHeader];
+            event = event.trim();
+            var rowData = new Array();
+            for (var sample in d) {
+                if (sample != eventColHeader) {
+                    var value = d[sample].trim();
+                    var data = {
+                        "sample" : sample.trim(),
+                        "event" : event,
+                        "value" : +value
+                    };
+                    rowData.push(data);
+                }
+            }
+            return rowData;
+        });
+    }
 
     var matrixData = new Array();
     for (var i in parsedResponse) {
@@ -617,3 +650,7 @@ window.onload = function() {
 
     var heatmapSvg = drawMatrix(dataObj, settings);
 };
+
+function endsWith(str, suffix) {
+    return str.indexOf(suffix, str.length - suffix.length) !== -1;
+}
