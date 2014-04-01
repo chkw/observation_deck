@@ -94,7 +94,6 @@ function setObservationData2(settingsList) {
 
         if (endsWith(settings["url"], ".json")) {
             parsedResponse = JSON && JSON.parse(response) || $.parseJSON(response);
-            console.log(prettyJson(parsedResponse));
             var rows = parsedResponse["rows"];
             parsedResponse = [];
             var numRows = rows.length;
@@ -132,14 +131,10 @@ function setObservationData2(settingsList) {
             });
         }
 
-        console.log("parsedResponse", prettyJson(parsedResponse));
-
         var matrixData = new Array();
         for (var i in parsedResponse) {
             matrixData.push.apply(matrixData, parsedResponse[i]);
         }
-
-        console.log("matrixData", prettyJson(matrixData));
 
         // 0-centered color mapping
         // settings["colorMapper"] = function(d, i) {
@@ -749,7 +744,7 @@ window.onload = function() {
 
     // dataObj = setObservationData(datasetSettingsObj);
     var dataObj2 = setObservationData2([datasetSettings["pancan signatures"], datasetSettings["mutation facts"]]);
-    console.log("dataObj2", prettyJson(dataObj2));
+    console.log("dataObj2", (dataObj2));
 
     var settings = {
         // "eventList" : getEventList(panelUrl),
