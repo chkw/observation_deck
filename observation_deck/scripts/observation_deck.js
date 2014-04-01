@@ -35,11 +35,11 @@ var datasetSettings = {
         "valueFeature" : "value",
         "nameFeature" : "sample",
     },
-    "fact table" : {
+    "mutation facts" : {
         "url" : "observation_deck/data/fact1.db_test.json",
         "eventColHeader" : "id",
-        "datatype" : "signature",
-        "colorMapper" : "centered",
+        "datatype" : "mutation",
+        "colorMapper" : "quantile",
         "rowFeature" : "event",
         "columnFeature" : "sample",
         "valueFeature" : "value",
@@ -91,22 +91,24 @@ function setObservationData(settings) {
     var parsedResponse = null;
 
     if (endsWith(settings["url"], ".json")) {
-        console.log("JSON!!!");
         parsedResponse = JSON && JSON.parse(response) || $.parseJSON(response);
         console.log(prettyJson(parsedResponse));
         var rows = parsedResponse["rows"];
+        parsedResponse = [];
         var numRows = rows.length;
-        console.log('numRows', numRows);
-        var patientIds = [];
+        var rowData = [];
         for (var i = 0; i < rows.length; i++) {
             var row = rows[i];
-            var id = row["patient_url"];
-            if (patientIds.indexOf(id) == -1) {
-                patientIds.push(id);
-            }
+            var id = row["patient_url"].trim().replace("/patient/WCDT/", "");
+            var eventName = row["gene_url"].trim().replace("/gene/", "");
+            var eventVal = row["value"];
+            rowData.push({
+                "sample" : id,
+                "event" : eventName,
+                "value" : +eventVal
+            });
         }
-        console.log(patientIds.length, patientIds);
-
+        parsedResponse.push(rowData);
     } else {
         parsedResponse = d3.tsv.parse(response, function(d) {
             var eventColHeader = settings["eventColHeader"];
@@ -128,10 +130,14 @@ function setObservationData(settings) {
         });
     }
 
+    console.log("parsedResponse", prettyJson(parsedResponse));
+
     var matrixData = new Array();
     for (var i in parsedResponse) {
         matrixData.push.apply(matrixData, parsedResponse[i]);
     }
+
+    console.log("matrixData", prettyJson(matrixData));
 
     // 0-centered color mapping
     // settings["colorMapper"] = function(d, i) {
