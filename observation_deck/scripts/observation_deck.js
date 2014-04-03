@@ -49,7 +49,15 @@ var datasetSettings = {
         "url" : "observation_deck/data/groups.json",
         "eventColHeader" : "id",
         "datatype" : "grouping",
-        "colorMapper" : "quantile",
+        "colorMapper" : function(d, i) {
+            color = "darkgrey";
+            if (d === "groupA") {
+                color = "rgba(255,0,0,1)";
+            } else {
+                color = "rgba(0,0,255,1)";
+            }
+            return color;
+        },
         "rowFeature" : "event",
         "columnFeature" : "sample",
         "valueFeature" : "value",
@@ -480,6 +488,25 @@ function drawMatrix(dataObj, settings) {
             group.appendChild(createSvgRingElement(cx, cy, r, attributes));
         }
 
+        if ((type.toLowerCase() == "grouping")) {
+            var x = (colNameMapping[d.getColumn() + "QQ"] * gridSize);
+            var y = (rowNameMapping[d.getRow() + "QQ"] * gridSize);
+            var rx = 4;
+            var ry = 4;
+            var width = gridSize;
+            var height = gridSize;
+
+            var datatype = d.getDatatype();
+            var colorMapper = dataObj.getColorMapper(datatype);
+
+            var attributes = {
+                "stroke" : "#E6E6E6",
+                "fill" : colorMapper(d.getValue()),
+                "stroke-width" : "2px"
+            };
+            group.appendChild(createSvgRectElement(x, y, rx, ry, width, height, attributes));
+        }
+
         if ((type.toLowerCase() == "rectangle") || (type.toLowerCase() == "unspecified")) {
             var x = (colNameMapping[d.getColumn() + "QQ"] * gridSize);
             var y = (rowNameMapping[d.getRow() + "QQ"] * gridSize);
@@ -777,7 +804,7 @@ window.onload = function() {
     a.push(datasetSettings["mutation facts"]);
     a.push(datasetSettings["test group"]);
     var dataObj = setObservationData(a);
-    // console.log("dataObj", (dataObj));
+    console.log("dataObj", (dataObj));
 
     var settings = {
         // "eventList" : getEventList(panelUrl),
