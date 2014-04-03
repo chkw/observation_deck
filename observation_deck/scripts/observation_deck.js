@@ -49,15 +49,7 @@ var datasetSettings = {
         "url" : "observation_deck/data/groups.json",
         "eventColHeader" : "id",
         "datatype" : "grouping",
-        "colorMapper" : function(d, i) {
-            color = "darkgrey";
-            if (d === "groupA") {
-                color = "rgba(255,0,0,1)";
-            } else {
-                color = "rgba(0,0,255,1)";
-            }
-            return color;
-        },
+        "colorMapper" : "categorical",
         "rowFeature" : "event",
         "columnFeature" : "sample",
         "valueFeature" : "value",
@@ -119,7 +111,7 @@ function setObservationData(settingsList) {
                     var memberId = memberList[i];
                     rowData.push({
                         "sample" : memberId,
-                        "event" : "groups",
+                        "event" : "group",
                         "value" : groupName
                     });
                 }
@@ -804,7 +796,6 @@ window.onload = function() {
     a.push(datasetSettings["mutation facts"]);
     a.push(datasetSettings["test group"]);
     var dataObj = setObservationData(a);
-    console.log("dataObj", (dataObj));
 
     var settings = {
         // "eventList" : getEventList(panelUrl),
