@@ -44,6 +44,16 @@ var datasetSettings = {
         "columnFeature" : "sample",
         "valueFeature" : "value",
         "nameFeature" : "sample",
+    },
+    "test group" : {
+        "url" : "observation_deck/data/groups.json",
+        "eventColHeader" : "id",
+        "datatype" : "grouping",
+        "colorMapper" : "quantile",
+        "rowFeature" : "event",
+        "columnFeature" : "sample",
+        "valueFeature" : "value",
+        "nameFeature" : "sample",
     }
 };
 
@@ -92,7 +102,24 @@ function setObservationData(settingsList) {
         var response = getResponse(settings["url"]);
         var parsedResponse = null;
 
-        if (endsWith(settings["url"], ".json")) {
+        if (endsWith(settings["url"], "groups.json")) {
+            parsedResponse = JSON && JSON.parse(response) || $.parseJSON(response);
+            var rowData = [];
+            for (var groupName in parsedResponse) {
+                var memberList = parsedResponse[groupName];
+                for (var i = 0; i < memberList.length; i++) {
+                    var memberId = memberList[i];
+                    rowData.push({
+                        "sample" : memberId,
+                        "event" : "groups",
+                        "value" : groupName
+                    });
+                }
+            }
+            // console.log("group data", prettyJson(rowData));
+            parsedResponse = [];
+            parsedResponse.push(rowData);
+        } else if (endsWith(settings["url"], ".json")) {
             parsedResponse = JSON && JSON.parse(response) || $.parseJSON(response);
             var rows = parsedResponse["rows"];
             parsedResponse = [];
@@ -748,6 +775,7 @@ window.onload = function() {
     var a = [];
     a.push(datasetSettings["pancan signatures"]);
     a.push(datasetSettings["mutation facts"]);
+    a.push(datasetSettings["test group"]);
     var dataObj = setObservationData(a);
     // console.log("dataObj", (dataObj));
 
