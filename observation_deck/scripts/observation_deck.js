@@ -706,7 +706,8 @@ window.onload = function() {
     // TODO context menu uses http://medialize.github.io/jQuery-contextMenu
     $(function() {
         $.contextMenu({
-            selector : ".axis",
+            // selector : ".axis",
+            selector : ".rowLabel",
             callback : function(key, options) {
                 // default callback
                 var textContent = this[0].textContent;
