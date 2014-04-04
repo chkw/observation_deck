@@ -565,7 +565,7 @@ function drawMatrix(dataObj, settings) {
 
     // heatmap titles
     heatMap.append("title").text(function(d) {
-        var s = "r:" + d.getRow() + "\n\nc:" + d.getColumn() + "\n\nval:" + d.getValue();
+        var s = "r:" + d.getRow() + "\n\nc:" + d.getColumn() + "\n\n" + d.getDatatype() + ":" + d.getValue();
         return s;
     });
 
