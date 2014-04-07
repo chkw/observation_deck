@@ -4,8 +4,7 @@
 PAGE_NAME = observation_deck
 
 #TARGET_DIR = /data/medbook-galaxy-central/static
-#TARGET_DIR = ~/medbook_sandbox/static
-TARGET_DIR = ~/Documents/eclipse_workspace/medbook-galaxy-central/static
+TARGET_DIR = ~/Documents/eclipse_workspace/medbook_sandbox/data/medbook-galaxy-central/static
 
 test:
 
