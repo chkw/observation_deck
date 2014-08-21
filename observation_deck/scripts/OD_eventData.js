@@ -15,8 +15,26 @@ function OD_eventMetadataAlbum() {
         return null;
     };
 
-    this.getAllChildren = function(id) {
-        return null;
+    /**
+     * recursive function to get all children IDs.
+     */
+    this.getAllChildren = function(idList, inputChildrenList) {
+        var childList = (inputChildrenList == null) ? [] : inputChildrenList;
+
+        // collect children
+        var currentChildren = [];
+        for (var i = 0; i < idList.length; i++) {
+            var currentMetadata = this.getMetadata(id);
+            currentChildren = currentChildren.concat(getKeys(currentMetadata.children));
+        }
+
+        // recurse on children
+        if (currentChildren.length == 0) {
+            return childList;
+        } else {
+            var newChildList = childList.concat(currentChildren);
+            return this.getAllChildren(currentChildren, newChildList);
+        }
     };
 }
 
