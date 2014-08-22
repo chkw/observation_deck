@@ -7,24 +7,36 @@
 function OD_eventMetadataAlbum() {
     this.album = {};
 
-    this.addMetadata = function(metadata) {
+    this.addEvent = function(id, metadata, data) {
+        var newEvent = new OD_event(id);
+        this.album[id] = newEvent;
+
+        // TODO add metadata
+        newEvent.metadata.name = '';
+
+        // TODO add data
+        newEvent.data.setData(data);
+
         return this;
     };
 
-    this.getMetadata = function(id) {
-        return null;
+    this.getEvent = function(id) {
+        var e = this.album[id];
+        return e;
     };
 
     /**
      * recursive function to get all children IDs.
      */
     this.getAllChildren = function(idList, inputChildrenList) {
-        var childList = (inputChildrenList == null) ? [] : inputChildrenList;
+        var childList = ( typeof inputChildrenList === "undefined") ? [] : inputChildrenList;
 
         // collect children
         var currentChildren = [];
         for (var i = 0; i < idList.length; i++) {
-            var currentMetadata = this.getMetadata(id);
+            var id = idList[i];
+            var e = this.getEvent(id);
+            var currentMetadata = e.metadata;
             currentChildren = currentChildren.concat(getKeys(currentMetadata.children));
         }
 
