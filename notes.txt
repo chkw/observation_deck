@@ -1,0 +1,10 @@
+Tue Aug 26 14:45:15 PDT 2014
+
+Found some possible ways to implement hierarchical table without writing it all new:
+https://stackoverflow.com/questions/5636375/how-to-create-a-collapsing-tree-table-in-html-css-js
+
+SlickGrid tree: http://mleibman.github.com/SlickGrid/examples/example5-collapsing.html
+
+jsTree: http://www.jstree.com/docs/html/
+
+
