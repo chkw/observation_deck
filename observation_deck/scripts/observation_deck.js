@@ -4,11 +4,6 @@
  * observation_deck.js
  */
 
-var svgNamespaceUri = 'http://www.w3.org/2000/svg';
-
-// use with "xlink:href" for images in svg as in <http://www.w3.org/Graphics/SVG/WG/wiki/Href>
-var xlinkUri = "http://www.w3.org/1999/xlink";
-
 var countsUrl = "observation_deck/data/gene_count.tab";
 var panelUrl = "observation_deck/data/gene.tab";
 
@@ -56,35 +51,6 @@ var datasetSettings = {
         "nameFeature" : "sample",
     }
 };
-
-/*
- * Synchronous GET
- */
-function getResponse(url) {
-    var status = null;
-    var xhr = null;
-    xhr = new XMLHttpRequest();
-    xhr.open("GET", url, false);
-    xhr.onload = function() {
-        status = xhr.status;
-        if (status != 200) {
-            console.log("xhr status: " + status + " for " + url);
-        }
-    };
-    xhr.send(null);
-    var response = null;
-    if (status == 200) {
-        response = xhr.responseText;
-    }
-    return response;
-}
-
-/**
- * Get a pretty JSON.
- */
-function prettyJson(object) {
-    return JSON.stringify(object, null, '\t');
-}
 
 function getEventList(url) {
     var response = getResponse(url);
@@ -572,108 +538,7 @@ function drawMatrix(dataObj, settings) {
     return svg;
 }
 
-function createSvgRingElement(cx, cy, r, attributes) {
-    // https://stackoverflow.com/questions/5736398/how-to-calculate-the-svg-path-for-an-arc-of-a-circle
-    // (rx ry x-axis-rotation large-arc-flag sweep-flag x y)+
-
-    function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
-        var angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
-        return {
-            x : centerX + (radius * Math.cos(angleInRadians)),
-            y : centerY + (radius * Math.sin(angleInRadians))
-        };
-    }
-
-    function describeArc(x, y, radius, startAngle, endAngle) {
-        var start = polarToCartesian(x, y, radius, endAngle);
-        var end = polarToCartesian(x, y, radius, startAngle);
-        var arcSweep = endAngle - startAngle <= 180 ? "0" : "1";
-        var d = ["M", start.x, start.y, "A", radius, radius, 0, arcSweep, 0, end.x, end.y].join(" ");
-        return d;
-    }
-
-    // TODO somehow the circle becomes invisible if using 0 to 360 degrees
-    var arcPath = describeArc(cx, cy, r, 0, 359.9);
-
-    var e = document.createElementNS(svgNamespaceUri, "path");
-    e.setAttributeNS(null, "d", arcPath);
-    if (attributes != null) {
-        for (var attribute in attributes) {
-            e.setAttributeNS(null, attribute, attributes[attribute]);
-        }
-    }
-    return e;
-}
-
-function createSvgCircleElement(cx, cy, r, attributes) {
-    var e = document.createElementNS(svgNamespaceUri, "circle");
-    e.setAttributeNS(null, "cx", cx);
-    e.setAttributeNS(null, "cy", cy);
-    e.setAttributeNS(null, 'r', r);
-    if (attributes != null) {
-        for (var attribute in attributes) {
-            e.setAttributeNS(null, attribute, attributes[attribute]);
-        }
-    }
-    return e;
-}
-
-function createSvgRectElement(x, y, rx, ry, width, height, attributes) {
-    var e = document.createElementNS(svgNamespaceUri, "rect");
-    e.setAttributeNS(null, "x", x);
-    e.setAttributeNS(null, "y", y);
-    e.setAttributeNS(null, "rx", rx);
-    e.setAttributeNS(null, "ry", ry);
-    e.setAttributeNS(null, "width", width);
-    e.setAttributeNS(null, "height", height);
-    if (attributes != null) {
-        for (var attribute in attributes) {
-            e.setAttributeNS(null, attribute, attributes[attribute]);
-        }
-    }
-    return e;
-}
-
-function createSvgImageElement(imageUrl, x, y, width, height, attributes) {
-    var e = document.createElementNS(svgNamespaceUri, "image");
-    e.setAttributeNS(xlinkUri, "href", imageUrl);
-    e.setAttributeNS(null, "x", x);
-    e.setAttributeNS(null, "y", y);
-    e.setAttributeNS(null, "width", width);
-    e.setAttributeNS(null, "height", height);
-    if (attributes != null) {
-        for (var attribute in attributes) {
-            e.setAttributeNS(null, attribute, attributes[attribute]);
-        }
-    }
-    return e;
-}
-
-/**
- * Get an object with UrlQueryString data.
- */
-function getQueryObj() {
-    var result = {};
-    var keyValuePairs = location.search.slice(1).split('&');
-
-    keyValuePairs.forEach(function(keyValuePair) {
-        keyValuePair = keyValuePair.split('=');
-        result[keyValuePair[0]] = decodeURIComponent(keyValuePair[1]) || '';
-    });
-
-    return result;
-}
-
 var dataObj = null;
-
-/**
- * querySettings is an object to be stringified into the query string.
- * @param {Object} querySettings
- */
-function loadNewSettings(querySettings) {
-    var url = window.location.pathname + "?query=" + JSON.stringify(querySettings);
-    window.open(url, "_self");
-}
 
 // TODO onload
 window.onload = function() {
@@ -809,7 +674,3 @@ window.onload = function() {
 
     var heatmapSvg = drawMatrix(dataObj, settings);
 };
-
-function endsWith(str, suffix) {
-    return str.indexOf(suffix, str.length - suffix.length) !== -1;
-}
