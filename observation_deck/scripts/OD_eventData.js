@@ -7,12 +7,9 @@
 function OD_eventMetadataAlbum() {
     this.album = {};
 
-    this.addEvent = function(id, metadata, data) {
-        var newEvent = new OD_event(id);
-        this.album[id] = newEvent;
-
-        // TODO add metadata
-        newEvent.metadata.name = '';
+    this.addEvent = function(metadataObj, data) {
+        var newEvent = new OD_event(metadataObj);
+        this.album[metadataObj['id']] = newEvent;
 
         // TODO add data
         newEvent.data.setData(data);
@@ -50,18 +47,18 @@ function OD_eventMetadataAlbum() {
     };
 }
 
-function OD_event(id) {
-    this.metadata = new OD_eventMetadata(id);
+function OD_event(metadataObj) {
+    this.metadata = new OD_eventMetadata(metadataObj);
     this.data = new OD_eventDataCollection();
 }
 
-function OD_eventMetadata(id) {
-    this.id = id;
-    this.name = null;
-    this.displayName = null;
-    this.description = null;
-    this.datatype = null;
-    this.allowedValues = null;
+function OD_eventMetadata(obj) {
+    this.id = obj['id'];
+    this.name = obj['name'];
+    this.displayName = obj['displayName'];
+    this.description = obj['description'];
+    this.datatype = obj['datatype'];
+    this.allowedValues = obj['allowedValues'];
     this.parents = {};
     this.children = {};
 

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Observation Deck Prototype</title>
+		<meta charset="utf-8">
+		<noscript>
+			<div align="center">
+				<p style="color:black;background-color:red;font-size:18pt">
+					This website requires JavaScript.  Please turn on JavaScript and then <a href="">try it again</a>.
+				</p>
+			</div>
+		</noscript>
+		<link href="observation_deck/images/favicon.ico" rel="icon" type="image/x-icon">
+		<link rel="stylesheet" href="observation_deck/css/observation_deck.css" type="text/css" />
+
+		<script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.js"></script>
+		<script type="text/javascript" src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+
+		<script type="text/javascript" src="observation_deck/scripts/jquery.contextMenu.js"></script>
+		<link type="text/css" rel="stylesheet" href="observation_deck/css/jquery.contextmenu.css">
+
+		<script type="text/javascript" src="observation_deck/scripts/static.js"></script>
+		<script type="text/javascript" src="observation_deck/scripts/OD_eventData.js"></script>
+		<script type="text/javascript" src="observation_deck/scripts/medbook_data_load.js"></script>
+	</head>
+	<body>
+		<script>
+            var OD_eventAlbum = new OD_eventMetadataAlbum();
+            getClinicalData(clinicalDataFileUrl, OD_eventAlbum);
+
+            console.log(prettyJson(OD_eventAlbum));
+		</script>
+	</body>
+</html>

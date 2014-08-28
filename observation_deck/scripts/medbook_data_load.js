@@ -8,13 +8,44 @@ var clinicalDataFileUrl = 'observation_deck/data/cbioMedbook/getClinicalData.txt
 var caseListsFileUrl = 'observation_deck/data/cbioMedbook/getCaseLists.txt';
 var mutationDataFileUrl = 'observation_deck/data/cbioMedbook/mutation.txt';
 
-function loadClinicalData(url) {
-    var response = getResponse(url);
-    var parsedResponse = d3.tsv.parse(response);
-    console.log(prettyJson(parsedResponse));
+function transposeClinicalData(input, recordKey) {
+    var transposed = {};
+    for (var i = 0; i < input.length; i++) {
+        var obj = input[i];
+        var case_id = obj[recordKey];
+        delete (obj[recordKey]);
+        for (var key in obj) {
+            if ( key in transposed) {
+            } else {
+                transposed[key] = {};
+            }
+            transposed[key][case_id] = obj[key];
+        }
+    }
+    return transposed;
 }
 
-function loadMutationData(url) {
+function getClinicalData(url, OD_eventAlbum) {
+    var response = getResponse(url);
+    var parsedResponse = d3.tsv.parse(response);
+    var transposed = transposeClinicalData(parsedResponse, 'CASE_ID');
+
+    for (var eventType in transposed) {
+        var data = transposed[eventType];
+        var id = eventType;
+        OD_eventAlbum.addEvent({
+            'id' : id,
+            'name' : null,
+            'displayName' : null,
+            'description' : null,
+            'datatype' : 'clinical',
+            'allowedValues' : null
+        }, data);
+    }
+
+}
+
+function getMutationData(url) {
     var response = getResponse(url);
     var lines = response.split('\n');
 
@@ -30,5 +61,6 @@ function loadMutationData(url) {
     }
 
     var parsedResponse = d3.tsv.parse(dataLines.join('\n'));
-    console.log(prettyJson(parsedResponse));
+    return parsedResponse;
 }
+
