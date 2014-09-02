@@ -42,7 +42,6 @@ function getClinicalData(url, OD_eventAlbum) {
             'allowedValues' : null
         }, data);
     }
-
 }
 
 function getMutationData(url) {
@@ -61,6 +60,25 @@ function getMutationData(url) {
     }
 
     var parsedResponse = d3.tsv.parse(dataLines.join('\n'));
+
+    for (var i = 0; i < parsedResponse.length; i++) {
+        var mutationData = parsedResponse[i];
+        var geneId = mutationData['GENE_ID'];
+        var common = mutationData['COMMON'];
+        delete mutationData['GENE_ID'];
+        delete mutationData['COMMON'];
+
+        OD_eventAlbum.addEvent({
+            'id' : common + '_mutation',
+            'name' : null,
+            'displayName' : null,
+            'description' : null,
+            'datatype' : 'mutation',
+            'allowedValues' : null
+        }, mutationData);
+
+    }
+
     return parsedResponse;
 }
 

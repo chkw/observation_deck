@@ -11,7 +11,7 @@ function OD_eventMetadataAlbum() {
         var newEvent = new OD_event(metadataObj);
         this.album[metadataObj['id']] = newEvent;
 
-        // TODO add data
+        // add data
         newEvent.data.setData(data);
 
         return this;
@@ -89,13 +89,11 @@ function OD_eventDataCollection() {
         this.val = val;
     };
 
-    this.setData = function(dataList) {
+    this.setData = function(dataObj) {
         this.dataCollection = [];
-        for (var i = 0; i < dataList.length; i++) {
-            var data = dataList[i];
-            var id = data['id'];
-            var val = data['val'];
-            this.dataCollection.append(new sampleData(id, val));
+        for (var sampleId in dataObj) {
+            var val = dataObj[sampleId];
+            this.dataCollection.push(new sampleData(sampleId, val));
         }
         return this;
     };
