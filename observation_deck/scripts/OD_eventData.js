@@ -4,7 +4,52 @@
  * OD_eventData.js defines an event object that is to be used with Observation Deck.
  */
 
+var eventHierarchyUrl = 'observation_deck/data/eventHierarchy.xml';
+
+function getHierarchyEventElement(xmlDom, eventType) {
+    var rootElem = xmlDom.getElementsByTagName('eventHierarchy')[0];
+    var eventElemList = rootElem.getElementsByTagName('event');
+    var resultElem = null;
+    for (var i = 0; i < eventElemList.length; i++) {
+        var elem = eventElemList[i];
+        if (elem.getAttribute('type') == eventType) {
+            resultElem = elem;
+            break;
+        }
+    }
+    return resultElem;
+}
+
+function getEventElems(jqXmlHierarchy, eventType) {
+    var eventElemList = [];
+    jqXmlHierarchy.find('event').each(function(index, value) {
+        var type = value.getAttribute('type');
+        if ((eventType === undefined) || (eventType === null)) {
+            console.log(index + ": " + type);
+            eventElemList.push(value);
+        } else if (type === eventType) {
+            console.log(index + ": " + type);
+            eventElemList.push(value);
+        }
+    });
+    return eventElemList;
+}
+
 function OD_eventMetadataAlbum() {
+    // TODO better to use jQuery XML DOM traversal due to browser differences
+    var xmlStr = getResponse(eventHierarchyUrl);
+    // parse string for XML doc (javascript obj)
+    xmlDoc = $.parseXML(xmlStr);
+    // convert JS obj to jQ obj
+    $xml = $(xmlDoc);
+
+    console.log($xml);
+
+    var eventElems = getEventElems($xml, 'mutation');
+    $(eventElems).each(function(index, elem) {
+        console.log(elem.getAttribute('type'));
+    });
+
     this.album = {};
 
     this.addEvent = function(metadataObj, data) {
