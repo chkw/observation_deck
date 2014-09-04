@@ -35,6 +35,23 @@ function getEventElems(jqXmlHierarchy, eventType) {
     return eventElemList;
 }
 
+function getEventParentChildren(jqXmlHierarchy, eventType) {
+    var result = {};
+    result['parent'] = null;
+    result['children'] = [];
+
+    var eventElems = getEventElems(jqXmlHierarchy, eventType);
+    $(eventElems).each(function(i, elemi) {
+        var parentElem = elemi.parentNode;
+        result['parent'] = parentElem.getAttribute('type');
+
+        $(elemi.children).each(function(j, elemj) {
+            result['children'].push(elemj.getAttribute('type'));
+        });
+    });
+    return result;
+}
+
 function OD_eventMetadataAlbum() {
     // TODO better to use jQuery XML DOM traversal due to browser differences
     var xmlStr = getResponse(eventHierarchyUrl);
@@ -45,10 +62,13 @@ function OD_eventMetadataAlbum() {
 
     console.log($xml);
 
-    var eventElems = getEventElems($xml, 'mutation');
+    var eventElems = getEventElems($xml, 'AR');
     $(eventElems).each(function(index, elem) {
         console.log(elem.getAttribute('type'));
     });
+
+    var parentChildren = getEventParentChildren($xml, 'mutation');
+    console.log(prettyJson(parentChildren));
 
     this.album = {};
 
