@@ -41,12 +41,17 @@ function getEventParentChildren(jqXmlHierarchy, eventType) {
     result['children'] = [];
 
     var eventElems = getEventElems(jqXmlHierarchy, eventType);
-    $(eventElems).each(function(i, elemi) {
-        var parentElem = elemi.parentNode;
+    $(eventElems).each(function(index, elem) {
+        if (elem.tagName !== 'event') {
+            return 'continue';
+        }
+        var parentElem = elem.parentNode;
         result['parent'] = parentElem.getAttribute('type');
 
-        $(elemi.children).each(function(j, elemj) {
-            result['children'].push(elemj.getAttribute('type'));
+        $(elem.children).each(function(index, elem) {
+            if (elem.tagName === 'event') {
+                result['children'].push(elem.getAttribute('type'));
+            }
         });
     });
     return result;
