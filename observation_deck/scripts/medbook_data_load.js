@@ -38,7 +38,7 @@ function getClinicalData(url, OD_eventAlbum) {
             'name' : null,
             'displayName' : null,
             'description' : null,
-            'datatype' : 'clinical',
+            'datatype' : 'clinical data',
             'allowedValues' : null
         }, data);
     }

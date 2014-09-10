@@ -6,6 +6,9 @@
 
 var eventHierarchyUrl = 'observation_deck/data/eventHierarchy.xml';
 
+/**
+ * Get the event element with the specified eventType.
+ */
 function getHierarchyEventElement(xmlDom, eventType) {
     var rootElem = xmlDom.getElementsByTagName('eventHierarchy')[0];
     var eventElemList = rootElem.getElementsByTagName('event');
@@ -20,21 +23,25 @@ function getHierarchyEventElement(xmlDom, eventType) {
     return resultElem;
 }
 
+/**
+ * Get the elements with the specified eventType.  Returns a list of elements.
+ */
 function getEventElems(jqXmlHierarchy, eventType) {
     var eventElemList = [];
     jqXmlHierarchy.find('event').each(function(index, value) {
         var type = value.getAttribute('type');
         if ((eventType === undefined) || (eventType === null)) {
-            console.log(index + ": " + type);
             eventElemList.push(value);
         } else if (type === eventType) {
-            console.log(index + ": " + type);
             eventElemList.push(value);
         }
     });
     return eventElemList;
 }
 
+/**
+ * Get the event types of an event's parent and children.
+ */
 function getEventParentChildren(jqXmlHierarchy, eventType) {
     var result = {};
     result['parent'] = null;
@@ -57,8 +64,29 @@ function getEventParentChildren(jqXmlHierarchy, eventType) {
     return result;
 }
 
+/**
+ * Find the path to the root of the hierarchy.
+ */
+function tracebackToRoot(jqXmlHierarchy, eventType) {
+    var tracebacks = [];
+    var eventElems = getEventElems(jqXmlHierarchy, eventType);
+    for (var i = 0; i < eventElems.length; i++) {
+        var eventElem = eventElems[i];
+        var traceback = [];
+        tracebacks.push(traceback);
+
+        var type = eventElem.getAttribute('type');
+        var parentType = getEventParentChildren(jqXmlHierarchy, type)['parent'];
+        while ((parentType !== undefined) && (parentType !== null)) {
+            traceback.push(parentType);
+            parentType = getEventParentChildren(jqXmlHierarchy, parentType)['parent'];
+        }
+    }
+    return tracebacks;
+}
+
 function OD_eventMetadataAlbum() {
-    // TODO better to use jQuery XML DOM traversal due to browser differences
+    // TODO better to use jQuery XML DOM traversal due to better handling of browser differences
     var xmlStr = getResponse(eventHierarchyUrl);
     // parse string for XML doc (javascript obj)
     xmlDoc = $.parseXML(xmlStr);
@@ -74,6 +102,9 @@ function OD_eventMetadataAlbum() {
 
     var parentChildren = getEventParentChildren($xml, 'mutation');
     console.log(prettyJson(parentChildren));
+
+    var tracebacks = tracebackToRoot($xml, 'presence');
+    console.log('tracebacks: ' + prettyJson(tracebacks));
 
     this.album = {};
 
