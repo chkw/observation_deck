@@ -31,6 +31,12 @@
             getMutationData(mutationDataFileUrl, OD_eventAlbum);
 
             //console.log(prettyJson(OD_eventAlbum));
+
+            var sampleIds = OD_eventAlbum.getAllSampleIds();
+            console.log(prettyJson(sampleIds));
+
+            var selectData = OD_eventAlbum.getEventData(["DTB-073", "DTB-034", "DTB-032", "DTB-030"]);
+            console.log('selectData: ' + prettyJson(selectData));
 		</script>
 	</body>
 </html>

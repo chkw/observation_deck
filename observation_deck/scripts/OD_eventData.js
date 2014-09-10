@@ -7,23 +7,6 @@
 var eventHierarchyUrl = 'observation_deck/data/eventHierarchy.xml';
 
 /**
- * Get the event element with the specified eventType.
- */
-function getHierarchyEventElement(xmlDom, eventType) {
-    var rootElem = xmlDom.getElementsByTagName('eventHierarchy')[0];
-    var eventElemList = rootElem.getElementsByTagName('event');
-    var resultElem = null;
-    for (var i = 0; i < eventElemList.length; i++) {
-        var elem = eventElemList[i];
-        if (elem.getAttribute('type') == eventType) {
-            resultElem = elem;
-            break;
-        }
-    }
-    return resultElem;
-}
-
-/**
  * Get the elements with the specified eventType.  Returns a list of elements.
  */
 function getEventElems(jqXmlHierarchy, eventType) {
@@ -86,8 +69,11 @@ function tracebackToRoot(jqXmlHierarchy, eventType) {
 }
 
 function OD_eventMetadataAlbum() {
-    // TODO better to use jQuery XML DOM traversal due to better handling of browser differences
+    // TODO instead of writing XML parser, better to use jQuery XML DOM traversal due to better handling of browser differences
     var xmlStr = getResponse(eventHierarchyUrl);
+    if (xmlStr === null) {
+        alert('Could not load event hierarchy!');
+    }
     // parse string for XML doc (javascript obj)
     xmlDoc = $.parseXML(xmlStr);
     // convert JS obj to jQ obj
@@ -116,6 +102,37 @@ function OD_eventMetadataAlbum() {
         newEvent.data.setData(data);
 
         return this;
+    };
+
+    /**
+     * Get all of the event data for specified samples.
+     */
+    this.getEventData = function(sampleIds) {
+        var result = {};
+        // iter over eventIds
+        var eventIdList = getKeys(this.album);
+        for (var i = 0; i < eventIdList.length; i++) {
+            var eventId = eventIdList[i];
+            var eventData = this.getEvent(eventId).data;
+            // grab data for sample IDs
+            var data = eventData.getData(sampleIds);
+            result[eventId] = data;
+        }
+        return result;
+    };
+
+    /**
+     * Get all of the sample IDs in album.
+     */
+    this.getAllSampleIds = function() {
+        var sampleIds = [];
+        var eventIdList = getKeys(this.album);
+        for (var i = 0; i < eventIdList.length; i++) {
+            var eventId = eventIdList[i];
+            var eventSampleIds = this.getEvent(eventId).data.getAllSampleIds();
+            sampleIds = sampleIds.concat(eventSampleIds);
+        }
+        return eliminateDuplicates(sampleIds);
     };
 
     this.getEvent = function(id) {
