@@ -39,7 +39,7 @@ function getClinicalData(url, OD_eventAlbum) {
             'displayName' : null,
             'description' : null,
             'datatype' : 'clinical data',
-            'allowedValues' : null
+            'allowedValues' : 'categorical'
         }, data);
     }
 }
@@ -74,7 +74,7 @@ function getMutationData(url) {
             'displayName' : null,
             'description' : null,
             'datatype' : 'mutation',
-            'allowedValues' : null
+            'allowedValues' : 'numeric'
         }, mutationData);
 
     }

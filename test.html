@@ -30,13 +30,19 @@
             getClinicalData(clinicalDataFileUrl, OD_eventAlbum);
             getMutationData(mutationDataFileUrl, OD_eventAlbum);
 
-            //console.log(prettyJson(OD_eventAlbum));
+            console.log(prettyJson(OD_eventAlbum));
 
-            var sampleIds = OD_eventAlbum.getAllSampleIds();
-            console.log(prettyJson(sampleIds));
+            var ev = OD_eventAlbum.getEvent('SUBTYPE');
+            console.log(prettyJson(ev));
 
-            var selectData = OD_eventAlbum.getEventData(["DTB-073", "DTB-034", "DTB-032", "DTB-030"]);
-            console.log('selectData: ' + prettyJson(selectData));
+            var sorted = ev.data.sortSamples();
+            console.log(prettyJson(sorted));
+
+            //  var sampleIds = OD_eventAlbum.getAllSampleIds();
+            //console.log(prettyJson(sampleIds));
+
+            //  var selectData = OD_eventAlbum.getEventData(["DTB-073", "DTB-034", "DTB-032", "DTB-030"]);
+            //console.log('selectData: ' + prettyJson(selectData));
 		</script>
 	</body>
 </html>

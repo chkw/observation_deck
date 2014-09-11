@@ -150,8 +150,7 @@ function OD_eventMetadataAlbum() {
         var currentChildren = [];
         for (var i = 0; i < idList.length; i++) {
             var id = idList[i];
-            var e = this.getEvent(id);
-            var currentMetadata = e.metadata;
+            var currentMetadata = this.getEvent(id).metadata;
             currentChildren = currentChildren.concat(getKeys(currentMetadata.children));
         }
 
@@ -246,12 +245,15 @@ function OD_eventDataCollection() {
     /**
      * compare sample scores and return sorted list of sample IDs
      */
-    this.sortSamples = function(sampleIdList) {
+    this.sortSamples = function(sampleIdList, comparator) {
         // sortingData has to be an array
         var sortingData = this.getData(sampleIdList);
 
         // sort objects
-        sortingData.sort(compareSamples);
+        if (comparator == null) {
+            comparator = compareSamplesAsStrings;
+        }
+        sortingData.sort(comparator);
 
         // return row names in sorted order
         var sortedNames = new Array();
@@ -260,38 +262,54 @@ function OD_eventDataCollection() {
         }
 
         return sortedNames;
+    };
 
-        function compareSamples(a, b) {
-            var valA = a['val'];
-            var valB = b['val'];
+    /**
+     *Compare sample values as numbers
+     * @param {Object} a
+     * @param {Object} b
+     */
+    var compareSamples = function(a, b) {
+        var valA = a['val'];
+        var valB = b['val'];
 
-            // convert to numbers
-            var scoreA = parseFloat(valA);
-            var scoreB = parseFloat(valB);
+        // convert to numbers
+        var scoreA = parseFloat(valA);
+        var scoreB = parseFloat(valB);
 
-            if (isNumerical(scoreA) && (isNumerical(scoreB))) {
-                if (scoreA < scoreB) {
-                    return -1;
-                }
-                if (scoreA > scoreB) {
-                    return 1;
-                } else {
-                    return 0;
-                }
-            } else {
-                // handle non-numericals
-                if (scoreA != scoreA && scoreB != scoreB) {
-                    // both non-numerical, may be nulls
-                    return 0;
-                } else if (scoreA != scoreA) {
-                    return -1;
-                } else if (scoreB != scoreB) {
-                    return 1;
-                }
+        if (isNumerical(scoreA) && (isNumerical(scoreB))) {
+            if (scoreA < scoreB) {
+                return -1;
             }
-            // default scoring
-            return 0;
+            if (scoreA > scoreB) {
+                return 1;
+            } else {
+                return 0;
+            }
+        } else {
+            // handle non-numericals
+            if (scoreA != scoreA && scoreB != scoreB) {
+                // both non-numerical, may be nulls
+                return 0;
+            } else if (scoreA != scoreA) {
+                return -1;
+            } else if (scoreB != scoreB) {
+                return 1;
+            }
         }
+        // default scoring
+        return 0;
+    };
 
+    /**
+     * Compare sample values as string
+     * @param {Object} a
+     * @param {Object} b
+     */
+    var compareSamplesAsStrings = function(a, b) {
+        var valA = new String(a['val']);
+        var valB = new String(b['val']);
+
+        return valA.localeCompare(valB);
     };
 }
