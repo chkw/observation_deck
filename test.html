@@ -29,7 +29,7 @@
 		<script type="text/javascript" src="observation_deck/scripts/observation_deck_2.js"></script>
 	</head>
 	<body>
-		<div id='testDiv' style="height: 400px; min-width: 310px; max-width: 800px; margin: 0 auto">
+		<div id='testDiv'>
 			testDiv is here.
 		</div>
 		<script>
@@ -52,7 +52,9 @@
             //  var selectData = OD_eventAlbum.getEventData(["DTB-073", "DTB-034", "DTB-032", "DTB-030"]);
             //console.log('selectData: ' + prettyJson(selectData));
 
-            $("#testDiv").observation_deck();
+            $("#testDiv").observation_deck({
+                'eventAlbum' : OD_eventAlbum
+            });
 		</script>
 	</body>
 </html>
