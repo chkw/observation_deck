@@ -16,14 +16,22 @@
 		<script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.js"></script>
 		<script type="text/javascript" src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 
+		<script type="text/javascript" src="http://code.highcharts.com/highcharts.js"></script>
+		<script type="text/javascript" src="http://code.highcharts.com/modules/heatmap.js"></script>
+		<script type="text/javascript" src="http://code.highcharts.com/modules/exporting.js"></script>
+
 		<script type="text/javascript" src="observation_deck/scripts/jquery.contextMenu.js"></script>
 		<link type="text/css" rel="stylesheet" href="observation_deck/css/jquery.contextmenu.css">
 
 		<script type="text/javascript" src="observation_deck/scripts/static.js"></script>
 		<script type="text/javascript" src="observation_deck/scripts/OD_eventData.js"></script>
 		<script type="text/javascript" src="observation_deck/scripts/medbook_data_load.js"></script>
+		<script type="text/javascript" src="observation_deck/scripts/observation_deck_2.js"></script>
 	</head>
 	<body>
+		<div id='testDiv' style="height: 400px; min-width: 310px; max-width: 800px; margin: 0 auto">
+			testDiv is here.
+		</div>
 		<script>
             var OD_eventAlbum = new OD_eventMetadataAlbum();
 
@@ -43,6 +51,8 @@
 
             //  var selectData = OD_eventAlbum.getEventData(["DTB-073", "DTB-034", "DTB-032", "DTB-030"]);
             //console.log('selectData: ' + prettyJson(selectData));
+
+            $("#testDiv").observation_deck();
 		</script>
 	</body>
 </html>
