@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eventHierarchy>
+	<event type="gene level">
+		<event type="mutation">
+			<event type="presence">
+				<value>present</value>
+				<value>absent</value>
+			</event>
+			<event type="impact">
+				<event type="PARADIGM-SHIFT"></event>
+				<event type="mutation assessor"></event>
+				<event type="VEL"></event>
+				<event type="CHASM"></event>
+				<event type="Sift">></event>
+				<event type="PolyPhen"></event>
+			</event>
+			<event type="copy number variation"></event>
+			<event type="single nucleotide variation">
+				<event type="missense"></event>
+				<event type="frameshift"></event>
+				<event type="nonsense"></event>
+				<event type="splice"></event>
+				<event type="silent"></event>
+			</event>
+			<event type="structural variation">
+				<event type="fusion"></event>
+				<event type="indel">
+					<event type="insertion"></event>
+					<event type="deletion"></event>
+				</event>
+			</event>
+		</event>
+		<event type="epigenetic">
+			<event type="expression">
+				<event type="overexpression"></event>
+				<event type="underexpression"></event>
+			</event>
+			<event type="DNA methylation">
+				<event type="hypomethylation"></event>
+				<event type="hypermethylation"></event>
+			</event>
+		</event>
+		<event type="activity">
+			<event type="PARADIGM IPL"></event>
+		</event>
+		<event type="protein level">
+			<event type="RPPA"></event>
+		</event>
+	</event>
+	<event type="chomosome level"></event>
+	<event type="clinical data">
+		<event type="AR"></event>
+		<event type="Abiraterone_category"></event>
+		<event type="Aggressive?"></event>
+		<event type="Enzalutamide"></event>
+		<event type="NE_phenotype"></event>
+		<event type="PTEN"></event>
+		<event type="SUBTYPE"></event>
+		<event type="Small_Cell_score"></event>
+	</event>
+</eventHierarchy>
