@@ -236,7 +236,7 @@ function OD_eventDataCollection() {
                 var data = this.dataCollection[index];
                 returnData.push(data);
             } else {
-                continue;
+                returnData.push(new sampleData(sampleId, null));
             }
         }
         return returnData;
