@@ -215,7 +215,37 @@ function OD_eventDataCollection() {
         return this;
     };
 
+    /**
+     * Order of samples is maintained... allows multi-sort
+     */
     this.getData = function(sampleIdList) {
+        // TODO preserve sample ordering to allow multi-sort
+        if (sampleIdList == null) {
+            sampleIdList = this.getAllSampleIds();
+        }
+        var returnData = [];
+
+        // a mapping of sampleId to index
+        var allSampleIds = this.getAllSampleIds(true);
+
+        for (var i = 0; i < sampleIdList.length; i++) {
+            var sampleId = sampleIdList[i];
+            // check if sampleId is in allSampleIds
+            if ( sampleId in allSampleIds) {
+                var index = allSampleIds[sampleId];
+                var data = this.dataCollection[index];
+                returnData.push(data);
+            } else {
+                continue;
+            }
+        }
+        return returnData;
+    };
+
+    /**
+     * Order of samples is lost.
+     */
+    this.getData_old = function(sampleIdList) {
         if (sampleIdList == null) {
             sampleIdList = this.getAllSampleIds();
         }
@@ -232,12 +262,18 @@ function OD_eventDataCollection() {
         return returnData;
     };
 
-    this.getAllSampleIds = function() {
+    /**
+     * Get all sampleIds as array.  If indices == true, then return mapping of id to index.
+     */
+    this.getAllSampleIds = function(indices) {
         var ids = {};
         for (var i = 0; i < this.dataCollection.length; i++) {
             var data = this.dataCollection[i];
             var id = data['id'];
-            ids[id] = true;
+            ids[id] = i;
+        }
+        if (indices) {
+            return ids;
         }
         return getKeys(ids);
     };
