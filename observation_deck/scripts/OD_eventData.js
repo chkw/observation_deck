@@ -219,7 +219,6 @@ function OD_eventDataCollection() {
      * Order of samples is maintained... allows multi-sort
      */
     this.getData = function(sampleIdList) {
-        // TODO preserve sample ordering to allow multi-sort
         if (sampleIdList == null) {
             sampleIdList = this.getAllSampleIds();
         }
@@ -238,26 +237,6 @@ function OD_eventDataCollection() {
             } else {
                 returnData.push(new sampleData(sampleId, null));
             }
-        }
-        return returnData;
-    };
-
-    /**
-     * Order of samples is lost.
-     */
-    this.getData_old = function(sampleIdList) {
-        if (sampleIdList == null) {
-            sampleIdList = this.getAllSampleIds();
-        }
-        var returnData = [];
-
-        for (var i = 0; i < this.dataCollection.length; i++) {
-            var data = this.dataCollection[i];
-            var id = data['id'];
-            if (sampleIdList.indexOf(id) == -1) {
-                continue;
-            }
-            returnData.push(data);
         }
         return returnData;
     };
