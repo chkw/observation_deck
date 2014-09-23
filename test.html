@@ -36,16 +36,15 @@
             var OD_eventAlbum = new OD_eventMetadataAlbum();
 
             getClinicalData(clinicalDataFileUrl, OD_eventAlbum);
-            getMutationData(mutationDataFileUrl, OD_eventAlbum);
+            // getMutationData(mutationDataFileUrl, OD_eventAlbum);
 
             console.log(prettyJson(OD_eventAlbum));
 
             var ev = OD_eventAlbum.getEvent('SUBTYPE');
-            console.log(prettyJson(ev));
+            // console.log(prettyJson(ev));
 
             var sorted = ev.data.sortSamples();
-            console.log(prettyJson(sorted));
-
+            // console.log(prettyJson(sorted));
             //  var sampleIds = OD_eventAlbum.getAllSampleIds();
             //console.log(prettyJson(sampleIds));
 

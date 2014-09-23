@@ -33,13 +33,14 @@ function getClinicalData(url, OD_eventAlbum) {
     for (var eventType in transposed) {
         var data = transposed[eventType];
         var id = eventType;
+        var allowedValues = (endsWith(id.toLowerCase(), '_score')) ? 'numeric' : 'categoric';
         OD_eventAlbum.addEvent({
             'id' : id,
             'name' : null,
             'displayName' : null,
             'description' : null,
             'datatype' : 'clinical data',
-            'allowedValues' : 'categorical'
+            'allowedValues' : allowedValues
         }, data);
     }
 }

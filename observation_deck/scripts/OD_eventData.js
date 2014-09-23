@@ -99,7 +99,8 @@ function OD_eventMetadataAlbum() {
         this.album[metadataObj['id']] = newEvent;
 
         // add data
-        newEvent.data.setData(data);
+        var isNumeric = (metadataObj['allowedValues'] == 'numeric');
+        newEvent.data.setData(data, isNumeric);
 
         return this;
     };
@@ -206,10 +207,13 @@ function OD_eventDataCollection() {
         this.val = val;
     };
 
-    this.setData = function(dataObj) {
+    this.setData = function(dataObj, isNumeric) {
         this.dataCollection = [];
         for (var sampleId in dataObj) {
             var val = dataObj[sampleId];
+            if ((isNumeric != null) && (isNumeric == true)) {
+                val = parseFloat(val);
+            }
             this.dataCollection.push(new sampleData(sampleId, val));
         }
         return this;
