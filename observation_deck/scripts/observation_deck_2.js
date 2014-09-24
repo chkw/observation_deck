@@ -223,92 +223,95 @@
                 return s;
             });
 
-            // TODO context menu uses http://medialize.github.io/jQuery-contextMenu
-            $(function() {
-                $.contextMenu({
-                    // selector : ".axis",
-                    selector : ".rowLabel",
-                    callback : function(key, options) {
-                        // default callback
-                        var textContent = this[0].textContent;
-                        var axis = this[0].getAttribute("class").indexOf("axis") >= 0 ? true : false;
-                        if (axis) {
-                            axis = this[0].getAttribute("class").indexOf("rowLabel") >= 0 ? "row" : "column";
+            window.onload = function() {
+                console.log("Page loaded. Start onload.");
+
+                // TODO context menu uses http://medialize.github.io/jQuery-contextMenu
+                $(function() {
+                    $.contextMenu({
+                        // selector : ".axis",
+                        selector : ".rowLabel",
+                        callback : function(key, options) {
+                            // default callback
+                            var textContent = this[0].textContent;
+                            var axis = this[0].getAttribute("class").indexOf("axis") >= 0 ? true : false;
+                            if (axis) {
+                                axis = this[0].getAttribute("class").indexOf("rowLabel") >= 0 ? "row" : "column";
+                            }
+                            console.log(key, textContent, axis);
+                        },
+                        items : {
+                            "test" : {
+                                name : "test",
+                                icon : null,
+                                disabled : false,
+                                callback : function(key, opt) {
+                                    var textContent = this[0].textContent;
+                                    console.log(key, textContent);
+                                    console.log("href", window.location.href);
+                                    console.log("host", window.location.host);
+                                    console.log("pathname", window.location.pathname);
+                                    console.log("search", window.location.search);
+                                }
+                            },
+                            "sort" : {
+                                name : "sort",
+                                icon : null,
+                                disabled : false,
+                                callback : function(key, opt) {
+                                    var textContent = this[0].textContent;
+
+                                    var axis = this[0].getAttribute("class").indexOf("axis") >= 0 ? true : false;
+                                    if (axis) {
+                                        axis = this[0].getAttribute("class").indexOf("rowLabel") >= 0 ? "row" : "column";
+                                    } else {
+                                        console.log("exit out because not a row or a column");
+                                        return;
+                                    }
+
+                                    var sortType = "colSort";
+                                    if (axis == "row") {
+                                        // do nothing, colSort is the default.
+                                    } else {
+                                        sortType = "rowSort";
+                                    }
+
+                                    var sortSteps = null;
+                                    if ( sortType in querySettings) {
+                                        sortSteps = new sortingSteps(querySettings[sortType]["steps"]);
+                                    } else {
+                                        sortSteps = new sortingSteps();
+                                    }
+                                    sortSteps.addStep(textContent);
+                                    querySettings[sortType] = sortSteps;
+
+                                    loadNewSettings(querySettings);
+                                }
+                            },
+                            "sep1" : "---------",
+                            "expand" : {
+                                name : "expand",
+                                icon : null,
+                                disabled : true
+                            },
+                            "collapse" : {
+                                name : "collapse",
+                                icon : null,
+                                disabled : true
+                            },
+                            "reset" : {
+                                name : "reset",
+                                icon : null,
+                                disabled : false,
+                                callback : function(key, opt) {
+                                    var url = window.location.pathname;
+                                    window.open(url, "_self");
+                                }
+                            }
                         }
-                        console.log(key, textContent, axis);
-                    },
-                    items : {
-                        "test" : {
-                            name : "test",
-                            icon : null,
-                            disabled : false,
-                            callback : function(key, opt) {
-                                var textContent = this[0].textContent;
-                                console.log(key, textContent);
-                                console.log("href", window.location.href);
-                                console.log("host", window.location.host);
-                                console.log("pathname", window.location.pathname);
-                                console.log("search", window.location.search);
-                            }
-                        },
-                        "sort" : {
-                            name : "sort",
-                            icon : null,
-                            disabled : false,
-                            callback : function(key, opt) {
-                                var textContent = this[0].textContent;
-
-                                var axis = this[0].getAttribute("class").indexOf("axis") >= 0 ? true : false;
-                                if (axis) {
-                                    axis = this[0].getAttribute("class").indexOf("rowLabel") >= 0 ? "row" : "column";
-                                } else {
-                                    console.log("exit out because not a row or a column");
-                                    return;
-                                }
-
-                                var sortType = "colSort";
-                                if (axis == "row") {
-                                    // do nothing, colSort is the default.
-                                } else {
-                                    sortType = "rowSort";
-                                }
-
-                                var sortSteps = null;
-                                if ( sortType in querySettings) {
-                                    sortSteps = new sortingSteps(querySettings[sortType]["steps"]);
-                                } else {
-                                    sortSteps = new sortingSteps();
-                                }
-                                sortSteps.addStep(textContent);
-                                querySettings[sortType] = sortSteps;
-
-                                loadNewSettings(querySettings);
-                            }
-                        },
-                        "sep1" : "---------",
-                        "expand" : {
-                            name : "expand",
-                            icon : null,
-                            disabled : true
-                        },
-                        "collapse" : {
-                            name : "collapse",
-                            icon : null,
-                            disabled : true
-                        },
-                        "reset" : {
-                            name : "reset",
-                            icon : null,
-                            disabled : false,
-                            callback : function(key, opt) {
-                                var url = window.location.pathname;
-                                window.open(url, "_self");
-                            }
-                        }
-                    }
+                    });
                 });
-            });
-
+            };
             // TODO end observation_deck
         }
     });
