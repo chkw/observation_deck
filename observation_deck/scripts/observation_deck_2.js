@@ -52,6 +52,12 @@
 
             var eventList = getKeys(album).sort();
 
+            var colorMappers = {};
+            for (var i = 0; i < eventList.length; i++) {
+                // TODO for now, use discrete mappers
+                colorMappers[eventList[i]] = d3.scale.category10();
+            }
+
             // map row names to row numbers
             var rowNames = eventList;
 
@@ -178,10 +184,11 @@
                 var ry = 4;
                 var width = gridSize;
                 var height = gridSize;
+                var colorMapper = colorMappers[d['eventId']];
                 var attributes = {
                     "stroke" : "#E6E6E6",
                     "stroke-width" : "2px",
-                    "fill" : d3.scale.category10(d['val'])
+                    "fill" : colorMapper(d['val'])
                 };
                 // TODO colormapper not working
                 group.appendChild(createSvgRectElement(x, y, rx, ry, width, height, attributes));
