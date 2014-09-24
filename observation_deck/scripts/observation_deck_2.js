@@ -14,6 +14,32 @@
         },
         observation_deck : function(config) {
             // TODO begin observation_deck
+            config["rowClickback"] = function(d, i) {
+                console.log("rowClickback: " + d);
+            };
+
+            config["columnClickback"] = function(d, i) {
+                console.log("columnClickback: " + d);
+            };
+
+            config["cellClickback"] = function(d, i) {
+                console.log("cellClickback: r" + d.getRow() + " c" + d.getColumn() + " name" + d.getName() + " val" + d.getValue());
+            };
+
+            config["rowRightClickback"] = function(d, i) {
+                console.log("rowRightClickback: " + d);
+                d3.event.preventDefault();
+            };
+
+            config["columnRightClickback"] = function(d, i) {
+                console.log("columnRightClickback: " + d);
+                d3.event.preventDefault();
+            };
+
+            config["cellRightClickback"] = function(d, i) {
+                console.log("cellRightClickback: r" + d.getRow() + " c" + d.getColumn() + " name" + d.getName() + " val" + d.getValue());
+                d3.event.preventDefault();
+            };
 
             var thisElement = this[0];
 
@@ -97,8 +123,8 @@
                     return "rowLabel mono axis unselectable";
                 }
             }).style("text-anchor", "end");
-            // rowLabels.on("click", dataObj.getRowClickback());
-            // rowLabels.on("contextmenu", dataObj.getRowRightClickback());
+            rowLabels.on("click", config["rowClickback"]);
+            rowLabels.on("contextmenu", config["rowRightClickback"]);
 
             // col labels
             var rotationDegrees = -90;
@@ -116,8 +142,8 @@
                     return "colLabel mono axis unselectable";
                 }
             }).style("text-anchor", "start");
-            // colLabels.on("click", dataObj.getColumnClickback());
-            // colLabels.on("contextmenu", dataObj.getColumnRightClickback());
+            colLabels.on("click", config["columnClickback"]);
+            colLabels.on("contextmenu", config["columnRightClickback"]);
 
             // TODO end observation_deck
         }
