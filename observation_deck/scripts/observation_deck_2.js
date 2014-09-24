@@ -82,6 +82,43 @@
                 "transform" : "translate(" + margin.left + "," + margin.top + ")"
             });
 
+            // row labels
+            var translateX = -6;
+            var translateY = gridSize / 1.5;
+            var rowLabels = svg.selectAll(".rowLabel").data(rowNames).enter().append("text").text(function(d) {
+                return d;
+            }).attr({
+                "x" : 0,
+                "y" : function(d, i) {
+                    return i * gridSize;
+                },
+                "transform" : "translate(" + translateX + ", " + translateY + ")",
+                "class" : function(d, i) {
+                    return "rowLabel mono axis unselectable";
+                }
+            }).style("text-anchor", "end");
+            // rowLabels.on("click", dataObj.getRowClickback());
+            // rowLabels.on("contextmenu", dataObj.getRowRightClickback());
+
+            // col labels
+            var rotationDegrees = -90;
+            translateX = Math.floor(gridSize / 5);
+            translateY = -1 * Math.floor(gridSize / 3);
+            var colLabels = svg.selectAll(".colLabel").data(colNames).enter().append("text").text(function(d) {
+                return d;
+            }).attr({
+                "y" : function(d, i) {
+                    return (i + 1) * gridSize;
+                },
+                "x" : 0,
+                "transform" : "rotate(" + rotationDegrees + ") translate(" + translateX + ", " + translateY + ")",
+                "class" : function(d, i) {
+                    return "colLabel mono axis unselectable";
+                }
+            }).style("text-anchor", "start");
+            // colLabels.on("click", dataObj.getColumnClickback());
+            // colLabels.on("contextmenu", dataObj.getColumnRightClickback());
+
             // TODO end observation_deck
         }
     });
