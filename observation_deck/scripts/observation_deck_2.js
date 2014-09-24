@@ -45,11 +45,12 @@
 
             // get eventList
             var eventAlbum = config['eventAlbum'];
+            var albumAsList = eventAlbum.getAllDataAsList();
+            console.log('albumAsList:' + prettyJson(albumAsList));
+
             var album = eventAlbum['album'];
-            console.log('album:' + prettyJson(album));
 
             var eventList = getKeys(album).sort();
-            console.log('eventList:' + prettyJson(eventList));
 
             // map row names to row numbers
             var rowNames = eventList;
@@ -60,11 +61,8 @@
                 rowNameMapping[name] = i;
             }
 
-            console.log(prettyJson(rowNameMapping));
-
             // get column names and map to numbers
             var colNames = eventAlbum.getAllSampleIds();
-            console.log('colNames:' + prettyJson(colNames));
 
             var colNameMapping = new Object();
             for (var i in colNames) {
@@ -83,8 +81,6 @@
                 "bottom" : 0,
                 "left" : ((longestRowName > 1) ? (8 * longestRowName) : 15)
             };
-
-            console.log('margin:' + prettyJson(margin));
 
             // document.documentElement.clientWidth
             var fullWidth = document.documentElement.clientWidth;

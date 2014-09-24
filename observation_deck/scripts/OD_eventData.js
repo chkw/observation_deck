@@ -79,19 +79,6 @@ function OD_eventMetadataAlbum() {
     // convert JS obj to jQ obj
     $xml = $(xmlDoc);
 
-    console.log($xml);
-
-    var eventElems = getEventElems($xml, 'AR');
-    $(eventElems).each(function(index, elem) {
-        console.log(elem.getAttribute('type'));
-    });
-
-    var parentChildren = getEventParentChildren($xml, 'mutation');
-    console.log(prettyJson(parentChildren));
-
-    var tracebacks = tracebackToRoot($xml, 'presence');
-    console.log('tracebacks: ' + prettyJson(tracebacks));
-
     this.album = {};
 
     this.addEvent = function(metadataObj, data) {
@@ -120,6 +107,24 @@ function OD_eventMetadataAlbum() {
             result[eventId] = data;
         }
         return result;
+    };
+
+    /**
+     * Get all of the event data in a list of objects.  Each object has keys: eventId, id, val.
+     */
+    this.getAllDataAsList = function() {
+        var allDataList = [];
+        var allDataObj = this.getEventData();
+        var eventNameList = getKeys(allDataObj);
+        for (var i = 0; i < eventNameList.length; i++) {
+            var eventName = eventNameList[i];
+            var eventData = allDataObj[eventName].slice();
+            for (var j = 0; j < eventData.length; j++) {
+                eventData[j]['eventId'] = eventName;
+            }
+            allDataList = allDataList.concat(eventData);
+        }
+        return allDataList;
     };
 
     /**
