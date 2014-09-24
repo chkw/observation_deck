@@ -212,6 +212,20 @@ function OD_eventDataCollection() {
         this.val = val;
     };
 
+    this.getValues = function(dedup) {
+        var vals = [];
+        var dataList = this.getData();
+        for (var i = 0; i < dataList.length; i++) {
+            var dataObj = dataList[i];
+            var val = dataObj['val'];
+            vals.push(val);
+        }
+        if ((dedup != null) && (dedup == true)) {
+            vals = eliminateDuplicates(vals);
+        }
+        return vals;
+    };
+
     this.setData = function(dataObj, isNumeric) {
         this.dataCollection = [];
         for (var sampleId in dataObj) {
