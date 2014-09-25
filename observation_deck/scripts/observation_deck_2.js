@@ -124,6 +124,9 @@
             config['eventAlbum'] = OD_eventAlbum;
 
             getClinicalData(clinicalDataFileUrl, OD_eventAlbum);
+            getExpressionData(expressionDataFileUrl, OD_eventAlbum);
+
+            console.log(prettyJson(OD_eventAlbum));
 
             this.drawMatrix(config);
             // TODO end observation_deck
@@ -206,9 +209,6 @@
             // {"colSort":{"steps":[{"name":"Small_Cell_score","reverse":false}]}}
             config['colSort'] = {
                 "steps" : [{
-                    "name" : "SUBTYPE",
-                    "reverse" : false
-                }, {
                     "name" : "Small_Cell_score",
                     "reverse" : false
                 }]

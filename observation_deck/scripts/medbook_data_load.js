@@ -7,6 +7,7 @@
 var clinicalDataFileUrl = 'observation_deck/data/cbioMedbook/getClinicalData.txt';
 var caseListsFileUrl = 'observation_deck/data/cbioMedbook/getCaseLists.txt';
 var mutationDataFileUrl = 'observation_deck/data/cbioMedbook/mutation.txt';
+var expressionDataFileUrl = 'observation_deck/data/cbioMedbook/expressionData.tab';
 
 function transposeClinicalData(input, recordKey) {
     var transposed = {};
@@ -81,5 +82,25 @@ function getMutationData(url) {
     }
 
     return parsedResponse;
+}
+
+function getExpressionData(url, OD_eventAlbum) {
+    var response = getResponse(url);
+    var parsedResponse = d3.tsv.parse(response);
+    console.log('parsedResponse:' + prettyJson(parsedResponse));
+
+    for (var eventType in parsedResponse) {
+        var data = parsedResponse[eventType];
+        var geneId = data['gene_id'];
+        delete data['gene_id'];
+        OD_eventAlbum.addEvent({
+            'id' : geneId + '_mRNA',
+            'name' : null,
+            'displayName' : null,
+            'description' : null,
+            'datatype' : 'expression data',
+            'allowedValues' : 'expression'
+        }, data);
+    }
 }
 
