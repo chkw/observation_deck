@@ -226,6 +226,13 @@
             window.onload = function() {
                 console.log("Page loaded. Start onload.");
 
+                // get settings from query string
+                var queryObj = getQueryObj();
+                var querySettings = {};
+                if ("query" in queryObj) {
+                    querySettings = parseJson(queryObj["query"]);
+                }
+
                 // TODO context menu uses http://medialize.github.io/jQuery-contextMenu
                 $(function() {
                     $.contextMenu({
@@ -284,6 +291,8 @@
                                     }
                                     sortSteps.addStep(textContent);
                                     querySettings[sortType] = sortSteps;
+
+                                    alert(prettyJson(querySettings));
 
                                     loadNewSettings(querySettings);
                                 }

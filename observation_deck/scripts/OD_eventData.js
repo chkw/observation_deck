@@ -351,3 +351,52 @@ function OD_eventDataCollection() {
         return valA.localeCompare(valB);
     };
 }
+
+/**
+ * Keep track of sorting.
+ */
+function sortingSteps(arrayOfSteps) {
+    this.steps = new Array();
+    if (arrayOfSteps != null) {
+        this.steps = arrayOfSteps;
+    }
+
+    this.getSteps = function() {
+        return this.steps;
+    };
+
+    this.getIndex = function(name) {
+        var result = -1;
+        for (var i = 0; i < this.steps.length; i++) {
+            if (this.steps[i]["name"] == name) {
+                return i;
+            }
+        }
+        return result;
+    };
+
+    this.addStep = function(name) {
+        var index = this.getIndex(name);
+        if (index >= 0) {
+            var c = this.steps.splice(index, 1)[0];
+            c["reverse"] = !c["reverse"];
+            this.steps.push(c);
+        } else {
+            this.steps.push({
+                "name" : name,
+                "reverse" : false
+            });
+        }
+    };
+
+    this.removeStep = function(name) {
+        var index = this.getIndex(name);
+        if (index >= 0) {
+            this.steps.splice(index, 1);
+        }
+    };
+
+    this.clearSteps = function() {
+        this.steps.splice(0, this.steps.length);
+    };
+}
