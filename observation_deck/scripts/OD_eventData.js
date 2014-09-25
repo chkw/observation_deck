@@ -168,6 +168,24 @@ function OD_eventMetadataAlbum() {
             return this.getAllChildren(currentChildren, newChildList);
         }
     };
+
+    this.multisortSamples = function(sortingSteps) {
+        var steps = sortingSteps.getSteps().reverse();
+        var sampleIds = this.getAllSampleIds();
+        for (var b = 0; b < steps.length; b++) {
+            var step = steps[b];
+            console.log("step:" + prettyJson(step));
+            var eventId = step['name'];
+            var reverse = step['reverse'];
+            var allowedValues = this.getEvent(eventId).metadata['allowedValues'];
+            var sortedIds = this.getEvent(eventId).data.sortSamples(sampleIds, allowedValues);
+            if (reverse) {
+                sortedIds = sortedIds.reverse();
+            }
+            sampleIds = sortedIds;
+        }
+        return sampleIds;
+    };
 }
 
 function OD_event(metadataObj) {
@@ -242,13 +260,13 @@ function OD_eventDataCollection() {
      * Order of samples is maintained... allows multi-sort
      */
     this.getData = function(sampleIdList) {
-        if (sampleIdList == null) {
-            sampleIdList = this.getAllSampleIds();
-        }
-        var returnData = [];
-
         // a mapping of sampleId to index
         var allSampleIds = this.getAllSampleIds(true);
+
+        if (sampleIdList == null) {
+            sampleIdList = getKeys(allSampleIds);
+        }
+        var returnData = [];
 
         for (var i = 0; i < sampleIdList.length; i++) {
             var sampleId = sampleIdList[i];
@@ -281,9 +299,32 @@ function OD_eventDataCollection() {
     };
 
     /**
+     * compare sample scores and return sorted list of sample IDs. If sortType == numeric, then numeric sort.  Else, sort as strings.
+     */
+    this.sortSamples = function(sampleIdList, sortType) {
+        // sortingData has to be an array
+        var sortingData = this.getData(sampleIdList);
+
+        // sort objects
+        var comparator = compareSamplesAsStrings;
+        if ((sortType != null) && (sortType == 'numeric')) {
+            comparator = compareSamplesAsNumeric;
+        }
+        sortingData.sort(comparator);
+
+        // return row names in sorted order
+        var sortedNames = new Array();
+        for (var k = 0; k < sortingData.length; k++) {
+            sortedNames.push(sortingData[k]['id']);
+        }
+
+        return sortedNames;
+    };
+
+    /**
      * compare sample scores and return sorted list of sample IDs
      */
-    this.sortSamples = function(sampleIdList, comparator) {
+    this.sortSamples_old = function(sampleIdList, comparator) {
         // sortingData has to be an array
         var sortingData = this.getData(sampleIdList);
 
@@ -307,7 +348,7 @@ function OD_eventDataCollection() {
      * @param {Object} a
      * @param {Object} b
      */
-    var compareSamples = function(a, b) {
+    var compareSamplesAsNumeric = function(a, b) {
         var valA = a['val'];
         var valB = b['val'];
 

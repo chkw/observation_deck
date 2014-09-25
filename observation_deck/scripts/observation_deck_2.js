@@ -86,7 +86,25 @@
             }
 
             // get column names and map to numbers
-            var colNames = eventAlbum.getAllSampleIds();
+
+            // {"colSort":{"steps":[{"name":"Small_Cell_score","reverse":false}]}}
+            config['colSort'] = {
+                "steps" : [{
+                    "name" : "SUBTYPE",
+                    "reverse" : false
+                }, {
+                    "name" : "Small_Cell_score",
+                    "reverse" : false
+                }]
+            };
+
+            var colNames = null;
+            if ("colSort" in config) {
+                var sortSteps = new sortingSteps(config["colSort"]["steps"]);
+                colNames = eventAlbum.multisortSamples(sortSteps);
+            } else {
+                colNames = eventAlbum.getAllSampleIds();
+            }
 
             var colNameMapping = new Object();
             for (var i in colNames) {
