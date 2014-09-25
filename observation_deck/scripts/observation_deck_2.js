@@ -2,6 +2,11 @@
  * chrisw@soe.ucsc.edu
  * SEPT 2014
  * observation_deck_2.js
+ *
+ * requirements:
+ * 1) jQuery <https://jquery.com/>
+ * 2) D3.js <http://d3js.org/>
+ * 3) jQuery-contextMenu <https://medialize.github.io/jQuery-contextMenu/>
  */
 
 (function($) {
