@@ -22,15 +22,25 @@
             if (config == null) {
                 config = {};
             }
+            // get settings from query string
+            var queryObj = getQueryObj();
+            var querySettings = {};
+            if ("query" in queryObj) {
+                querySettings = parseJson(queryObj["query"]);
+            }
+            config['querySettings'] = querySettings;
+
             window.onload = function() {
                 console.log("Page loaded. Start onload.");
 
                 // get settings from query string
-                var queryObj = getQueryObj();
-                var querySettings = {};
-                if ("query" in queryObj) {
-                    querySettings = parseJson(queryObj["query"]);
-                }
+
+                // var queryObj = getQueryObj();
+                // var querySettings = {};
+                // if ("query" in queryObj) {
+                // querySettings = parseJson(queryObj["query"]);
+                // }
+                // config['querySettings'] = querySettings;
 
                 // TODO context menu uses http://medialize.github.io/jQuery-contextMenu
                 $(function() {
@@ -91,8 +101,6 @@
                                     sortSteps.addStep(textContent);
                                     querySettings[sortType] = sortSteps;
 
-                                    alert(prettyJson(querySettings));
-
                                     loadNewSettings(querySettings);
                                 }
                             },
@@ -125,8 +133,6 @@
 
             getClinicalData(clinicalDataFileUrl, OD_eventAlbum);
             getExpressionData(expressionDataFileUrl, OD_eventAlbum);
-
-            console.log(prettyJson(OD_eventAlbum));
 
             this.drawMatrix(config);
             // TODO end observation_deck
@@ -171,6 +177,8 @@
 
             var eventList = getKeys(album).sort();
 
+            var expressionColorMapper = setupQuantileColorMapper([0, 35000]);
+
             var colorMappers = {};
             for (var i = 0; i < eventList.length; i++) {
                 var eventId = eventList[i];
@@ -180,18 +188,11 @@
                 } else if (allowedValues == 'numeric') {
                     // 0-centered color mapper
                     colorMappers[eventId] = centeredRgbaColorMapper(true);
+                } else if (allowedValues == 'expression') {
+                    // shared quantile mapper
+                    colorMappers[eventId] = expressionColorMapper;
                 } else {
-                    // quantile color mapper
-                    var vals = eventAlbum.getEvent(eventId).data.getValues(false);
-                    // color scale
-                    var colors = ["rgb(255,255,217)", "rgb(237,248,177)", "rgb(199,233,180)", "rgb(127,205,187)", "rgb(65,182,196)", "rgb(29,145,192)", "rgb(34,94,168)", "rgb(37,52,148)", "rgb(8,29,88)"];
-                    var buckets = colors.length;
-                    // TODO color scale goes from 0 to max
-                    var colorScale = d3.scale.quantile().domain([0, buckets - 1, d3.max(vals, function(d) {
-                        return parseFloat(d);
-                    })]).range(colors);
-
-                    colorMappers[eventId] = colorScale;
+                    colorMappers[eventId] = d3.scale.category10();
                 }
             }
 
@@ -205,18 +206,11 @@
             }
 
             // get column names and map to numbers
-
-            // {"colSort":{"steps":[{"name":"Small_Cell_score","reverse":false}]}}
-            config['colSort'] = {
-                "steps" : [{
-                    "name" : "Small_Cell_score",
-                    "reverse" : false
-                }]
-            };
+            var querySettings = config['querySettings'];
 
             var colNames = null;
-            if ("colSort" in config) {
-                var sortSteps = new sortingSteps(config["colSort"]["steps"]);
+            if ("colSort" in querySettings) {
+                var sortSteps = new sortingSteps(querySettings["colSort"]["steps"]);
                 colNames = eventAlbum.multisortSamples(sortSteps);
             } else {
                 colNames = eventAlbum.getAllSampleIds();

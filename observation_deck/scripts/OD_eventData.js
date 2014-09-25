@@ -183,6 +183,7 @@ function OD_eventMetadataAlbum() {
                 sortedIds = sortedIds.reverse();
             }
             sampleIds = sortedIds;
+            break;
         }
         return sampleIds;
     };
@@ -307,7 +308,7 @@ function OD_eventDataCollection() {
 
         // sort objects
         var comparator = compareSamplesAsStrings;
-        if ((sortType != null) && (sortType == 'numeric')) {
+        if ((sortType != null) && ((sortType == 'numeric') || (sortType == 'expression'))) {
             comparator = compareSamplesAsNumeric;
         }
         sortingData.sort(comparator);
