@@ -14,6 +14,117 @@
         },
         observation_deck : function(config) {
             // TODO begin observation_deck
+            if (config == null) {
+                config = {};
+            }
+            window.onload = function() {
+                console.log("Page loaded. Start onload.");
+
+                // get settings from query string
+                var queryObj = getQueryObj();
+                var querySettings = {};
+                if ("query" in queryObj) {
+                    querySettings = parseJson(queryObj["query"]);
+                }
+
+                // TODO context menu uses http://medialize.github.io/jQuery-contextMenu
+                $(function() {
+                    $.contextMenu({
+                        // selector : ".axis",
+                        selector : ".rowLabel",
+                        callback : function(key, options) {
+                            // default callback
+                            var textContent = this[0].textContent;
+                            var axis = this[0].getAttribute("class").indexOf("axis") >= 0 ? true : false;
+                            if (axis) {
+                                axis = this[0].getAttribute("class").indexOf("rowLabel") >= 0 ? "row" : "column";
+                            }
+                            console.log(key, textContent, axis);
+                        },
+                        items : {
+                            "test" : {
+                                name : "test",
+                                icon : null,
+                                disabled : false,
+                                callback : function(key, opt) {
+                                    var textContent = this[0].textContent;
+                                    console.log(key, textContent);
+                                    console.log("href", window.location.href);
+                                    console.log("host", window.location.host);
+                                    console.log("pathname", window.location.pathname);
+                                    console.log("search", window.location.search);
+                                }
+                            },
+                            "sort" : {
+                                name : "sort",
+                                icon : null,
+                                disabled : false,
+                                callback : function(key, opt) {
+                                    var textContent = this[0].textContent;
+
+                                    var axis = this[0].getAttribute("class").indexOf("axis") >= 0 ? true : false;
+                                    if (axis) {
+                                        axis = this[0].getAttribute("class").indexOf("rowLabel") >= 0 ? "row" : "column";
+                                    } else {
+                                        console.log("exit out because not a row or a column");
+                                        return;
+                                    }
+
+                                    var sortType = "colSort";
+                                    if (axis == "row") {
+                                        // do nothing, colSort is the default.
+                                    } else {
+                                        sortType = "rowSort";
+                                    }
+
+                                    var sortSteps = null;
+                                    if ( sortType in querySettings) {
+                                        sortSteps = new sortingSteps(querySettings[sortType]["steps"]);
+                                    } else {
+                                        sortSteps = new sortingSteps();
+                                    }
+                                    sortSteps.addStep(textContent);
+                                    querySettings[sortType] = sortSteps;
+
+                                    alert(prettyJson(querySettings));
+
+                                    loadNewSettings(querySettings);
+                                }
+                            },
+                            "sep1" : "---------",
+                            "expand" : {
+                                name : "expand",
+                                icon : null,
+                                disabled : true
+                            },
+                            "collapse" : {
+                                name : "collapse",
+                                icon : null,
+                                disabled : true
+                            },
+                            "reset" : {
+                                name : "reset",
+                                icon : null,
+                                disabled : false,
+                                callback : function(key, opt) {
+                                    var url = window.location.pathname;
+                                    window.open(url, "_self");
+                                }
+                            }
+                        }
+                    });
+                });
+            };
+            var OD_eventAlbum = new OD_eventMetadataAlbum();
+            config['eventAlbum'] = OD_eventAlbum;
+
+            getClinicalData(clinicalDataFileUrl, OD_eventAlbum);
+
+            this.drawMatrix(config);
+            // TODO end observation_deck
+        },
+        drawMatrix : function(config) {
+            // TODO begin drawMatrix
             config["rowClickback"] = function(d, i) {
                 console.log("rowClickback: " + d);
             };
@@ -240,106 +351,7 @@
                 var s = "r:" + d['eventId'] + "\n\nc:" + d['id'] + "\n\n" + d['val'];
                 return s;
             });
-
-            window.onload = function() {
-                console.log("Page loaded. Start onload.");
-
-                // get settings from query string
-                var queryObj = getQueryObj();
-                var querySettings = {};
-                if ("query" in queryObj) {
-                    querySettings = parseJson(queryObj["query"]);
-                }
-
-                // TODO context menu uses http://medialize.github.io/jQuery-contextMenu
-                $(function() {
-                    $.contextMenu({
-                        // selector : ".axis",
-                        selector : ".rowLabel",
-                        callback : function(key, options) {
-                            // default callback
-                            var textContent = this[0].textContent;
-                            var axis = this[0].getAttribute("class").indexOf("axis") >= 0 ? true : false;
-                            if (axis) {
-                                axis = this[0].getAttribute("class").indexOf("rowLabel") >= 0 ? "row" : "column";
-                            }
-                            console.log(key, textContent, axis);
-                        },
-                        items : {
-                            "test" : {
-                                name : "test",
-                                icon : null,
-                                disabled : false,
-                                callback : function(key, opt) {
-                                    var textContent = this[0].textContent;
-                                    console.log(key, textContent);
-                                    console.log("href", window.location.href);
-                                    console.log("host", window.location.host);
-                                    console.log("pathname", window.location.pathname);
-                                    console.log("search", window.location.search);
-                                }
-                            },
-                            "sort" : {
-                                name : "sort",
-                                icon : null,
-                                disabled : false,
-                                callback : function(key, opt) {
-                                    var textContent = this[0].textContent;
-
-                                    var axis = this[0].getAttribute("class").indexOf("axis") >= 0 ? true : false;
-                                    if (axis) {
-                                        axis = this[0].getAttribute("class").indexOf("rowLabel") >= 0 ? "row" : "column";
-                                    } else {
-                                        console.log("exit out because not a row or a column");
-                                        return;
-                                    }
-
-                                    var sortType = "colSort";
-                                    if (axis == "row") {
-                                        // do nothing, colSort is the default.
-                                    } else {
-                                        sortType = "rowSort";
-                                    }
-
-                                    var sortSteps = null;
-                                    if ( sortType in querySettings) {
-                                        sortSteps = new sortingSteps(querySettings[sortType]["steps"]);
-                                    } else {
-                                        sortSteps = new sortingSteps();
-                                    }
-                                    sortSteps.addStep(textContent);
-                                    querySettings[sortType] = sortSteps;
-
-                                    alert(prettyJson(querySettings));
-
-                                    loadNewSettings(querySettings);
-                                }
-                            },
-                            "sep1" : "---------",
-                            "expand" : {
-                                name : "expand",
-                                icon : null,
-                                disabled : true
-                            },
-                            "collapse" : {
-                                name : "collapse",
-                                icon : null,
-                                disabled : true
-                            },
-                            "reset" : {
-                                name : "reset",
-                                icon : null,
-                                disabled : false,
-                                callback : function(key, opt) {
-                                    var url = window.location.pathname;
-                                    window.open(url, "_self");
-                                }
-                            }
-                        }
-                    });
-                });
-            };
-            // TODO end observation_deck
+            // TODO end drawMatrix
         }
     });
 })(jQuery);
