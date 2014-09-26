@@ -170,11 +170,12 @@
 
             // get eventList
             var eventAlbum = config['eventAlbum'];
-            var albumAsList = eventAlbum.getAllDataAsList();
 
-            var album = eventAlbum['album'];
-
-            var eventList = getKeys(album).sort();
+            var groupedEvents = eventAlbum.getEventIdsByType();
+            var eventList = [];
+            for (var datatype in groupedEvents) {
+                eventList = eventList.concat(groupedEvents[datatype]);
+            }
 
             // var expressionColorMapper = setupQuantileColorMapper([1, 17]);
             var expressionColorMapper = centeredRgbaColorMapper(false, 0, -6, 15);

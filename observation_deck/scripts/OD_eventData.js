@@ -93,6 +93,23 @@ function OD_eventMetadataAlbum() {
     };
 
     /**
+     * Get the eventIds grouped by datatype.
+     */
+    this.getEventIdsByType = function() {
+        var groupedEventIds = {};
+        var eventIdList = getKeys(this.album);
+        for (var i = 0; i < eventIdList.length; i++) {
+            var eventId = eventIdList[i];
+            var datatype = this.getEvent(eventId).metadata.datatype;
+            if (!hasOwnProperty(groupedEventIds, datatype)) {
+                groupedEventIds[datatype] = [];
+            }
+            groupedEventIds[datatype].push(eventId);
+        }
+        return groupedEventIds;
+    };
+
+    /**
      * Get all of the event data for specified samples.
      */
     this.getEventData = function(sampleIds) {
