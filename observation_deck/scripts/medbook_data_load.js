@@ -4,6 +4,11 @@
  * medbook_data_load.js is meant to load cBio/medbook data into data objects.
  */
 
+// cBio-Medbook api:
+// https://medbook.ucsc.edu/cbioportal/webservice.do?cmd=getClinicalData&case_set_id=prad_wcdt_all
+// https://medbook.ucsc.edu/cbioportal/webservice.do?cmd=getMutationData&case_set_id=prad_wcdt_all&genetic_profile_id=prad_wcdt_mutations&gene_list=AKT1+AKT2+RB1+PTEN
+// https://medbook.ucsc.edu/cbioportal/webservice.do?cmd=getCaseLists&cancer_study_id=prad_wcdt
+
 var clinicalDataFileUrl = 'observation_deck/data/cbioMedbook/data_clinical.txt';
 var caseListsFileUrl = 'observation_deck/data/cbioMedbook/getCaseLists.txt';
 var mutationDataFileUrl = 'observation_deck/data/cbioMedbook/mutation.txt';
@@ -32,10 +37,13 @@ function getClinicalData(url, OD_eventAlbum) {
 
     var dataLines = [];
     var commentLines = [];
+    var types = [];
     for (var i = 0; i < lines.length; i++) {
         var line = lines[i];
-        if ((beginsWith(line, '#')) || (beginsWith(line, 'STRING'))) {
+        if (beginsWith(line, '#')) {
             commentLines.push(line);
+        } else if (beginsWith(line, 'STRING')) {
+            types = line.split('\t');
         } else {
             dataLines.push(line);
         }
@@ -49,8 +57,15 @@ function getClinicalData(url, OD_eventAlbum) {
     for (var i = 0; i < eventIdList.length; i++) {
         var eventId = eventIdList[i];
         var clinicalData = transposed[eventId];
+        var type = types[i + 1];
 
-        var allowedValues = ((endsWith(eventId.toLowerCase(), '_score')) || (endsWith(eventId.toLowerCase(), '(days)'))) ? 'numeric' : 'categoric';
+        var allowedValues = 'categoric';
+        if (type.toLowerCase() == 'number') {
+            allowedValues = 'numeric';
+        } else if (type.toLowerCase() == 'date') {
+            allowedValues = 'date';
+        }
+
         OD_eventAlbum.addEvent({
             'id' : eventId,
             'name' : null,

@@ -195,11 +195,16 @@ function OD_eventMetadataAlbum() {
             var eventId = step['name'];
             var reverse = step['reverse'];
             var allowedValues = this.getEvent(eventId).metadata['allowedValues'];
+            console.log(allowedValues);
             var sortedIds = this.getEvent(eventId).data.sortSamples(sampleIds, allowedValues);
             if (reverse) {
                 sortedIds = sortedIds.reverse();
             }
             sampleIds = sortedIds;
+
+            // var sortedData = this.getEvent(eventId).data.getData(sampleIds);
+            // console.log(prettyJson(sortedData));
+
             break;
         }
         return sampleIds;
@@ -263,7 +268,7 @@ function OD_eventDataCollection() {
     };
 
     this.setData = function(dataObj, isNumeric) {
-        this.dataCollection = [];
+        // this.dataCollection = [];
         for (var sampleId in dataObj) {
             var val = dataObj[sampleId];
             if ((isNumeric != null) && (isNumeric == true)) {
@@ -325,8 +330,16 @@ function OD_eventDataCollection() {
 
         // sort objects
         var comparator = compareSamplesAsStrings;
-        if ((sortType != null) && ((sortType == 'numeric') || (sortType == 'expression'))) {
+        if (sortType == null) {
+            sortType = 'categoric';
+        } else {
+            sortType = sortType.toLowerCase();
+        }
+
+        if (((sortType == 'numeric') || (sortType == 'expression'))) {
             comparator = compareSamplesAsNumeric;
+        } else if (sortType == 'date') {
+            comparator = compareSamplesAsDate;
         }
         sortingData.sort(comparator);
 
@@ -408,6 +421,33 @@ function OD_eventDataCollection() {
         var valB = new String(b['val']);
 
         return valA.localeCompare(valB);
+    };
+
+    /**
+     * Compare sample values as date
+     * @param {Object} a
+     * @param {Object} b
+     */
+    var compareSamplesAsDate = function(a, b) {
+        var valA = a['val'];
+        var valB = b['val'];
+
+        if (valA == null) {
+            valA = '1000';
+        } else if (valA == '') {
+            valA = '1001';
+        }
+
+        if (valB == null) {
+            valB = '1000';
+        } else if (valB == '') {
+            valB = '1001';
+        }
+
+        var dateA = new Date(valA);
+        var dateB = new Date(valB);
+
+        return (dateA - dateB);
     };
 }
 

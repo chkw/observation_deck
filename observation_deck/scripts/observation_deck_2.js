@@ -188,6 +188,20 @@
                     colorMappers[eventId] = d3.scale.category10();
                 } else if (allowedValues == 'numeric') {
                     // 0-centered color mapper
+                    var vals = eventAlbum.getEvent(eventId).data.getValues();
+                    var numbers = [];
+                    for (var j = 0; j < vals.length; j++) {
+                        var val = vals[j];
+                        if (isNumerical(val)) {
+                            numbers.push(val);
+                        }
+                    }
+                    // var minVal = Math.min.apply(null, numbers);
+                    // var maxVal = Math.max.apply(null, numbers);
+                    //
+                    // console.log('numbers: ' + prettyJson(numbers));
+                    // console.log('min: ' + minVal);
+                    // console.log('max: ' + maxVal);
                     colorMappers[eventId] = centeredRgbaColorMapper(true);
                 } else if (allowedValues == 'expression') {
                     // shared expression color mapper
