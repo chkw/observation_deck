@@ -179,7 +179,6 @@
 
             // var expressionColorMapper = setupQuantileColorMapper([1, 17]);
             var expressionColorMapper = centeredRgbaColorMapper(false, 0, -6, 15);
-            ;
 
             var colorMappers = {};
             for (var i = 0; i < eventList.length; i++) {
