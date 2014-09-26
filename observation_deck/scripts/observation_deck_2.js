@@ -171,13 +171,14 @@
             // get eventList
             var eventAlbum = config['eventAlbum'];
             var albumAsList = eventAlbum.getAllDataAsList();
-            console.log('albumAsList:' + prettyJson(albumAsList));
 
             var album = eventAlbum['album'];
 
             var eventList = getKeys(album).sort();
 
-            var expressionColorMapper = setupQuantileColorMapper([0, 35000]);
+            // var expressionColorMapper = setupQuantileColorMapper([1, 17]);
+            var expressionColorMapper = centeredRgbaColorMapper(false, 0, -6, 15);
+            ;
 
             var colorMappers = {};
             for (var i = 0; i < eventList.length; i++) {
@@ -189,7 +190,7 @@
                     // 0-centered color mapper
                     colorMappers[eventId] = centeredRgbaColorMapper(true);
                 } else if (allowedValues == 'expression') {
-                    // shared quantile mapper
+                    // shared expression color mapper
                     colorMappers[eventId] = expressionColorMapper;
                 } else {
                     colorMappers[eventId] = d3.scale.category10();
@@ -324,6 +325,8 @@
                     return group;
                 }
 
+                var val = (endsWith(d['eventId'], '_mRNA')) ? (d['val'] - 7) : d['val'];
+
                 var x = (colNameMapping[d['id']] * gridSize);
                 var y = (rowNameMapping[d['eventId']] * gridSize);
                 var rx = 4;
@@ -334,7 +337,7 @@
                 var attributes = {
                     "stroke" : "#E6E6E6",
                     "stroke-width" : "2px",
-                    "fill" : colorMapper(d['val'])
+                    "fill" : colorMapper(val)
                 };
                 // TODO colormapper not working
                 group.appendChild(createSvgRectElement(x, y, rx, ry, width, height, attributes));

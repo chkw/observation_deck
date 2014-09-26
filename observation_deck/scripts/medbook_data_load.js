@@ -87,12 +87,11 @@ function getMutationData(url) {
 function getExpressionData(url, OD_eventAlbum) {
     var response = getResponse(url);
     var parsedResponse = d3.tsv.parse(response);
-    console.log('parsedResponse:' + prettyJson(parsedResponse));
 
     for (var eventType in parsedResponse) {
         var data = parsedResponse[eventType];
-        var geneId = data['gene_id'];
-        delete data['gene_id'];
+        var geneId = data[''];
+        delete data[''];
         OD_eventAlbum.addEvent({
             'id' : geneId + '_mRNA',
             'name' : null,

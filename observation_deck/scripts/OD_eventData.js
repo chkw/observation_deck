@@ -86,7 +86,7 @@ function OD_eventMetadataAlbum() {
         this.album[metadataObj['id']] = newEvent;
 
         // add data
-        var isNumeric = (metadataObj['allowedValues'] == 'numeric');
+        var isNumeric = ((metadataObj['allowedValues'] == 'numeric') || metadataObj['allowedValues'] == 'expression');
         newEvent.data.setData(data, isNumeric);
 
         return this;
