@@ -158,6 +158,9 @@ function OD_eventMetadataAlbum() {
         return eliminateDuplicates(sampleIds);
     };
 
+    /**
+     * Get the specified event from the album.
+     */
     this.getEvent = function(id) {
         var e = this.album[id];
         return e;
@@ -186,9 +189,16 @@ function OD_eventMetadataAlbum() {
         }
     };
 
+    /**
+     * If sortingSteps is null, then just return the sampleIds without sorting.
+     */
     this.multisortSamples = function(sortingSteps) {
-        var steps = sortingSteps.getSteps().reverse();
         var sampleIds = this.getAllSampleIds();
+        if (sortingSteps == null) {
+            return sampleIds;
+        }
+        var steps = sortingSteps.getSteps().slice();
+        steps.reverse();
         for (var b = 0; b < steps.length; b++) {
             var step = steps[b];
             console.log("step:" + prettyJson(step));
@@ -198,7 +208,7 @@ function OD_eventMetadataAlbum() {
             console.log(allowedValues);
             var sortedIds = this.getEvent(eventId).data.sortSamples(sampleIds, allowedValues);
             if (reverse) {
-                sortedIds = sortedIds.reverse();
+                sortedIds.reverse();
             }
             sampleIds = sortedIds;
 

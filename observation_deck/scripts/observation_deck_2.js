@@ -211,30 +211,45 @@
                 }
             }
 
-            // map row names to row numbers
-            var rowNames = eventList;
-
-            var rowNameMapping = new Object();
-            for (var i in rowNames) {
-                var name = rowNames[i];
-                rowNameMapping[name] = i;
-            }
-
             // get column names and map to numbers
             var querySettings = config['querySettings'];
 
             var colNames = null;
+            var sortSteps = null;
             if ("colSort" in querySettings) {
-                var sortSteps = new sortingSteps(querySettings["colSort"]["steps"]);
-                colNames = eventAlbum.multisortSamples(sortSteps);
-            } else {
-                colNames = eventAlbum.getAllSampleIds();
+                sortSteps = new sortingSteps(querySettings["colSort"]["steps"]);
             }
+            colNames = eventAlbum.multisortSamples(sortSteps);
 
             var colNameMapping = new Object();
             for (var i in colNames) {
                 var name = colNames[i];
                 colNameMapping[name] = i;
+            }
+
+            // map row names to row numbers
+            var rowNames = [];
+            if (sortSteps != null) {
+                var steps = sortSteps.getSteps();
+                for (var b = 0; b < steps.length; b++) {
+                    var step = steps[b];
+                    var eventId = step['name'];
+                    rowNames.push(eventId);
+                }
+                rowNames.reverse();
+            }
+
+            for (var c = 0; c < eventList.length; c++) {
+                var eventId = eventList[c];
+                if (! isObjInArray(rowNames, eventId)) {
+                    rowNames.push(eventId);
+                }
+            }
+
+            var rowNameMapping = new Object();
+            for (var i in rowNames) {
+                var name = rowNames[i];
+                rowNameMapping[name] = i;
             }
 
             // setup margins
