@@ -199,24 +199,55 @@ function OD_eventMetadataAlbum() {
         }
         var steps = sortingSteps.getSteps().slice();
         steps.reverse();
-        for (var b = 0; b < steps.length; b++) {
-            var step = steps[b];
-            console.log("step:" + prettyJson(step));
-            var eventId = step['name'];
-            var reverse = step['reverse'];
-            var allowedValues = this.getEvent(eventId).metadata['allowedValues'];
-            console.log(allowedValues);
-            var sortedIds = this.getEvent(eventId).data.sortSamples(sampleIds, allowedValues);
-            if (reverse) {
-                sortedIds.reverse();
+
+        var album = this;
+
+        sampleIds.sort(function(a, b) {
+            // begin sort function
+            var comparisonResult = 0;
+            // iterate over sorting steps in order
+            for (var i = 0; i < steps.length; i++) {
+                // get this step's values
+                var eventId = steps[i]['name'];
+                var reverse = steps[i]['reverse'];
+                var allowedValues = album.getEvent(eventId).metadata['allowedValues'];
+
+                var vals = album.getEvent(eventId).data.getData([a, b]);
+                var valA = vals[0]['val'];
+                var valB = vals[1]['val'];
+
+                // select correct comparator
+                var comparator = null;
+                if (allowedValues == 'numeric') {
+                    comparator = compareAsNumeric;
+                } else if (allowedValues == 'categoric') {
+                    comparator = compareAsString;
+                } else if (allowedValues == 'expression') {
+                    comparator = compareAsNumeric;
+                } else if (allowedValues == 'date') {
+                    comparator = compareAsDate;
+                } else {
+                    comparator = compareAsString;
+                }
+
+                // compare this step's values
+                comparisonResult = comparator(valA, valB);
+                if (reverse) {
+                    comparisonResult = comparisonResult * -1;
+                }
+
+                // return final comparison or try next eventId
+                if (comparisonResult == 0) {
+                    continue;
+                } else {
+                    break;
+                }
+
             }
-            sampleIds = sortedIds;
+            return comparisonResult;
+            // end sort function
+        });
 
-            // var sortedData = this.getEvent(eventId).data.getData(sampleIds);
-            // console.log(prettyJson(sortedData));
-
-            break;
-        }
         return sampleIds;
     };
 }
@@ -360,104 +391,6 @@ function OD_eventDataCollection() {
         }
 
         return sortedNames;
-    };
-
-    /**
-     * compare sample scores and return sorted list of sample IDs
-     */
-    this.sortSamples_old = function(sampleIdList, comparator) {
-        // sortingData has to be an array
-        var sortingData = this.getData(sampleIdList);
-
-        // sort objects
-        if (comparator == null) {
-            comparator = compareSamplesAsStrings;
-        }
-        sortingData.sort(comparator);
-
-        // return row names in sorted order
-        var sortedNames = new Array();
-        for (var k = 0; k < sortingData.length; k++) {
-            sortedNames.push(sortingData[k]['id']);
-        }
-
-        return sortedNames;
-    };
-
-    /**
-     *Compare sample values as numbers
-     * @param {Object} a
-     * @param {Object} b
-     */
-    var compareSamplesAsNumeric = function(a, b) {
-        var valA = a['val'];
-        var valB = b['val'];
-
-        // convert to numbers
-        var scoreA = parseFloat(valA);
-        var scoreB = parseFloat(valB);
-
-        if (isNumerical(scoreA) && (isNumerical(scoreB))) {
-            if (scoreA < scoreB) {
-                return -1;
-            }
-            if (scoreA > scoreB) {
-                return 1;
-            } else {
-                return 0;
-            }
-        } else {
-            // handle non-numericals
-            if (scoreA != scoreA && scoreB != scoreB) {
-                // both non-numerical, may be nulls
-                return 0;
-            } else if (scoreA != scoreA) {
-                return -1;
-            } else if (scoreB != scoreB) {
-                return 1;
-            }
-        }
-        // default scoring
-        return 0;
-    };
-
-    /**
-     * Compare sample values as string
-     * @param {Object} a
-     * @param {Object} b
-     */
-    var compareSamplesAsStrings = function(a, b) {
-        var valA = new String(a['val']);
-        var valB = new String(b['val']);
-
-        return valA.localeCompare(valB);
-    };
-
-    /**
-     * Compare sample values as date
-     * @param {Object} a
-     * @param {Object} b
-     */
-    var compareSamplesAsDate = function(a, b) {
-        var valA = a['val'];
-        var valB = b['val'];
-
-        if (valA == null) {
-            valA = '1000';
-        } else if (valA == '') {
-            valA = '1001';
-        }
-
-        if (valB == null) {
-            valB = '1000';
-        } else if (valB == '') {
-            valB = '1001';
-        }
-
-        var dateA = new Date(valA);
-        var dateB = new Date(valB);
-
-        return (dateA - dateB);
     };
 }
 
