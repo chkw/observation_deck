@@ -31,6 +31,21 @@ function transposeClinicalData(input, recordKey) {
     return transposed;
 }
 
+/**
+ * The clinical data file looks like this:
+
+ #Sample f1    f2   f3     f4
+ #Sample f1    f2   f3     f4
+ STRING  STRING  DATE    STRING  STRING
+ SAMPLE_ID       f1    f2   f3     f4
+ 1 UCSF    6/15/2012       Bone    Resistant
+ 2 UCSF    12/15/2012      Liver   Naive
+ 3 UCSF    2/26/2013       Liver   Naive
+ 4 UCSF    2/21/2013       Liver   Naive
+
+ * @param {Object} url
+ * @param {Object} OD_eventAlbum
+ */
 function getClinicalData(url, OD_eventAlbum) {
     var response = getResponse(url);
     var lines = response.split('\n');
@@ -100,6 +115,10 @@ function getClinicalData_old(url, OD_eventAlbum) {
     }
 }
 
+/**
+ *
+ * @param {Object} url
+ */
 function getMutationData(url) {
     var response = getResponse(url);
     var lines = response.split('\n');
@@ -138,6 +157,19 @@ function getMutationData(url) {
     return parsedResponse;
 }
 
+/**
+ * The expression data looks like this:
+
+ a b c
+ ACOT9   7.89702013149366        4.56919333525263        7.30772632354453
+ ADM     9.8457751118653 1       3.92199798893442
+ AGR2    14.0603428300693        1       9.25656041315632
+ ANG     3.47130453638819        4.56919333525263        6.94655542449336
+ ANK2    6.22356349157533        10.7658085407174        12.4021643510831
+
+ * @param {Object} url
+ * @param {Object} OD_eventAlbum
+ */
 function getExpressionData(url, OD_eventAlbum) {
     var response = getResponse(url);
     var parsedResponse = d3.tsv.parse(response);
