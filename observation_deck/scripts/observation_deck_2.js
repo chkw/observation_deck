@@ -134,6 +134,10 @@
             getClinicalData(clinicalDataFileUrl, OD_eventAlbum);
             getExpressionData(expressionDataFileUrl, OD_eventAlbum);
 
+            config['yuliaExpressionRescaling'] = OD_eventAlbum.yuliaExpressionRescaling('Final Histo Call', 'Adeno');
+
+            OD_eventAlbum.fillInMissingSamples(null);
+
             this.drawMatrix(config);
             // TODO end observation_deck
         },
@@ -178,7 +182,13 @@
             }
 
             // var expressionColorMapper = setupQuantileColorMapper([1, 17]);
-            var expressionColorMapper = centeredRgbaColorMapper(false, 0, -6, 15);
+            var expressionColorMapper = centeredRgbaColorMapper(true);
+            if (hasOwnProperty(config, 'yuliaExpressionRescaling')) {
+                console.log('using yulia expression rescaling to configure expression color mapper');
+                var minExpVal = config['yuliaExpressionRescaling']['minVal'];
+                var maxExpVal = config['yuliaExpressionRescaling']['maxVal'];
+                expressionColorMapper = centeredRgbaColorMapper(false, 0, minExpVal, maxExpVal);
+            }
 
             var colorMappers = {};
             for (var i = 0; i < eventList.length; i++) {

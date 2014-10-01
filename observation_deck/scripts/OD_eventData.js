@@ -250,6 +250,101 @@ function OD_eventMetadataAlbum() {
 
         return sampleIds;
     };
+
+    /**
+     * Rescale all expression data by subtracting mean of specified group on a per-event basis.  Returns new min/max values.
+     */
+    this.yuliaExpressionRescaling = function(clinicalEventId, category) {
+        // get sampleId list of neg group
+        var negSampleIds = this.getEvent(clinicalEventId).data.selectIds(category);
+
+        // get expression events
+        var allEventIds = this.getEventIdsByType();
+        if (!hasOwnProperty(allEventIds, 'expression data')) {
+            console.log('no expression');
+            return null;
+        }
+        var expressionEventIds = allEventIds['expression data'];
+
+        // compute average expression of neg group over each gene
+        var meanVals = {};
+        var result = {
+            'meanVals' : meanVals
+        };
+
+        var allAdjustedVals = [];
+
+        for (var i = 0; i < expressionEventIds.length; i++) {
+            var eventId = expressionEventIds[i];
+            var negGroupEventData = this.getEvent(eventId).data.getData(negSampleIds);
+            var sum = 0;
+            var count = 0;
+
+            // first iter over neg group samples to get mean
+            for (var j = 0; j < negGroupEventData.length; j++) {
+                var data = negGroupEventData[j];
+                var val = data['val'];
+                if (isNumerical(val)) {
+                    sum = sum + parseFloat(val);
+                    count++;
+                }
+            }
+            if (count != 0) {
+                meanVals[eventId] = sum / count;
+            } else {
+                continue;
+            }
+
+            // second iter over all samples to adjust score
+            var allEventData = this.getEvent(eventId).data.getData();
+            for (var j = 0; j < allEventData.length; j++) {
+                var data = allEventData[j];
+                var val = data['val'];
+                if (isNumerical(val)) {
+                    data['val'] = val - meanVals[eventId];
+                    allAdjustedVals.push(data['val']);
+                }
+            }
+        }
+
+        // find min/max of entire expression matrix
+        result['maxVal'] = Math.max.apply(null, allAdjustedVals);
+        result['minVal'] = Math.min.apply(null, allAdjustedVals);
+
+        return result;
+    };
+
+    /**
+     * Fill in missing samples data with the specified value.
+     */
+    this.fillInMissingSamples = function(value) {
+        // get all sample IDs
+        var allAlbumSampleIds = this.getAllSampleIds();
+
+        // get all sample IDs for event
+        var allEventIdsByCategory = this.getEventIdsByType();
+        for (var i = 0; i < getKeys(allEventIdsByCategory).length; i++) {
+            var category = getKeys(allEventIdsByCategory)[i];
+            for (var j = 0; j < allEventIdsByCategory[category].length; j++) {
+                var eventId = allEventIdsByCategory[category][j];
+                var eventData = this.getEvent(eventId).data;
+                var allEventSampleIds = eventData.getAllSampleIds();
+                if (allAlbumSampleIds.length - allEventSampleIds.length == 0) {
+                    continue;
+                };
+
+                // find missing data
+                var missingSampleIds = keepReplicates(allAlbumSampleIds.concat(allEventSampleIds), 2, true);
+                var missingData = {};
+                for (var k = 0; k < missingSampleIds.length; k++) {
+                    var id = missingSampleIds[k];
+                    missingData[id] = value;
+                }
+                // add data
+                this.getEvent(eventId).data.setData(missingData);
+            }
+        }
+    };
 }
 
 function OD_event(metadataObj) {
@@ -294,6 +389,9 @@ function OD_eventDataCollection() {
         this.val = val;
     };
 
+    /**
+     * Get all data values.
+     */
     this.getValues = function(dedup) {
         var vals = [];
         var dataList = this.getData();
@@ -391,6 +489,23 @@ function OD_eventDataCollection() {
         }
 
         return sortedNames;
+    };
+
+    /**
+     * Select Ids with data that match a value.
+     */
+    this.selectIds = function(selectVal) {
+        var selectedIds = [];
+
+        var allData = this.getData();
+        for (var i = 0; i < allData.length; i++) {
+            var data = allData[i];
+            if (data['val'] == selectVal) {
+                selectedIds.push(data['id']);
+            }
+        }
+
+        return selectedIds;
     };
 }
 
