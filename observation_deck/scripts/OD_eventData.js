@@ -300,6 +300,7 @@ function OD_eventMetadataAlbum() {
             for (var j = 0; j < allEventData.length; j++) {
                 var data = allEventData[j];
                 var val = data['val'];
+                data['val_orig'] = val;
                 if (isNumerical(val)) {
                     data['val'] = val - meanVals[eventId];
                     allAdjustedVals.push(data['val']);

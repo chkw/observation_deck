@@ -364,7 +364,7 @@
                     return group;
                 }
 
-                var val = (endsWith(d['eventId'], '_mRNA')) ? (d['val'] - 7) : d['val'];
+                var val = d['val'];
 
                 var x = (colNameMapping[d['id']] * gridSize);
                 var y = (rowNameMapping[d['eventId']] * gridSize);
@@ -389,7 +389,7 @@
 
             // heatmap titles
             heatMap.append("title").text(function(d) {
-                var s = "r:" + d['eventId'] + "\n\nc:" + d['id'] + "\n\n" + d['val'];
+                var s = "r:" + d['eventId'] + "\n\nc:" + d['id'] + "\n\nval:" + d['val'] + "\n\nval_orig:" + d['val_orig'];
                 return s;
             });
             // TODO end drawMatrix
