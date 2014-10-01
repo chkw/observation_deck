@@ -5,7 +5,15 @@ SCRIPTS = static.js OD_eventData.js medbook_data_load.js observation_deck_2.js
 
 TARGETS = observation_deck_jqplugin.js
 
+CLOSURE_COMPILER_JAR = ~/git/closure-compiler/build/compiler.jar
+COMPILATION_LEVEL = SIMPLE_OPTIMIZATIONS
+#COMPILATION_LEVEL = ADVANCED_OPTIMIZATIONS
+
 observation_deck_jqplugin.js: $(SCRIPTS)
+	java -jar $(CLOSURE_COMPILER_JAR) --compilation_level $(COMPILATION_LEVEL) --js_output_file=$@ $(SCRIPTS) ;
+	\
+
+observation_deck_jqplugin.js_old: $(SCRIPTS)
 	rm -f 1.tmp ;
 	\
 	for script in $(SCRIPTS) ; do \

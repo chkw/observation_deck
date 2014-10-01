@@ -19,15 +19,19 @@
 		<script type="text/javascript" src="observation_deck/scripts/jquery.contextMenu.js"></script>
 		<link type="text/css" rel="stylesheet" href="observation_deck/css/jquery.contextmenu.css">
 
-		<script type="text/javascript" src="observation_deck/scripts/static.js"></script>
+		<!-- <script type="text/javascript" src="observation_deck/scripts/static.js"></script>
 		<script type="text/javascript" src="observation_deck/scripts/OD_eventData.js"></script>
 		<script type="text/javascript" src="observation_deck/scripts/medbook_data_load.js"></script>
-		<script type="text/javascript" src="observation_deck/scripts/observation_deck_2.js"></script>
-		<!-- <script type="text/javascript" src="observation_deck/scripts/observation_deck_jqplugin.js"></script> -->
+		<script type="text/javascript" src="observation_deck/scripts/observation_deck_2.js"></script> -->
+		<script type="text/javascript" src="observation_deck/scripts/observation_deck_jqplugin.js"></script>
 	</head>
 	<body>
 		<div id='testDiv'></div>
 		<script>
+            var clinicalDataFileUrl = 'observation_deck/data/cbioMedbook/data_clinical.txt';
+            var caseListsFileUrl = 'observation_deck/data/cbioMedbook/getCaseLists.txt';
+            var mutationDataFileUrl = 'observation_deck/data/cbioMedbook/mutation.txt';
+            var expressionDataFileUrl = 'observation_deck/data/cbioMedbook/expressionData.tab';
             $("#testDiv").observation_deck();
 		</script>
 	</body>

@@ -9,10 +9,10 @@
 // https://medbook.ucsc.edu/cbioportal/webservice.do?cmd=getMutationData&case_set_id=prad_wcdt_all&genetic_profile_id=prad_wcdt_mutations&gene_list=AKT1+AKT2+RB1+PTEN
 // https://medbook.ucsc.edu/cbioportal/webservice.do?cmd=getCaseLists&cancer_study_id=prad_wcdt
 
-var clinicalDataFileUrl = 'observation_deck/data/cbioMedbook/data_clinical.txt';
-var caseListsFileUrl = 'observation_deck/data/cbioMedbook/getCaseLists.txt';
-var mutationDataFileUrl = 'observation_deck/data/cbioMedbook/mutation.txt';
-var expressionDataFileUrl = 'observation_deck/data/cbioMedbook/expressionData.tab';
+// var clinicalDataFileUrl = 'observation_deck/data/cbioMedbook/data_clinical.txt';
+// var caseListsFileUrl = 'observation_deck/data/cbioMedbook/getCaseLists.txt';
+// var mutationDataFileUrl = 'observation_deck/data/cbioMedbook/mutation.txt';
+// var expressionDataFileUrl = 'observation_deck/data/cbioMedbook/expressionData.tab';
 
 function transposeClinicalData(input, recordKey) {
     var transposed = {};
