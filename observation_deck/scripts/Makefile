@@ -9,6 +9,10 @@ CLOSURE_COMPILER_JAR = ~/git/closure-compiler/build/compiler.jar
 COMPILATION_LEVEL = SIMPLE_OPTIMIZATIONS
 #COMPILATION_LEVEL = ADVANCED_OPTIMIZATIONS
 
+sync_dev: observation_deck_jqplugin.js
+	rsync -avP $< su2c-dev.ucsc.edu:~/observation_deck/observation_deck/scripts/. ;
+	\
+
 observation_deck_jqplugin.js: $(SCRIPTS)
 	java -jar $(CLOSURE_COMPILER_JAR) --compilation_level $(COMPILATION_LEVEL) --js_output_file=$@ $(SCRIPTS) ;
 	\
