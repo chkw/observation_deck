@@ -116,10 +116,31 @@ function getClinicalData_old(url, OD_eventAlbum) {
 }
 
 /**
+ * The mutation data file is a maf file and looks like this:
+
+ Hugo_Symbol     Entrez_Gene_Id  Center  NCBI_Build
+ PEG10   23089   ucsc.edu        GRCh37-lite
+ CNKSR3  154043  ucsc.edu        GRCh37-lite
+ ANK2    287     ucsc.edu        GRCh37-lite
+ ST8SIA4 7903    ucsc.edu        GRCh37-lite
+ RUNX1T1 862     ucsc.edu        GRCh37-lite
+ GABRB3  2562    ucsc.edu        GRCh37-lite
+
+ * @param {Object} url
+ * @param {Object} OD_eventAlbum
+ */
+function getMutationData(url, OD_eventAlbum) {
+    var response = getResponse(url);
+    var parsedResponse = d3.tsv.parse(response);
+
+    return parsedResponse;
+}
+
+/**
  *
  * @param {Object} url
  */
-function getMutationData(url) {
+function getMutationData_old(url) {
     var response = getResponse(url);
     var lines = response.split('\n');
 
