@@ -39,7 +39,7 @@
                 $(function() {
                     $.contextMenu({
                         // selector : ".axis",
-                        selector : ".cell",
+                        selector : ".categoric",
                         callback : function(key, options) {
                             // default callback
                             var cellElem = this[0];
@@ -168,8 +168,9 @@
 
             getClinicalData(clinicalDataFileUrl, OD_eventAlbum);
             getExpressionData(expressionDataFileUrl, OD_eventAlbum);
+            getMutationData(mutationDataFileUrl, OD_eventAlbum);
 
-            config['yuliaExpressionRescaling'] = OD_eventAlbum.yuliaExpressionRescaling('Final Histo Call', 'Adeno');
+            config['yuliaExpressionRescaling'] = OD_eventAlbum.yuliaExpressionRescaling('Small Cell v Adeno', 'Adeno');
 
             OD_eventAlbum.fillInMissingSamples(null);
 
@@ -409,6 +410,9 @@
                     "stroke-width" : "2px",
                     "fill" : colorMapper(val)
                 };
+                if (eventAlbum.getEvent(d['eventId']).metadata.allowedValues) {
+                    attributes['class'] = 'categoric';
+                }
                 group.appendChild(createSvgRectElement(x, y, rx, ry, width, height, attributes));
 
                 return group;
