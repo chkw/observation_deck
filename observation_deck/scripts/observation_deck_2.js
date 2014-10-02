@@ -33,16 +33,51 @@
             window.onload = function() {
                 console.log("Page loaded. Start onload.");
 
-                // get settings from query string
-
-                // var queryObj = getQueryObj();
-                // var querySettings = {};
-                // if ("query" in queryObj) {
-                // querySettings = parseJson(queryObj["query"]);
-                // }
-                // config['querySettings'] = querySettings;
-
                 // TODO context menu uses http://medialize.github.io/jQuery-contextMenu
+
+                // context menu for cells
+                $(function() {
+                    $.contextMenu({
+                        // selector : ".axis",
+                        selector : ".cell",
+                        callback : function(key, options) {
+                            // default callback
+                            var cellElem = this[0];
+                        },
+                        items : {
+                            "test" : {
+                                name : "test",
+                                icon : null,
+                                disabled : false,
+                                callback : function(key, opt) {
+                                    var cellElem = this[0];
+                                    var childrenElems = cellElem.children;
+                                    var eventId = null;
+                                    var sampleId = null;
+                                    for (var i = 0; i < childrenElems.length; i++) {
+                                        var childElem = childrenElems[i];
+                                        var tagName = childElem.tagName;
+                                        if (tagName == 'eventId') {
+                                            eventId = childElem.textContent;
+                                            continue;
+                                        }
+                                        if (tagName == 'sampleId') {
+                                            sampleId = childElem.textContent;
+                                            continue;
+                                        }
+                                    }
+                                    console.log('key:', key, 'eventId:', eventId, 'sampleId:', sampleId);
+                                    console.log("href", window.location.href);
+                                    console.log("host", window.location.host);
+                                    console.log("pathname", window.location.pathname);
+                                    console.log("search", window.location.search);
+                                }
+                            }
+                        }
+                    });
+                });
+
+                // context menu for row labels
                 $(function() {
                     $.contextMenu({
                         // selector : ".axis",
@@ -378,7 +413,6 @@
                     "stroke-width" : "2px",
                     "fill" : colorMapper(val)
                 };
-                // TODO colormapper not working
                 group.appendChild(createSvgRectElement(x, y, rx, ry, width, height, attributes));
 
                 return group;
@@ -392,6 +426,14 @@
                 // var s = "r:" + d['eventId'] + "\n\nc:" + d['id'] + "\n\nval:" + d['val'] + "\n\nval_orig:" + d['val_orig'];
                 var s = "r:" + d['eventId'] + "\n\nc:" + d['id'] + "\n\nval:" + d['val'];
                 return s;
+            });
+
+            heatMap.append("eventId").text(function(d) {
+                return d['eventId'];
+            });
+
+            heatMap.append("sampleId").text(function(d) {
+                return d['id'];
             });
             // TODO end drawMatrix
         }
