@@ -241,13 +241,9 @@
                             numbers.push(val);
                         }
                     }
-                    // var minVal = Math.min.apply(null, numbers);
-                    // var maxVal = Math.max.apply(null, numbers);
-                    //
-                    // console.log('numbers: ' + prettyJson(numbers));
-                    // console.log('min: ' + minVal);
-                    // console.log('max: ' + maxVal);
-                    colorMappers[eventId] = centeredRgbaColorMapper(true);
+                    var minVal = Math.min.apply(null, numbers);
+                    var maxVal = Math.max.apply(null, numbers);
+                    colorMappers[eventId] = centeredRgbaColorMapper(false, 0, minVal, maxVal);
                 } else if (allowedValues == 'expression') {
                     // shared expression color mapper
                     colorMappers[eventId] = expressionColorMapper;
