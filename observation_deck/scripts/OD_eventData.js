@@ -411,6 +411,10 @@ function OD_eventDataCollection() {
         // this.dataCollection = [];
         for (var sampleId in dataObj) {
             var val = dataObj[sampleId];
+            if ((val == "NaN") || (val == "null") || (val == "") || (val == "N/A")) {
+                // skip non-values
+                continue;
+            }
             if ((isNumeric != null) && (isNumeric == true)) {
                 val = parseFloat(val);
             }
