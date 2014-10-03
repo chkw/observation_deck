@@ -190,7 +190,8 @@
             };
 
             config["columnClickback"] = function(d, i) {
-                console.log("columnClickback: " + d);
+                alert('open page for sample: ' + d);
+                // console.log("columnClickback: " + d);
             };
 
             config["cellClickback"] = function(d, i) {
