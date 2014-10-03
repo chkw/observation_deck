@@ -52,25 +52,31 @@
                                 callback : function(key, opt) {
                                     var cellElem = this[0];
                                     var childrenElems = cellElem.children;
-                                    var eventId = null;
-                                    var sampleId = null;
-                                    for (var i = 0; i < childrenElems.length; i++) {
-                                        var childElem = childrenElems[i];
-                                        var tagName = childElem.tagName;
-                                        if (tagName == 'eventId') {
-                                            eventId = childElem.textContent;
-                                            continue;
-                                        }
-                                        if (tagName == 'sampleId') {
-                                            sampleId = childElem.textContent;
-                                            continue;
-                                        }
-                                    }
-                                    console.log('key:', key, 'eventId:', eventId, 'sampleId:', sampleId);
+                                    var eventId = cellElem.getAttribute('eventId');
+                                    var sampleId = cellElem.getAttribute('sampleId');
+                                    var val = cellElem.getAttribute('val');
+
+                                    console.log('key:', key, 'eventId:', eventId, 'val:', val);
                                     console.log("href", window.location.href);
                                     console.log("host", window.location.host);
                                     console.log("pathname", window.location.pathname);
                                     console.log("search", window.location.search);
+
+                                    querySettings["atrribute-based_expression_rescaling"] = {
+                                        'eventId' : eventId,
+                                        'val' : val
+                                    };
+                                    loadNewSettings(querySettings);
+                                }
+                            },
+                            "sep1" : "---------",
+                            "reset" : {
+                                name : "reset",
+                                icon : null,
+                                disabled : false,
+                                callback : function(key, opt) {
+                                    var url = window.location.pathname;
+                                    window.open(url, "_self");
                                 }
                             }
                         }
@@ -412,6 +418,9 @@
                 };
                 if (eventAlbum.getEvent(d['eventId']).metadata.allowedValues) {
                     attributes['class'] = 'categoric';
+                    attributes['eventId'] = d['eventId'];
+                    attributes['sampleId'] = d['id'];
+                    attributes['val'] = d['val'];
                 }
                 group.appendChild(createSvgRectElement(x, y, rx, ry, width, height, attributes));
 
@@ -426,14 +435,6 @@
                 // var s = "r:" + d['eventId'] + "\n\nc:" + d['id'] + "\n\nval:" + d['val'] + "\n\nval_orig:" + d['val_orig'];
                 var s = "r:" + d['eventId'] + "\n\nc:" + d['id'] + "\n\nval:" + d['val'];
                 return s;
-            });
-
-            heatMap.append("eventId").text(function(d) {
-                return d['eventId'];
-            });
-
-            heatMap.append("sampleId").text(function(d) {
-                return d['id'];
             });
             // TODO end drawMatrix
         }
