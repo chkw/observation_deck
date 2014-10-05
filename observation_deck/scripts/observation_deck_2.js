@@ -46,7 +46,7 @@
                         },
                         items : {
                             "test" : {
-                                name : "test",
+                                name : "Yulia's atrribute-based expression rescaling",
                                 icon : null,
                                 disabled : false,
                                 callback : function(key, opt) {
@@ -62,7 +62,7 @@
                                     console.log("pathname", window.location.pathname);
                                     console.log("search", window.location.search);
 
-                                    querySettings["atrribute-based_expression_rescaling"] = {
+                                    querySettings["yulia_rescaling"] = {
                                         'eventId' : eventId,
                                         'val' : val
                                     };
@@ -176,8 +176,6 @@
             getExpressionData(expressionDataFileUrl, OD_eventAlbum);
             getMutationData(mutationDataFileUrl, OD_eventAlbum);
 
-            config['yuliaExpressionRescaling'] = OD_eventAlbum.yuliaExpressionRescaling('Small Cell v Adeno', 'Adeno');
-
             OD_eventAlbum.fillInMissingSamples(null);
 
             this.drawMatrix(config);
@@ -224,15 +222,23 @@
                 eventList = eventList.concat(groupedEvents[datatype]);
             }
 
-            // var expressionColorMapper = setupQuantileColorMapper([1, 17]);
-            var expressionColorMapper = centeredRgbaColorMapper(true);
-            if (hasOwnProperty(config, 'yuliaExpressionRescaling')) {
-                console.log('using yulia expression rescaling to configure expression color mapper');
-                var minExpVal = config['yuliaExpressionRescaling']['minVal'];
-                var maxExpVal = config['yuliaExpressionRescaling']['maxVal'];
-                expressionColorMapper = centeredRgbaColorMapper(false, 0, minExpVal, maxExpVal);
+            var querySettings = config['querySettings'];
+
+            // expression rescaling and color mapping
+            var rescalingData = null;
+            if (hasOwnProperty(querySettings, 'yulia_rescaling')) {
+                var rescalingConfig = querySettings['yulia_rescaling'];
+                rescalingData = eventAlbum.yuliaExpressionRescaling(rescalingConfig['eventId'], rescalingConfig['val']);
+            } else {
+                rescalingData = eventAlbum.yuliaExpressionRescaling('Small Cell v Adeno', 'Adeno');
             }
 
+            var expressionColorMapper = null;
+            var minExpVal = rescalingData['minVal'];
+            var maxExpVal = rescalingData['maxVal'];
+            expressionColorMapper = centeredRgbaColorMapper(false, 0, minExpVal, maxExpVal);
+
+            // assign color mappers
             var colorMappers = {};
             for (var i = 0; i < eventList.length; i++) {
                 var eventId = eventList[i];
@@ -261,8 +267,6 @@
             }
 
             // get column names and map to numbers
-            var querySettings = config['querySettings'];
-
             var colNames = null;
             var sortSteps = null;
             if ("colSort" in querySettings) {

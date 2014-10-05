@@ -133,7 +133,7 @@ function getMutationData(url, OD_eventAlbum) {
     var response = getResponse(url);
     var parsedResponse = d3.tsv.parse(response);
 
-    console.log(prettyJson(parsedResponse));
+    // console.log(prettyJson(parsedResponse));
 
     return parsedResponse;
 }
