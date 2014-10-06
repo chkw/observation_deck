@@ -133,9 +133,46 @@ function getMutationData(url, OD_eventAlbum) {
     var response = getResponse(url);
     var parsedResponse = d3.tsv.parse(response);
 
-    // console.log(prettyJson(parsedResponse));
+    var dataByGene = {};
 
-    return parsedResponse;
+    for (var i = 0; i < parsedResponse.length; i++) {
+        var parsedData = parsedResponse[i];
+        var gene = parsedData['Hugo_Symbol'];
+        var classification = parsedData['Variant_Classification'];
+        var variantType = parsedData['Variant_Type'];
+        var sampleId = parsedData['Tumor_Sample_Barcode'];
+
+        // maf file uses - instead of _
+        sampleId = sampleId.replace(/_/g, '-');
+
+        // some samples have trailing [A-Z]
+        sampleId = sampleId.replace(/[A-Z]$/, '');
+
+        if (!hasOwnProperty(dataByGene, gene)) {
+            dataByGene[gene] = {};
+            dataByGene[gene]['metadata'] = {
+                'id' : gene + '_mut',
+                'name' : null,
+                'displayName' : null,
+                'description' : null,
+                'datatype' : 'mutation data',
+                'allowedValues' : 'categoric'
+            };
+            dataByGene[gene]['data'] = {};
+        }
+
+        dataByGene[gene]['data'][sampleId] = true;
+    }
+
+    // add mutation events
+    var mutatedGenes = getKeys(dataByGene);
+    for (var j = 0; j < mutatedGenes.length; j++) {
+        var mutatedGene = mutatedGenes[j];
+        var mutationData = dataByGene[mutatedGene];
+        OD_eventAlbum.addEvent(mutationData['metadata'], mutationData['data']);
+    }
+
+    return dataByGene;
 }
 
 /**
