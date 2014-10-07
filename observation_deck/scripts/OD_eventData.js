@@ -251,10 +251,115 @@ function OD_eventMetadataAlbum() {
         return sampleIds;
     };
 
+    this.scaledExpressionRescaling = function() {
+        // TODO divide by SD
+    };
+
+    this.zScoreExpressionRescaling = function() {
+        // TODO
+    };
+
+    /**
+     *  Rescale expression data.
+
+     */
+    this.betweenMeansExpressionRescaling = function(clinicalEventId, category1, category2) {
+        console.log('betweenMeansExpressionRescaling', clinicalEventId, category1, category2);
+        // get group sample IDs
+        var group1SampleIds = this.getEvent(clinicalEventId).data.selectIds(category1);
+
+        var group2SampleIds = null;
+        if (category2 == null) {
+            group2SampleIds = this.getEvent(clinicalEventId).data.selectIds(category2);
+            group2SampleIds = group2SampleIds.concat(group1SampleIds);
+            group2SampleIds = eliminateDuplicates(group2SampleIds);
+        } else {
+            group2SampleIds = this.getEvent(clinicalEventId).data.selectIds(category2);
+        }
+
+        // get expression events
+        var allEventIds = this.getEventIdsByType();
+        if (!hasOwnProperty(allEventIds, 'expression data')) {
+            console.log('no expression');
+            return null;
+        }
+        var expressionEventIds = allEventIds['expression data'];
+
+        // compute average expression of groups over each gene
+        var meanVals = {};
+        var result = {
+            'meanVals' : meanVals
+        };
+
+        var allAdjustedVals = [];
+
+        for (var i = 0; i < expressionEventIds.length; i++) {
+            var eventId = expressionEventIds[i];
+            meanVals[eventId] = {};
+            var group1EventData = this.getEvent(eventId).data.getData(group1SampleIds);
+            var sum = 0;
+            var count = 0;
+
+            // first iter over group1 samples to get mean
+            for (var j = 0; j < group1EventData.length; j++) {
+                var data = group1EventData[j];
+                var val = data['val'];
+                if (isNumerical(val)) {
+                    sum = sum + parseFloat(val);
+                    count++;
+                }
+            }
+            if (count != 0) {
+                meanVals[eventId]['group1'] = sum / count;
+            } else {
+                meanVals[eventId]['group1'] = 0;
+            }
+
+            var group2EventData = this.getEvent(eventId).data.getData(group2SampleIds);
+            sum = 0;
+            count = 0;
+
+            // next iter over group2 samples to get mean
+            for (var j = 0; j < group2EventData.length; j++) {
+                var data = group2EventData[j];
+                var val = data['val'];
+                if (isNumerical(val)) {
+                    sum = sum + parseFloat(val);
+                    count++;
+                }
+            }
+            if (count != 0) {
+                meanVals[eventId]['group2'] = sum / count;
+            } else {
+                meanVals[eventId]['group2'] = 0;
+            }
+
+            // finally iter over all samples to adjust score
+            var adjustment = (meanVals[eventId]['group2'] - meanVals[eventId]['group1']) / 2;
+            var allEventData = this.getEvent(eventId).data.getData();
+            for (var k = 0; k < allEventData.length; k++) {
+                var data = allEventData[k];
+                var val = data['val'];
+                data['val_orig'] = val;
+                if (isNumerical(val)) {
+                    data['val'] = val - adjustment;
+                    allAdjustedVals.push(data['val']);
+                }
+            }
+        }
+
+        // find min/max of entire expression matrix
+        result['maxVal'] = Math.max.apply(null, allAdjustedVals);
+        result['minVal'] = Math.min.apply(null, allAdjustedVals);
+
+        return result;
+    };
+
     /**
      * Rescale all expression data by subtracting mean of specified group on a per-event basis.  Returns new min/max values.
      */
     this.yuliaExpressionRescaling = function(clinicalEventId, category) {
+        console.log('yuliaExpressionRescaling', clinicalEventId, category);
         // get sampleId list of neg group
         var negSampleIds = this.getEvent(clinicalEventId).data.selectIds(category);
 
