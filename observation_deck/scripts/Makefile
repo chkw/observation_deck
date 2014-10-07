@@ -1,7 +1,7 @@
 # 25SEP14 chrisw
 # Package up observation deck scripts into one file.
 
-SCRIPTS = static.js OD_eventData.js medbook_data_load.js observation_deck_2.js
+SCRIPTS = jstat.min.js static.js OD_eventData.js medbook_data_load.js observation_deck_2.js
 
 TARGETS = observation_deck_jqplugin.js
 

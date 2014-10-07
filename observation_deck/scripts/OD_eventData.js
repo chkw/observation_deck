@@ -296,43 +296,8 @@ function OD_eventMetadataAlbum() {
         for (var i = 0; i < expressionEventIds.length; i++) {
             var eventId = expressionEventIds[i];
             meanVals[eventId] = {};
-            var group1EventData = this.getEvent(eventId).data.getData(group1SampleIds);
-            var sum = 0;
-            var count = 0;
-
-            // first iter over group1 samples to get mean
-            for (var j = 0; j < group1EventData.length; j++) {
-                var data = group1EventData[j];
-                var val = data['val'];
-                if (isNumerical(val)) {
-                    sum = sum + parseFloat(val);
-                    count++;
-                }
-            }
-            if (count != 0) {
-                meanVals[eventId]['group1'] = sum / count;
-            } else {
-                meanVals[eventId]['group1'] = 0;
-            }
-
-            var group2EventData = this.getEvent(eventId).data.getData(group2SampleIds);
-            sum = 0;
-            count = 0;
-
-            // next iter over group2 samples to get mean
-            for (var j = 0; j < group2EventData.length; j++) {
-                var data = group2EventData[j];
-                var val = data['val'];
-                if (isNumerical(val)) {
-                    sum = sum + parseFloat(val);
-                    count++;
-                }
-            }
-            if (count != 0) {
-                meanVals[eventId]['group2'] = sum / count;
-            } else {
-                meanVals[eventId]['group2'] = 0;
-            }
+            meanVals[eventId]['group1'] = this.getEvent(eventId).data.getMean(group1SampleIds);
+            meanVals[eventId]['group2'] = this.getEvent(eventId).data.getMean(group2SampleIds);
 
             // finally iter over all samples to adjust score
             var adjustment = (meanVals[eventId]['group2'] - meanVals[eventId]['group1']) / 2;
@@ -349,8 +314,8 @@ function OD_eventMetadataAlbum() {
         }
 
         // find min/max of entire expression matrix
-        result['maxVal'] = Math.max.apply(null, allAdjustedVals);
-        result['minVal'] = Math.min.apply(null, allAdjustedVals);
+        result['maxVal'] = jStat.max(allAdjustedVals);
+        result['minVal'] = jStat.min(allAdjustedVals);
 
         return result;
     };
@@ -381,24 +346,7 @@ function OD_eventMetadataAlbum() {
 
         for (var i = 0; i < expressionEventIds.length; i++) {
             var eventId = expressionEventIds[i];
-            var negGroupEventData = this.getEvent(eventId).data.getData(negSampleIds);
-            var sum = 0;
-            var count = 0;
-
-            // first iter over neg group samples to get mean
-            for (var j = 0; j < negGroupEventData.length; j++) {
-                var data = negGroupEventData[j];
-                var val = data['val'];
-                if (isNumerical(val)) {
-                    sum = sum + parseFloat(val);
-                    count++;
-                }
-            }
-            if (count != 0) {
-                meanVals[eventId] = sum / count;
-            } else {
-                continue;
-            }
+            meanVals[eventId] = this.getEvent(eventId).data.getMean(negSampleIds);
 
             // second iter over all samples to adjust score
             var allEventData = this.getEvent(eventId).data.getData();
@@ -414,8 +362,8 @@ function OD_eventMetadataAlbum() {
         }
 
         // find min/max of entire expression matrix
-        result['maxVal'] = Math.max.apply(null, allAdjustedVals);
-        result['minVal'] = Math.min.apply(null, allAdjustedVals);
+        result['maxVal'] = jStat.max(allAdjustedVals);
+        result['minVal'] = jStat.min(allAdjustedVals);
 
         return result;
     };
@@ -616,6 +564,37 @@ function OD_eventDataCollection() {
         }
 
         return selectedIds;
+    };
+
+    /**
+     *get mean of samples vals.  Uses jStat library
+     */
+    this.getMean = function(sampleIdList) {
+        var mean = 0;
+
+        // a mapping of sampleId to index
+        var allSampleIds = this.getAllSampleIds(true);
+
+        if (sampleIdList == null) {
+            sampleIdList = getKeys(allSampleIds);
+        }
+
+        var vector = [];
+        for (var i = 0; i < sampleIdList.length; i++) {
+            var sampleId = sampleIdList[i];
+            // check if sampleId is in allSampleIds
+            if ( sampleId in allSampleIds) {
+                var index = allSampleIds[sampleId];
+                var data = this.dataCollection[index];
+                var val = data['val'];
+                if (isNumerical(val)) {
+                    vector.push(val);
+                }
+            }
+        }
+        mean = jStat.mean(vector);
+
+        return mean;
     };
 }
 
