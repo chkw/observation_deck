@@ -257,6 +257,56 @@ function OD_eventMetadataAlbum() {
 
     this.zScoreExpressionRescaling = function() {
         // TODO
+        console.log('zScoreExpressionRescaling');
+
+        // get expression events
+        var allEventIds = this.getEventIdsByType();
+        if (!hasOwnProperty(allEventIds, 'expression data')) {
+            console.log('no expression');
+            return null;
+        }
+        var expressionEventIds = allEventIds['expression data'];
+
+        // compute average expression each gene
+        var stats = {};
+        var result = {
+            'stats' : stats
+        };
+
+        var allAdjustedVals = [];
+
+        // TODO get mean and sd
+
+        for (var i = 0; i < expressionEventIds.length; i++) {
+            var eventId = expressionEventIds[i];
+
+            var eventStats = this.getEvent(eventId).data.getMeanAndSd();
+            meanVals[eventId] = {};
+            meanVals[eventId] = stats;
+
+            sdVals[eventId] = {};
+            sdVals[eventId] = this.getEvent(eventId).data.getSD();
+
+            // finally iter over all samples to adjust score
+            var adjustment = (meanVals[eventId]['group2'] - meanVals[eventId]['group1']) / 2;
+            var allEventData = this.getEvent(eventId).data.getData();
+            for (var k = 0; k < allEventData.length; k++) {
+                var data = allEventData[k];
+                var val = data['val'];
+                data['val_orig'] = val;
+                if (isNumerical(val)) {
+                    data['val'] = val - adjustment;
+                    allAdjustedVals.push(data['val']);
+                }
+            }
+        }
+
+        // find min/max of entire expression matrix
+        result['maxVal'] = jStat.max(allAdjustedVals);
+        result['minVal'] = jStat.min(allAdjustedVals);
+
+        return result;
+
     };
 
     /**
@@ -296,8 +346,8 @@ function OD_eventMetadataAlbum() {
         for (var i = 0; i < expressionEventIds.length; i++) {
             var eventId = expressionEventIds[i];
             meanVals[eventId] = {};
-            meanVals[eventId]['group1'] = this.getEvent(eventId).data.getMean(group1SampleIds);
-            meanVals[eventId]['group2'] = this.getEvent(eventId).data.getMean(group2SampleIds);
+            meanVals[eventId]['group1'] = this.getEvent(eventId).data.getMeanAndSd(group1SampleIds)['mean'];
+            meanVals[eventId]['group2'] = this.getEvent(eventId).data.getMeanAndSd(group2SampleIds)['mean'];
 
             // finally iter over all samples to adjust score
             var adjustment = (meanVals[eventId]['group2'] - meanVals[eventId]['group1']) / 2;
@@ -346,7 +396,7 @@ function OD_eventMetadataAlbum() {
 
         for (var i = 0; i < expressionEventIds.length; i++) {
             var eventId = expressionEventIds[i];
-            meanVals[eventId] = this.getEvent(eventId).data.getMean(negSampleIds);
+            meanVals[eventId] = this.getEvent(eventId).data.getMeanAndSd(negSampleIds)['mean'];
 
             // second iter over all samples to adjust score
             var allEventData = this.getEvent(eventId).data.getData();
@@ -567,10 +617,13 @@ function OD_eventDataCollection() {
     };
 
     /**
-     *get mean of samples vals.  Uses jStat library
+     *get mean and sd of samples vals.  Uses jStat library
      */
-    this.getMean = function(sampleIdList) {
-        var mean = 0;
+    this.getMeanAndSd = function(sampleIdList) {
+        var results = {
+            'mean' : 0,
+            'sd' : 0
+        };
 
         // a mapping of sampleId to index
         var allSampleIds = this.getAllSampleIds(true);
@@ -592,9 +645,10 @@ function OD_eventDataCollection() {
                 }
             }
         }
-        mean = jStat.mean(vector);
+        results['mean'] = jStat.mean(vector);
+        results['sd'] = jStat.stdev(vector);
 
-        return mean;
+        return results;
     };
 }
 
