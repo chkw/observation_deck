@@ -256,7 +256,6 @@ function OD_eventMetadataAlbum() {
     };
 
     this.zScoreExpressionRescaling = function() {
-        // TODO
         console.log('zScoreExpressionRescaling');
 
         // get expression events
@@ -275,27 +274,23 @@ function OD_eventMetadataAlbum() {
 
         var allAdjustedVals = [];
 
-        // TODO get mean and sd
-
         for (var i = 0; i < expressionEventIds.length; i++) {
             var eventId = expressionEventIds[i];
 
+            // get mean and sd
             var eventStats = this.getEvent(eventId).data.getMeanAndSd();
-            meanVals[eventId] = {};
-            meanVals[eventId] = stats;
-
-            sdVals[eventId] = {};
-            sdVals[eventId] = this.getEvent(eventId).data.getSD();
+            stats[eventId] = {};
+            stats[eventId] = eventStats;
 
             // finally iter over all samples to adjust score
-            var adjustment = (meanVals[eventId]['group2'] - meanVals[eventId]['group1']) / 2;
             var allEventData = this.getEvent(eventId).data.getData();
             for (var k = 0; k < allEventData.length; k++) {
                 var data = allEventData[k];
                 var val = data['val'];
                 data['val_orig'] = val;
                 if (isNumerical(val)) {
-                    data['val'] = val - adjustment;
+                    var z = (val - stats[eventId]['mean']) / (stats[eventId]['sd']);
+                    data['val'] = z;
                     allAdjustedVals.push(data['val']);
                 }
             }
