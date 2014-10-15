@@ -24,27 +24,16 @@
         },
         observation_deck : function(config) {
             // TODO begin observation_deck
-            if (config == null) {
-                config = {};
-            }
-            // get settings from query string
-            var queryObj = getQueryObj();
-            var querySettings = {};
-            if ("query" in queryObj) {
-                querySettings = parseJson(queryObj["query"]);
-            }
-            config['querySettings'] = querySettings;
+            config = getConfiguration(config);
 
             window.onload = function() {
                 console.log("Page loaded. Start onload.");
 
-                // TODO context menu uses http://medialize.github.io/jQuery-contextMenu
-
                 // context menu for cells
-                setupCategoricCellContextMenu(querySettings);
+                setupCategoricCellContextMenu(config['querySettings']);
 
                 // context menu for row labels
-                setupRowLabelContextMenu(querySettings);
+                setupRowLabelContextMenu(config['querySettings']);
 
             };
             var OD_eventAlbum = new OD_eventMetadataAlbum();
@@ -54,13 +43,28 @@
             getExpressionData(expressionDataFileUrl, OD_eventAlbum);
             getMutationData(mutationDataFileUrl, OD_eventAlbum);
 
-            OD_eventAlbum.fillInMissingSamples(null);
-
             drawMatrix(this[0], config);
             // TODO end observation_deck
         }
     });
 })(jQuery);
+
+/**
+ *
+ */
+getConfiguration = function(config) {
+    if (config == null) {
+        config = {};
+    }
+    // get settings from query string
+    var queryObj = getQueryObj();
+    var querySettings = {};
+    if ("query" in queryObj) {
+        querySettings = parseJson(queryObj["query"]);
+    }
+    config['querySettings'] = querySettings;
+    return config;
+};
 
 /**
  *context menu uses http://medialize.github.io/jQuery-contextMenu
@@ -242,6 +246,7 @@ drawMatrix = function(containingDiv, config) {
 
     // get eventList
     var eventAlbum = config['eventAlbum'];
+    eventAlbum.fillInMissingSamples(null);
 
     var groupedEvents = eventAlbum.getEventIdsByType();
     var eventList = [];
