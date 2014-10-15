@@ -14,40 +14,35 @@
  * 6) OD_eventData.js
  */
 
-(function($) {
-    // extend the jQuery prototype
-    $.fn.extend({
-        test : function() {
-            return $(this).bind('click', function() {
-                alert('Custom plugin click!');
-            });
-        },
-        observation_deck : function(config) {
-            // TODO begin observation_deck
-            config = getConfiguration(config);
+// (function($) {
+// // extend the jQuery prototype
+// $.fn.extend({
+// test : function() {
+// return $(this).bind('click', function() {
+// alert('Custom plugin click!');
+// });
+// },
+// observation_deck : function(config) {
+// // TODO begin observation_deck
+//
+// buildObservationDeck(this[0], config);
+//
+// // TODO end observation_deck
+// }
+// });
+// })(jQuery);
 
-            window.onload = function() {
-                console.log("Page loaded. Start onload.");
+/**
+ *  Build an observation deck!
+ */
+buildObservationDeck = function(containerDivElem, config) {
+    config = getConfiguration(config);
 
-                // context menu for cells
-                setupCategoricCellContextMenu(config['querySettings']);
+    drawMatrix(containerDivElem, config);
 
-                // context menu for row labels
-                setupRowLabelContextMenu(config['querySettings']);
-
-            };
-            var OD_eventAlbum = new OD_eventMetadataAlbum();
-            config['eventAlbum'] = OD_eventAlbum;
-
-            getClinicalData(clinicalDataFileUrl, OD_eventAlbum);
-            getExpressionData(expressionDataFileUrl, OD_eventAlbum);
-            getMutationData(mutationDataFileUrl, OD_eventAlbum);
-
-            drawMatrix(this[0], config);
-            // TODO end observation_deck
-        }
-    });
-})(jQuery);
+    // set up context menu should follow matrix drawing
+    setupContextMenus(config['querySettings']);
+};
 
 /**
  *
@@ -63,7 +58,23 @@ getConfiguration = function(config) {
         querySettings = parseJson(queryObj["query"]);
     }
     config['querySettings'] = querySettings;
+
+    var OD_eventAlbum = new OD_eventMetadataAlbum();
+    config['eventAlbum'] = OD_eventAlbum;
+
+    getClinicalData(clinicalDataFileUrl, OD_eventAlbum);
+    getExpressionData(expressionDataFileUrl, OD_eventAlbum);
+    getMutationData(mutationDataFileUrl, OD_eventAlbum);
+
     return config;
+};
+
+/*
+ *
+ */
+setupContextMenus = function(querySettings) {
+    setupRowLabelContextMenu(querySettings);
+    setupCategoricCellContextMenu(querySettings);
 };
 
 /**
@@ -477,5 +488,7 @@ drawMatrix = function(containingDiv, config) {
         var s = "r:" + d['eventId'] + "\n\nc:" + d['id'] + "\n\nval:" + d['val'];
         return s;
     });
+
+    return config;
     // TODO end drawMatrix
 };
