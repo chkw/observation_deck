@@ -65,9 +65,17 @@ getConfiguration = function(config) {
         config['eventAlbum'] = OD_eventAlbum;
     }
 
-    // getClinicalData(clinicalDataFileUrl, OD_eventAlbum);
-    // getExpressionData(expressionDataFileUrl, OD_eventAlbum);
-    // getMutationData(mutationDataFileUrl, OD_eventAlbum);
+    if ('clinicalUrl' in config) {
+        getClinicalData(config['clinicalUrl'], OD_eventAlbum);
+    }
+
+    if ('expressionUrl' in config) {
+        getExpressionData(config['expressionUrl'], OD_eventAlbum);
+    }
+
+    if ('mutationUrl' in config) {
+        getMutationData(config['mutationUrl'], OD_eventAlbum);
+    }
 
     return config;
 };
