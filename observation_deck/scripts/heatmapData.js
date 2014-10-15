@@ -1,1 +1,0 @@
-../../../js_heatmap/heatmap/scripts/heatmapData.js
