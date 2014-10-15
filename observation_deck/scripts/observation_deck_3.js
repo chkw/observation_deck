@@ -52,16 +52,22 @@ getConfiguration = function(config) {
         config = {};
     }
 
-    // TODO look for od_config in cookies
+    // look for od_config in cookies
     var querySettings = parseJson(getCookie('od_config')) || {};
     config['querySettings'] = querySettings;
 
-    var OD_eventAlbum = new OD_eventMetadataAlbum();
-    config['eventAlbum'] = OD_eventAlbum;
+    var OD_eventAlbum = null;
+    if ('eventAlbum' in config) {
+        OD_eventAlbum = config['eventAlbum'];
+    } else {
+        console.log('od creating album');
+        OD_eventAlbum = new OD_eventMetadataAlbum();
+        config['eventAlbum'] = OD_eventAlbum;
+    }
 
-    getClinicalData(clinicalDataFileUrl, OD_eventAlbum);
-    getExpressionData(expressionDataFileUrl, OD_eventAlbum);
-    getMutationData(mutationDataFileUrl, OD_eventAlbum);
+    // getClinicalData(clinicalDataFileUrl, OD_eventAlbum);
+    // getExpressionData(expressionDataFileUrl, OD_eventAlbum);
+    // getMutationData(mutationDataFileUrl, OD_eventAlbum);
 
     return config;
 };
@@ -285,9 +291,11 @@ drawMatrix = function(containingDiv, config) {
     // rescalingData = eventAlbum.zScoreExpressionRescaling();
 
     var expressionColorMapper = null;
-    var minExpVal = rescalingData['minVal'];
-    var maxExpVal = rescalingData['maxVal'];
-    expressionColorMapper = centeredRgbaColorMapper(false, 0, minExpVal, maxExpVal);
+    if (rescalingData != null) {
+        var minExpVal = rescalingData['minVal'];
+        var maxExpVal = rescalingData['maxVal'];
+        expressionColorMapper = centeredRgbaColorMapper(false, 0, minExpVal, maxExpVal);
+    }
 
     // assign color mappers
     var colorMappers = {};

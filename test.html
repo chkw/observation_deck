@@ -36,7 +36,12 @@
 
             var divElem = document.getElementById("testDiv");
 
-            buildObservationDeck(divElem);
+            var OD_eventAlbum = new OD_eventMetadataAlbum();
+            getClinicalData(clinicalDataFileUrl, OD_eventAlbum);
+
+            buildObservationDeck(divElem, {
+                'eventAlbum' : OD_eventAlbum
+            });
 		</script>
 	</body>
 </html>
