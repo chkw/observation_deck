@@ -51,12 +51,9 @@ getConfiguration = function(config) {
     if (config == null) {
         config = {};
     }
-    // get settings from query string
-    var queryObj = getQueryObj();
-    var querySettings = {};
-    if ("query" in queryObj) {
-        querySettings = parseJson(queryObj["query"]);
-    }
+
+    // TODO look for od_config in cookies
+    var querySettings = parseJson(getCookie('od_config')) || {};
     config['querySettings'] = querySettings;
 
     var OD_eventAlbum = new OD_eventMetadataAlbum();
@@ -138,7 +135,9 @@ setupRowLabelContextMenu = function(querySettings) {
                     sortSteps.addStep(textContent);
                     querySettings[sortType] = sortSteps;
 
-                    loadNewSettings(querySettings);
+                    setCookie('od_config', JSON.stringify(querySettings));
+                    var url = window.location.pathname;
+                    window.open(url, "_self");
                 }
             },
             "sep1" : "---------",
@@ -157,6 +156,7 @@ setupRowLabelContextMenu = function(querySettings) {
                 icon : null,
                 disabled : false,
                 callback : function(key, opt) {
+                    deleteCookie('od_config');
                     var url = window.location.pathname;
                     window.open(url, "_self");
                 }
@@ -198,7 +198,10 @@ setupCategoricCellContextMenu = function(querySettings) {
                         'eventId' : eventId,
                         'val' : val
                     };
-                    loadNewSettings(querySettings);
+
+                    setCookie('od_config', JSON.stringify(querySettings));
+                    var url = window.location.pathname;
+                    window.open(url, "_self");
                 }
             },
             "sep1" : "---------",
@@ -207,6 +210,7 @@ setupCategoricCellContextMenu = function(querySettings) {
                 icon : null,
                 disabled : false,
                 callback : function(key, opt) {
+                    deleteCookie('od_config');
                     var url = window.location.pathname;
                     window.open(url, "_self");
                 }
