@@ -70,14 +70,14 @@ function tracebackToRoot(jqXmlHierarchy, eventType) {
 
 function OD_eventMetadataAlbum() {
     // TODO instead of writing XML parser, better to use jQuery XML DOM traversal due to better handling of browser differences
-    var xmlStr = getResponse(eventHierarchyUrl);
-    if (xmlStr === null) {
-        alert('Could not load event hierarchy!');
-    }
-    // parse string for XML doc (javascript obj)
-    xmlDoc = $.parseXML(xmlStr);
-    // convert JS obj to jQ obj
-    $xml = $(xmlDoc);
+    // var xmlStr = getResponse(eventHierarchyUrl);
+    // if (xmlStr === null) {
+    // alert('Could not load event hierarchy!');
+    // }
+    // // parse string for XML doc (javascript obj)
+    // xmlDoc = $.parseXML(xmlStr);
+    // // convert JS obj to jQ obj
+    // $xml = $(xmlDoc);
 
     this.album = {};
 
