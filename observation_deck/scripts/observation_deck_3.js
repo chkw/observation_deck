@@ -272,6 +272,9 @@ drawMatrix = function(containingDiv, config) {
     };
 
     var thisElement = containingDiv;
+    while (thisElement.firstChild) {
+        thisElement.removeChild(thisElement.firstChild);
+    }
 
     // get eventList
     var eventAlbum = config['eventAlbum'];
