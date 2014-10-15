@@ -23,7 +23,7 @@
 		<script type="text/javascript" src="observation_deck/scripts/static.js"></script>
 		<script type="text/javascript" src="observation_deck/scripts/OD_eventData.js"></script>
 		<script type="text/javascript" src="observation_deck/scripts/medbook_data_load.js"></script>
-		<script type="text/javascript" src="observation_deck/scripts/observation_deck_2.js"></script>
+		<script type="text/javascript" src="observation_deck/scripts/observation_deck_3.js"></script>
 		<!-- <script type="text/javascript" src="observation_deck/scripts/observation_deck_jqplugin.js"></script> -->
 	</head>
 	<body>
@@ -33,7 +33,10 @@
             var caseListsFileUrl = 'observation_deck/data/cbioMedbook/getCaseLists.txt';
             var mutationDataFileUrl = 'observation_deck/data/cbioMedbook/mutations.maf';
             var expressionDataFileUrl = 'observation_deck/data/cbioMedbook/expressionData.tab';
-            $("#testDiv").observation_deck();
+
+            var divElem = document.getElementById("testDiv");
+
+            $(divElem).observation_deck();
 		</script>
 	</body>
 </html>

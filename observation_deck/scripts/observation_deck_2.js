@@ -7,6 +7,9 @@
  * 1) jQuery <https://jquery.com/>
  * 2) D3.js <http://d3js.org/>
  * 3) jQuery-contextMenu <https://medialize.github.io/jQuery-contextMenu/>
+ * 4) jStat
+ * 5) static.js
+ * 6) OD_eventData.js
  */
 
 (function($) {
