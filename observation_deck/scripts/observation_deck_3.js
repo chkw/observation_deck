@@ -41,138 +41,11 @@
                 // TODO context menu uses http://medialize.github.io/jQuery-contextMenu
 
                 // context menu for cells
-                $(function() {
-                    $.contextMenu({
-                        // selector : ".axis",
-                        selector : ".categoric",
-                        callback : function(key, options) {
-                            // default callback
-                            var cellElem = this[0];
-                        },
-                        items : {
-                            "test" : {
-                                name : "Yulia's atrribute-based expression rescaling",
-                                icon : null,
-                                disabled : false,
-                                callback : function(key, opt) {
-                                    var cellElem = this[0];
-                                    var childrenElems = cellElem.children;
-                                    var eventId = cellElem.getAttribute('eventId');
-                                    var sampleId = cellElem.getAttribute('sampleId');
-                                    var val = cellElem.getAttribute('val');
-
-                                    console.log('key:', key, 'eventId:', eventId, 'val:', val);
-                                    console.log("href", window.location.href);
-                                    console.log("host", window.location.host);
-                                    console.log("pathname", window.location.pathname);
-                                    console.log("search", window.location.search);
-
-                                    querySettings["yulia_rescaling"] = {
-                                        'eventId' : eventId,
-                                        'val' : val
-                                    };
-                                    loadNewSettings(querySettings);
-                                }
-                            },
-                            "sep1" : "---------",
-                            "reset" : {
-                                name : "reset",
-                                icon : null,
-                                disabled : false,
-                                callback : function(key, opt) {
-                                    var url = window.location.pathname;
-                                    window.open(url, "_self");
-                                }
-                            }
-                        }
-                    });
-                });
+                setupCategoricCellContextMenu(querySettings);
 
                 // context menu for row labels
-                $(function() {
-                    $.contextMenu({
-                        // selector : ".axis",
-                        selector : ".rowLabel",
-                        callback : function(key, options) {
-                            // default callback
-                            var textContent = this[0].textContent;
-                            var axis = this[0].getAttribute("class").indexOf("axis") >= 0 ? true : false;
-                            if (axis) {
-                                axis = this[0].getAttribute("class").indexOf("rowLabel") >= 0 ? "row" : "column";
-                            }
-                            console.log(key, textContent, axis);
-                        },
-                        items : {
-                            "test" : {
-                                name : "test",
-                                icon : null,
-                                disabled : false,
-                                callback : function(key, opt) {
-                                    var textContent = this[0].textContent;
-                                    console.log(key, textContent);
-                                    console.log("href", window.location.href);
-                                    console.log("host", window.location.host);
-                                    console.log("pathname", window.location.pathname);
-                                    console.log("search", window.location.search);
-                                }
-                            },
-                            "sort" : {
-                                name : "sort",
-                                icon : null,
-                                disabled : false,
-                                callback : function(key, opt) {
-                                    var textContent = this[0].textContent;
+                setupRowLabelContextMenu(querySettings);
 
-                                    var axis = this[0].getAttribute("class").indexOf("axis") >= 0 ? true : false;
-                                    if (axis) {
-                                        axis = this[0].getAttribute("class").indexOf("rowLabel") >= 0 ? "row" : "column";
-                                    } else {
-                                        console.log("exit out because not a row or a column");
-                                        return;
-                                    }
-
-                                    var sortType = "colSort";
-                                    if (axis == "row") {
-                                        // do nothing, colSort is the default.
-                                    } else {
-                                        sortType = "rowSort";
-                                    }
-
-                                    var sortSteps = null;
-                                    if ( sortType in querySettings) {
-                                        sortSteps = new sortingSteps(querySettings[sortType]["steps"]);
-                                    } else {
-                                        sortSteps = new sortingSteps();
-                                    }
-                                    sortSteps.addStep(textContent);
-                                    querySettings[sortType] = sortSteps;
-
-                                    loadNewSettings(querySettings);
-                                }
-                            },
-                            "sep1" : "---------",
-                            "expand" : {
-                                name : "expand",
-                                icon : null,
-                                disabled : true
-                            },
-                            "collapse" : {
-                                name : "collapse",
-                                icon : null,
-                                disabled : true
-                            },
-                            "reset" : {
-                                name : "reset",
-                                icon : null,
-                                disabled : false,
-                                callback : function(key, opt) {
-                                    var url = window.location.pathname;
-                                    window.open(url, "_self");
-                                }
-                            }
-                        }
-                    });
-                });
             };
             var OD_eventAlbum = new OD_eventMetadataAlbum();
             config['eventAlbum'] = OD_eventAlbum;
@@ -188,6 +61,144 @@
         }
     });
 })(jQuery);
+
+/**
+ *context menu uses http://medialize.github.io/jQuery-contextMenu
+ */
+setupRowLabelContextMenu = function(querySettings) {
+    $.contextMenu({
+        // selector : ".axis",
+        selector : ".rowLabel",
+        callback : function(key, options) {
+            // default callback
+            var textContent = this[0].textContent;
+            var axis = this[0].getAttribute("class").indexOf("axis") >= 0 ? true : false;
+            if (axis) {
+                axis = this[0].getAttribute("class").indexOf("rowLabel") >= 0 ? "row" : "column";
+            }
+            console.log(key, textContent, axis);
+        },
+        items : {
+            "test" : {
+                name : "test",
+                icon : null,
+                disabled : false,
+                callback : function(key, opt) {
+                    var textContent = this[0].textContent;
+                    console.log(key, textContent);
+                    console.log("href", window.location.href);
+                    console.log("host", window.location.host);
+                    console.log("pathname", window.location.pathname);
+                    console.log("search", window.location.search);
+                }
+            },
+            "sort" : {
+                name : "sort",
+                icon : null,
+                disabled : false,
+                callback : function(key, opt) {
+                    var textContent = this[0].textContent;
+
+                    var axis = this[0].getAttribute("class").indexOf("axis") >= 0 ? true : false;
+                    if (axis) {
+                        axis = this[0].getAttribute("class").indexOf("rowLabel") >= 0 ? "row" : "column";
+                    } else {
+                        console.log("exit out because not a row or a column");
+                        return;
+                    }
+
+                    var sortType = "colSort";
+                    if (axis == "row") {
+                        // do nothing, colSort is the default.
+                    } else {
+                        sortType = "rowSort";
+                    }
+
+                    var sortSteps = null;
+                    if ( sortType in querySettings) {
+                        sortSteps = new sortingSteps(querySettings[sortType]["steps"]);
+                    } else {
+                        sortSteps = new sortingSteps();
+                    }
+                    sortSteps.addStep(textContent);
+                    querySettings[sortType] = sortSteps;
+
+                    loadNewSettings(querySettings);
+                }
+            },
+            "sep1" : "---------",
+            "expand" : {
+                name : "expand",
+                icon : null,
+                disabled : true
+            },
+            "collapse" : {
+                name : "collapse",
+                icon : null,
+                disabled : true
+            },
+            "reset" : {
+                name : "reset",
+                icon : null,
+                disabled : false,
+                callback : function(key, opt) {
+                    var url = window.location.pathname;
+                    window.open(url, "_self");
+                }
+            }
+        }
+    });
+};
+
+/**
+ * context menu uses http://medialize.github.io/jQuery-contextMenu
+ */
+setupCategoricCellContextMenu = function(querySettings) {
+    $.contextMenu({
+        // selector : ".axis",
+        selector : ".categoric",
+        callback : function(key, options) {
+            // default callback
+            var cellElem = this[0];
+        },
+        items : {
+            "test" : {
+                name : "Yulia's atrribute-based expression rescaling",
+                icon : null,
+                disabled : false,
+                callback : function(key, opt) {
+                    var cellElem = this[0];
+                    var childrenElems = cellElem.children;
+                    var eventId = cellElem.getAttribute('eventId');
+                    var sampleId = cellElem.getAttribute('sampleId');
+                    var val = cellElem.getAttribute('val');
+
+                    console.log('key:', key, 'eventId:', eventId, 'val:', val);
+                    console.log("href", window.location.href);
+                    console.log("host", window.location.host);
+                    console.log("pathname", window.location.pathname);
+                    console.log("search", window.location.search);
+
+                    querySettings["yulia_rescaling"] = {
+                        'eventId' : eventId,
+                        'val' : val
+                    };
+                    loadNewSettings(querySettings);
+                }
+            },
+            "sep1" : "---------",
+            "reset" : {
+                name : "reset",
+                icon : null,
+                disabled : false,
+                callback : function(key, opt) {
+                    var url = window.location.pathname;
+                    window.open(url, "_self");
+                }
+            }
+        }
+    });
+};
 
 /**
  * Draw the matrix in the containing div.
