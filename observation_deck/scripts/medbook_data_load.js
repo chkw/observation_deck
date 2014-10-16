@@ -249,3 +249,44 @@ function getExpressionData(url, OD_eventAlbum) {
     }
 }
 
+/**
+ *
+ * @param {Object} collection
+ * @param {Object} OD_eventAlbum
+ */
+mongoClinicalData = function(collection, OD_eventAlbum) {
+
+    // iter over doc (each doc = sample)
+    for (var i = 0; i < collection.length; i++) {
+        var doc = collection[i];
+        delete doc['_id'];
+        var sampleId = doc['sample'];
+        delete doc['sample'];
+
+        // iter over event names
+        var keys = getKeys(doc);
+        for (var j = 0; j < keys.length; j++) {
+            var key = keys[j];
+            var eventObj = OD_eventAlbum.getEvent(key);
+
+            // add event if DNE
+            if (eventObj == null) {
+                OD_eventAlbum.addEvent({
+                    'id' : key,
+                    'name' : null,
+                    'displayName' : null,
+                    'description' : null,
+                    'datatype' : 'clinical data',
+                    'allowedValues' : 'categoric'
+                }, []);
+                eventObj = OD_eventAlbum.getEvent(key);
+            }
+            var value = doc[key];
+            var data = {};
+            data[sampleId] = value;
+            eventObj.data.setData(data);
+        }
+    }
+    return null;
+};
+

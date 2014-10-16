@@ -77,6 +77,13 @@ getConfiguration = function(config) {
         getMutationData(config['mutationUrl'], OD_eventAlbum);
     }
 
+    if ('mongoData in config') {
+        var mongoData = config['mongoData'];
+        if ('clinical' in mongoData) {
+            mongoClinicalData(mongoData['clinical'], OD_eventAlbum);
+        }
+    }
+
     return config;
 };
 
@@ -290,12 +297,14 @@ drawMatrix = function(containingDiv, config) {
 
     // expression rescaling and color mapping
     var rescalingData = null;
-    if (hasOwnProperty(querySettings, 'yulia_rescaling')) {
-        var rescalingConfig = querySettings['yulia_rescaling'];
-        rescalingData = eventAlbum.yuliaExpressionRescaling(rescalingConfig['eventId'], rescalingConfig['val']);
-    } else {
-        rescalingData = eventAlbum.yuliaExpressionRescaling('Small Cell v Adeno', 'Adeno');
-    }
+
+    // if (hasOwnProperty(querySettings, 'yulia_rescaling')) {
+    // var rescalingConfig = querySettings['yulia_rescaling'];
+    // rescalingData = eventAlbum.yuliaExpressionRescaling(rescalingConfig['eventId'], rescalingConfig['val']);
+    // } else {
+    // rescalingData = eventAlbum.yuliaExpressionRescaling('Small Cell v Adeno', 'Adeno');
+    // }
+
 
     // rescalingData = eventAlbum.betweenMeansExpressionRescaling('Small Cell v Adeno', 'Adeno', 'Small Cell');
     //
