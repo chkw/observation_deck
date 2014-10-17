@@ -305,7 +305,6 @@ drawMatrix = function(containingDiv, config) {
     // rescalingData = eventAlbum.yuliaExpressionRescaling('Small Cell v Adeno', 'Adeno');
     // }
 
-
     // rescalingData = eventAlbum.betweenMeansExpressionRescaling('Small Cell v Adeno', 'Adeno', 'Small Cell');
     //
     // rescalingData = eventAlbum.zScoreExpressionRescaling();
