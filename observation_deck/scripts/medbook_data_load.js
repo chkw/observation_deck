@@ -255,13 +255,16 @@ function getExpressionData(url, OD_eventAlbum) {
  * @param {Object} OD_eventAlbum
  */
 mongoClinicalData = function(collection, OD_eventAlbum) {
-
     // iter over doc (each doc = sample)
     for (var i = 0; i < collection.length; i++) {
         var doc = collection[i];
         delete doc['_id'];
-        var sampleId = doc['sample'];
+        var sampleId = doc['sample'].trim();
         delete doc['sample'];
+
+        if (sampleId == 'Patient ID') {
+            continue;
+        }
 
         // iter over event names
         var keys = getKeys(doc);
