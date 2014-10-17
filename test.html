@@ -36,20 +36,20 @@
 
             var divElem = document.getElementById("testDiv");
 
-            // buildObservationDeck(divElem, {
-            // 'clinicalUrl' : clinicalDataFileUrl,
-            // 'mutationUrl' : mutationDataFileUrl,
-            // 'expressionUrl' : expressionDataFileUrl
-            // });
+            buildObservationDeck(divElem, {
+                'clinicalUrl' : clinicalDataFileUrl,
+                'mutationUrl' : mutationDataFileUrl,
+                'expressionUrl' : expressionDataFileUrl
+            });
 
             var resp = getResponse('observation_deck/data/meteorMedbook/clinicalData.json');
             resp = parseJson(resp);
 
-            buildObservationDeck(divElem, {
-                'mongoData' : {
-                    'clinical' : resp
-                }
-            });
+            // buildObservationDeck(divElem, {
+            // 'mongoData' : {
+            // 'clinical' : resp
+            // }
+            // });
 		</script>
 	</body>
 </html>

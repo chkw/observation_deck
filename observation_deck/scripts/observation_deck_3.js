@@ -60,7 +60,6 @@ getConfiguration = function(config) {
     if ('eventAlbum' in config) {
         OD_eventAlbum = config['eventAlbum'];
     } else {
-        console.log('od creating album');
         OD_eventAlbum = new OD_eventMetadataAlbum();
         config['eventAlbum'] = OD_eventAlbum;
     }
@@ -77,7 +76,7 @@ getConfiguration = function(config) {
         getMutationData(config['mutationUrl'], OD_eventAlbum);
     }
 
-    if ('mongoData in config') {
+    if ('mongoData' in config) {
         var mongoData = config['mongoData'];
         if ('clinical' in mongoData) {
             mongoClinicalData(mongoData['clinical'], OD_eventAlbum);
@@ -91,8 +90,97 @@ getConfiguration = function(config) {
  *
  */
 setupContextMenus = function(querySettings) {
+    setupColLabelContextMenu(querySettings);
     setupRowLabelContextMenu(querySettings);
     setupCategoricCellContextMenu(querySettings);
+};
+
+setupColLabelContextMenu = function(querySettings) {
+    $.contextMenu({
+        // selector : ".axis",
+        selector : ".colLabel",
+        callback : function(key, options) {
+            // default callback
+            var textContent = this[0].textContent;
+            var axis = this[0].getAttribute("class").indexOf("axis") >= 0 ? true : false;
+            if (axis) {
+                axis = this[0].getAttribute("class").indexOf("rowLabel") >= 0 ? "row" : "column";
+            }
+            console.log(key, textContent, axis);
+        },
+        items : {
+            // "test" : {
+            // name : "test",
+            // icon : null,
+            // disabled : false,
+            // callback : function(key, opt) {
+            // var textContent = this[0].textContent;
+            // console.log(key, textContent);
+            // console.log("href", window.location.href);
+            // console.log("host", window.location.host);
+            // console.log("pathname", window.location.pathname);
+            // console.log("search", window.location.search);
+            // }
+            // },
+            "sort" : {
+                name : "sort",
+                icon : null,
+                disabled : false,
+                callback : function(key, opt) {
+                    var textContent = this[0].textContent;
+
+                    var axis = this[0].getAttribute("class").indexOf("axis") >= 0 ? true : false;
+                    if (axis) {
+                        axis = this[0].getAttribute("class").indexOf("rowLabel") >= 0 ? "row" : "column";
+                    } else {
+                        console.log("exit out because not a row or a column");
+                        return;
+                    }
+
+                    var sortType = "colSort";
+                    if (axis == "row") {
+                        // do nothing, colSort is the default.
+                    } else {
+                        sortType = "rowSort";
+                    }
+
+                    var sortSteps = null;
+                    if ( sortType in querySettings) {
+                        sortSteps = new sortingSteps(querySettings[sortType]["steps"]);
+                    } else {
+                        sortSteps = new sortingSteps();
+                    }
+                    sortSteps.addStep(textContent);
+                    querySettings[sortType] = sortSteps;
+
+                    setCookie('od_config', JSON.stringify(querySettings));
+                    var url = window.location.pathname;
+                    window.open(url, "_self");
+                }
+            },
+            "sep1" : "---------",
+            "expand" : {
+                name : "expand",
+                icon : null,
+                disabled : true
+            },
+            "collapse" : {
+                name : "collapse",
+                icon : null,
+                disabled : true
+            },
+            "reset" : {
+                name : "reset",
+                icon : null,
+                disabled : false,
+                callback : function(key, opt) {
+                    deleteCookie('od_config');
+                    var url = window.location.pathname;
+                    window.open(url, "_self");
+                }
+            }
+        }
+    });
 };
 
 /**
@@ -112,19 +200,19 @@ setupRowLabelContextMenu = function(querySettings) {
             console.log(key, textContent, axis);
         },
         items : {
-            "test" : {
-                name : "test",
-                icon : null,
-                disabled : false,
-                callback : function(key, opt) {
-                    var textContent = this[0].textContent;
-                    console.log(key, textContent);
-                    console.log("href", window.location.href);
-                    console.log("host", window.location.host);
-                    console.log("pathname", window.location.pathname);
-                    console.log("search", window.location.search);
-                }
-            },
+            // "test" : {
+            // name : "test",
+            // icon : null,
+            // disabled : false,
+            // callback : function(key, opt) {
+            // var textContent = this[0].textContent;
+            // console.log(key, textContent);
+            // console.log("href", window.location.href);
+            // console.log("host", window.location.host);
+            // console.log("pathname", window.location.pathname);
+            // console.log("search", window.location.search);
+            // }
+            // },
             "sort" : {
                 name : "sort",
                 icon : null,
@@ -198,34 +286,34 @@ setupCategoricCellContextMenu = function(querySettings) {
             var cellElem = this[0];
         },
         items : {
-            "test" : {
-                name : "Yulia's atrribute-based expression rescaling",
-                icon : null,
-                disabled : false,
-                callback : function(key, opt) {
-                    var cellElem = this[0];
-                    var childrenElems = cellElem.children;
-                    var eventId = cellElem.getAttribute('eventId');
-                    var sampleId = cellElem.getAttribute('sampleId');
-                    var val = cellElem.getAttribute('val');
-
-                    console.log('key:', key, 'eventId:', eventId, 'val:', val);
-                    console.log("href", window.location.href);
-                    console.log("host", window.location.host);
-                    console.log("pathname", window.location.pathname);
-                    console.log("search", window.location.search);
-
-                    querySettings["yulia_rescaling"] = {
-                        'eventId' : eventId,
-                        'val' : val
-                    };
-
-                    setCookie('od_config', JSON.stringify(querySettings));
-                    var url = window.location.pathname;
-                    window.open(url, "_self");
-                }
-            },
-            "sep1" : "---------",
+            // "test" : {
+            // name : "Yulia's atrribute-based expression rescaling",
+            // icon : null,
+            // disabled : false,
+            // callback : function(key, opt) {
+            // var cellElem = this[0];
+            // var childrenElems = cellElem.children;
+            // var eventId = cellElem.getAttribute('eventId');
+            // var sampleId = cellElem.getAttribute('sampleId');
+            // var val = cellElem.getAttribute('val');
+            //
+            // console.log('key:', key, 'eventId:', eventId, 'val:', val);
+            // console.log("href", window.location.href);
+            // console.log("host", window.location.host);
+            // console.log("pathname", window.location.pathname);
+            // console.log("search", window.location.search);
+            //
+            // querySettings["yulia_rescaling"] = {
+            // 'eventId' : eventId,
+            // 'val' : val
+            // };
+            //
+            // setCookie('od_config', JSON.stringify(querySettings));
+            // var url = window.location.pathname;
+            // window.open(url, "_self");
+            // }
+            // },
+            // "sep1" : "---------",
             "reset" : {
                 name : "reset",
                 icon : null,
@@ -307,7 +395,12 @@ drawMatrix = function(containingDiv, config) {
 
     // rescalingData = eventAlbum.betweenMeansExpressionRescaling('Small Cell v Adeno', 'Adeno', 'Small Cell');
     //
-    // rescalingData = eventAlbum.zScoreExpressionRescaling();
+
+    if (hasOwnProperty(groupedEvents, 'expression data')) {
+        rescalingData = eventAlbum.zScoreExpressionRescaling();
+    } else {
+        // console.log('no expression data to rescale');
+    }
 
     var expressionColorMapper = null;
     if (rescalingData != null) {

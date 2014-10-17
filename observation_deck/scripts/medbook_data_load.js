@@ -258,10 +258,14 @@ mongoClinicalData = function(collection, OD_eventAlbum) {
     // iter over doc (each doc = sample)
     for (var i = 0; i < collection.length; i++) {
         var doc = collection[i];
+
+        // skip the mongo ID
         delete doc['_id'];
+
         var sampleId = doc['sample'].trim();
         delete doc['sample'];
 
+        // don't use this field
         if (sampleId == 'Patient ID') {
             continue;
         }

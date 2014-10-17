@@ -10,6 +10,12 @@ CLOSURE_COMPILER_JAR = ~/git/closure-compiler/build/compiler.jar
 COMPILATION_LEVEL = SIMPLE_OPTIMIZATIONS
 #COMPILATION_LEVEL = ADVANCED_OPTIMIZATIONS
 
+METEOR_PACKAGE_DIR = ~/workspace/MedBook-Workbench/packages/observation-deck
+
+sync_meteor: observation_deck_plugin.js
+	rsync -avP $< $(METEOR_PACKAGE_DIR)/.
+	\
+
 sync_dev: observation_deck_plugin.js
 	rsync -avP $< su2c-dev.ucsc.edu:~/observation_deck/observation_deck/scripts/. ;
 	\
