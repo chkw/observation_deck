@@ -286,34 +286,34 @@ setupCategoricCellContextMenu = function(querySettings) {
             var cellElem = this[0];
         },
         items : {
-            // "test" : {
-            // name : "Yulia's atrribute-based expression rescaling",
-            // icon : null,
-            // disabled : false,
-            // callback : function(key, opt) {
-            // var cellElem = this[0];
-            // var childrenElems = cellElem.children;
-            // var eventId = cellElem.getAttribute('eventId');
-            // var sampleId = cellElem.getAttribute('sampleId');
-            // var val = cellElem.getAttribute('val');
-            //
-            // console.log('key:', key, 'eventId:', eventId, 'val:', val);
-            // console.log("href", window.location.href);
-            // console.log("host", window.location.host);
-            // console.log("pathname", window.location.pathname);
-            // console.log("search", window.location.search);
-            //
-            // querySettings["yulia_rescaling"] = {
-            // 'eventId' : eventId,
-            // 'val' : val
-            // };
-            //
-            // setCookie('od_config', JSON.stringify(querySettings));
-            // var url = window.location.pathname;
-            // window.open(url, "_self");
-            // }
-            // },
-            // "sep1" : "---------",
+            "test" : {
+                name : "test expression rescaling",
+                icon : null,
+                disabled : false,
+                callback : function(key, opt) {
+                    var cellElem = this[0];
+                    var childrenElems = cellElem.children;
+                    var eventId = cellElem.getAttribute('eventId');
+                    var sampleId = cellElem.getAttribute('sampleId');
+                    var val = cellElem.getAttribute('val');
+
+                    console.log('key:', key, 'eventId:', eventId, 'val:', val);
+                    console.log("href", window.location.href);
+                    console.log("host", window.location.host);
+                    console.log("pathname", window.location.pathname);
+                    console.log("search", window.location.search);
+
+                    querySettings["yulia_rescaling"] = {
+                        'eventId' : eventId,
+                        'val' : val
+                    };
+
+                    setCookie('od_config', JSON.stringify(querySettings));
+                    var url = window.location.pathname;
+                    window.open(url, "_self");
+                }
+            },
+            "sep1" : "---------",
             "reset" : {
                 name : "reset",
                 icon : null,
@@ -386,23 +386,20 @@ drawMatrix = function(containingDiv, config) {
     // expression rescaling and color mapping
     var rescalingData = null;
 
-    // if (hasOwnProperty(querySettings, 'yulia_rescaling')) {
-    // var rescalingConfig = querySettings['yulia_rescaling'];
-    // rescalingData = eventAlbum.yuliaExpressionRescaling(rescalingConfig['eventId'], rescalingConfig['val']);
-    // } else {
-    // rescalingData = eventAlbum.yuliaExpressionRescaling('Small Cell v Adeno', 'Adeno');
-    // }
-
-    // rescalingData = eventAlbum.betweenMeansExpressionRescaling('Small Cell v Adeno', 'Adeno', 'Small Cell');
-    //
-
     if (hasOwnProperty(groupedEvents, 'expression data')) {
-        rescalingData = eventAlbum.zScoreExpressionRescaling();
+        if (hasOwnProperty(querySettings, 'yulia_rescaling')) {
+            var rescalingConfig = querySettings['yulia_rescaling'];
+            rescalingData = eventAlbum.yuliaExpressionRescaling(rescalingConfig['eventId'], rescalingConfig['val']);
+        } else {
+            rescalingData = eventAlbum.zScoreExpressionRescaling();
+        }
     } else {
-        // console.log('no expression data to rescale');
+        console.log('no expression data to rescale');
     }
 
-    var expressionColorMapper = null;
+    // rescalingData = eventAlbum.betweenMeansExpressionRescaling('Small Cell v Adeno', 'Adeno', 'Small Cell');
+
+    var expressionColorMapper = centeredRgbaColorMapper(false);
     if (rescalingData != null) {
         var minExpVal = rescalingData['minVal'];
         var maxExpVal = rescalingData['maxVal'];
