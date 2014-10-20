@@ -159,6 +159,23 @@ function OD_eventMetadataAlbum() {
     };
 
     /**
+     * Select samples that meet the criteria.
+     */
+    this.selectSamples = function(selectionCriteria) {
+        var ids = this.getAllSampleIds();
+        if (selectionCriteria.length == 0) {
+            return ids;
+        }
+        for (var i in selectionCriteria) {
+            var eventId = selectionCriteria[i]["eventId"];
+            var value = selectionCriteria[i]["value"];
+
+            // select IDs from event data
+            ids = this.getEvent(eventId).data.selectIds(value, ids);
+        }
+        return ids;
+    };
+    /**
      * Get the specified event from the album.
      */
     this.getEvent = function(id) {
@@ -522,7 +539,7 @@ function OD_eventDataCollection() {
     };
 
     /**
-     * Order of samples is maintained... allows multi-sort
+     * Order of samples is maintained... allows multi-sort.  If a specified ID is not found, then null is used for the value.
      */
     this.getData = function(sampleIdList) {
         // a mapping of sampleId to index
@@ -595,12 +612,12 @@ function OD_eventDataCollection() {
     };
 
     /**
-     * Select Ids with data that match a value.
+     * Select Ids with data that match a value. Restrict to startingIds, if given.
      */
-    this.selectIds = function(selectVal) {
+    this.selectIds = function(selectVal, startingIds) {
         var selectedIds = [];
 
-        var allData = this.getData();
+        var allData = (startingIds == null) ? this.getData() : this.getData(startingIds);
         for (var i = 0; i < allData.length; i++) {
             var data = allData[i];
             if (data['val'] == selectVal) {
@@ -693,5 +710,42 @@ function sortingSteps(arrayOfSteps) {
 
     this.clearSteps = function() {
         this.steps.splice(0, this.steps.length);
+    };
+}
+
+/**
+ * Object to help with selecting sample IDs based on selection criteria.
+ */
+function sampleSelectionCriteria() {
+    this.criteria = new Array();
+
+    this.getCriteria = function() {
+        return this.criteria;
+    };
+
+    this.addCriteria = function(eventId, value) {
+        var criteria = {
+            "eventId" : feature,
+            "value" : value
+        };
+        for (var i in this.criteria) {
+            if (JSON.stringify(this.criteria[i]) == JSON.stringify(criteria)) {
+                return;
+            }
+        }
+        this.criteria.push(criteria);
+    };
+
+    this.removeCriteria = function(feature, value) {
+        for (var i = 0; i < this.criteria.length; i++) {
+            if ((this.criteria[i]["eventId"] == feature) && (this.criteria[i]["value"] == value)) {
+                this.criteria.splice(i, 1);
+                break;
+            }
+        }
+    };
+
+    this.clearCriteria = function() {
+        this.criteria.splice(0, this.criteria.length);
     };
 }
