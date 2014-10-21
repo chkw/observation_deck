@@ -381,10 +381,7 @@ drawMatrix = function(containingDiv, config) {
         d3.event.preventDefault();
     };
 
-    var thisElement = containingDiv;
-    while (thisElement.firstChild) {
-        thisElement.removeChild(thisElement.firstChild);
-    }
+    var thisElement = removeChildElems(containingDiv);
 
     // get eventList
     var eventAlbum = config['eventAlbum'];
