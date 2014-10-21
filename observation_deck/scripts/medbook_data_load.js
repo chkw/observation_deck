@@ -270,7 +270,7 @@ mongoClinicalData = function(collection, OD_eventAlbum) {
         var keys = getKeys(doc);
         for (var j = 0; j < keys.length; j++) {
             var key = keys[j];
-            if ( key in ['_id', 'sample']) {
+            if (isObjInArray(['_id', 'sample'], key)) {
                 continue;
             }
             var eventObj = OD_eventAlbum.getEvent(key);
