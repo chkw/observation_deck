@@ -36,6 +36,7 @@
  *  Build an observation deck!
  */
 buildObservationDeck = function(containerDivElem, config) {
+    // console.log('buildObservationDeck');
     config['containerDivId'] = containerDivElem.id;
 
     config = getConfiguration(config);
@@ -113,74 +114,78 @@ setupColLabelContextMenu = function(config) {
             console.log(key, textContent, axis);
         },
         items : {
-            "test" : {
-                name : "test",
-                icon : null,
-                disabled : false,
-                callback : function(key, opt) {
-                    var textContent = this[0].textContent;
-                    console.log(key, textContent);
-                    console.log("href", window.location.href);
-                    console.log("host", window.location.host);
-                    console.log("pathname", window.location.pathname);
-                    console.log("search", window.location.search);
-                }
-            },
-            "sort" : {
-                name : "sort",
-                icon : null,
-                disabled : false,
-                callback : function(key, opt) {
-                    var textContent = this[0].textContent;
 
-                    var axis = this[0].getAttribute("class").indexOf("axis") >= 0 ? true : false;
-                    if (axis) {
-                        axis = this[0].getAttribute("class").indexOf("rowLabel") >= 0 ? "row" : "column";
-                    } else {
-                        console.log("exit out because not a row or a column");
-                        return;
-                    }
+            // "test" : {
+            // name : "test",
+            // icon : null,
+            // disabled : false,
+            // callback : function(key, opt) {
+            // var textContent = this[0].textContent;
+            // console.log(key, textContent);
+            // console.log("href", window.location.href);
+            // console.log("host", window.location.host);
+            // console.log("pathname", window.location.pathname);
+            // console.log("search", window.location.search);
+            // }
+            // },
+            // "sort" : {
+            // name : "sort",
+            // icon : null,
+            // disabled : false,
+            // callback : function(key, opt) {
+            // var textContent = this[0].textContent;
+            //
+            // var axis = this[0].getAttribute("class").indexOf("axis") >= 0 ? true : false;
+            // if (axis) {
+            // axis = this[0].getAttribute("class").indexOf("rowLabel") >= 0 ? "row" : "column";
+            // } else {
+            // console.log("exit out because not a row or a column");
+            // return;
+            // }
+            //
+            // var sortType = "colSort";
+            // if (axis == "row") {
+            // // do nothing, colSort is the default.
+            // } else {
+            // sortType = "rowSort";
+            // }
+            //
+            // var sortSteps = null;
+            // if ( sortType in querySettings) {
+            // sortSteps = new sortingSteps(querySettings[sortType]["steps"]);
+            // } else {
+            // sortSteps = new sortingSteps();
+            // }
+            // sortSteps.addStep(textContent);
+            // querySettings[sortType] = sortSteps;
+            //
+            // setCookie('od_config', JSON.stringify(querySettings));
+            // var url = window.location.pathname;
+            // window.open(url, "_self");
+            // }
+            // },
+            // "sep1" : "---------",
+            // "expand" : {
+            // name : "expand",
+            // icon : null,
+            // disabled : true
+            // },
+            // "collapse" : {
+            // name : "collapse",
+            // icon : null,
+            // disabled : true
+            // },
 
-                    var sortType = "colSort";
-                    if (axis == "row") {
-                        // do nothing, colSort is the default.
-                    } else {
-                        sortType = "rowSort";
-                    }
-
-                    var sortSteps = null;
-                    if ( sortType in querySettings) {
-                        sortSteps = new sortingSteps(querySettings[sortType]["steps"]);
-                    } else {
-                        sortSteps = new sortingSteps();
-                    }
-                    sortSteps.addStep(textContent);
-                    querySettings[sortType] = sortSteps;
-
-                    setCookie('od_config', JSON.stringify(querySettings));
-                    var url = window.location.pathname;
-                    window.open(url, "_self");
-                }
-            },
-            "sep1" : "---------",
-            "expand" : {
-                name : "expand",
-                icon : null,
-                disabled : true
-            },
-            "collapse" : {
-                name : "collapse",
-                icon : null,
-                disabled : true
-            },
             "reset" : {
                 name : "reset",
                 icon : null,
                 disabled : false,
                 callback : function(key, opt) {
                     deleteCookie('od_config');
-                    var url = window.location.pathname;
-                    window.open(url, "_self");
+                    // var url = window.location.pathname;
+                    // window.open(url, "_self");
+                    var containerDivElem = document.getElementById(config['containerDivId']);
+                    buildObservationDeck(containerDivElem, config);
                 }
             }
         }
@@ -250,8 +255,9 @@ setupRowLabelContextMenu = function(config) {
                     querySettings[sortType] = sortSteps;
 
                     setCookie('od_config', JSON.stringify(querySettings));
-                    var url = window.location.pathname;
-                    window.open(url, "_self");
+
+                    var containerDivElem = document.getElementById(config['containerDivId']);
+                    buildObservationDeck(containerDivElem, config);
                 }
             },
             "sep1" : "---------",
@@ -271,8 +277,9 @@ setupRowLabelContextMenu = function(config) {
                 disabled : false,
                 callback : function(key, opt) {
                     deleteCookie('od_config');
-                    var url = window.location.pathname;
-                    window.open(url, "_self");
+
+                    var containerDivElem = document.getElementById(config['containerDivId']);
+                    buildObservationDeck(containerDivElem, config);
                 }
             }
         }
@@ -315,8 +322,9 @@ setupCategoricCellContextMenu = function(config) {
                     };
 
                     setCookie('od_config', JSON.stringify(querySettings));
-                    var url = window.location.pathname;
-                    window.open(url, "_self");
+
+                    var containerDivElem = document.getElementById(config['containerDivId']);
+                    buildObservationDeck(containerDivElem, config);
                 }
             },
             "sep1" : "---------",
@@ -326,8 +334,9 @@ setupCategoricCellContextMenu = function(config) {
                 disabled : false,
                 callback : function(key, opt) {
                     deleteCookie('od_config');
-                    var url = window.location.pathname;
-                    window.open(url, "_self");
+
+                    var containerDivElem = document.getElementById(config['containerDivId']);
+                    buildObservationDeck(containerDivElem, config);
                 }
             }
         }
