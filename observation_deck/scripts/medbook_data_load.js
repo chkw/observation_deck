@@ -259,11 +259,7 @@ mongoClinicalData = function(collection, OD_eventAlbum) {
     for (var i = 0; i < collection.length; i++) {
         var doc = collection[i];
 
-        // skip the mongo ID
-        delete doc['_id'];
-
         var sampleId = doc['sample'].trim();
-        delete doc['sample'];
 
         // don't use this field
         if (sampleId == 'Patient ID') {
@@ -274,6 +270,9 @@ mongoClinicalData = function(collection, OD_eventAlbum) {
         var keys = getKeys(doc);
         for (var j = 0; j < keys.length; j++) {
             var key = keys[j];
+            if ( key in ['_id', 'sample']) {
+                continue;
+            }
             var eventObj = OD_eventAlbum.getEvent(key);
 
             // add event if DNE
