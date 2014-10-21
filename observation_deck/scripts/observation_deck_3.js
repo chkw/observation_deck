@@ -36,12 +36,14 @@
  *  Build an observation deck!
  */
 buildObservationDeck = function(containerDivElem, config) {
+    config['containerDivId'] = containerDivElem.id;
+
     config = getConfiguration(config);
 
     drawMatrix(containerDivElem, config);
 
     // set up context menu should follow matrix drawing
-    setupContextMenus(config['querySettings']);
+    setupContextMenus(config);
 };
 
 /**
@@ -89,13 +91,15 @@ getConfiguration = function(config) {
 /*
  *
  */
-setupContextMenus = function(querySettings) {
-    setupColLabelContextMenu(querySettings);
-    setupRowLabelContextMenu(querySettings);
-    setupCategoricCellContextMenu(querySettings);
+setupContextMenus = function(config) {
+    // config['querySettings']
+    setupColLabelContextMenu(config);
+    setupRowLabelContextMenu(config);
+    setupCategoricCellContextMenu(config);
 };
 
-setupColLabelContextMenu = function(querySettings) {
+setupColLabelContextMenu = function(config) {
+    var querySettings = config['querySettings'];
     $.contextMenu({
         // selector : ".axis",
         selector : ".colLabel",
@@ -109,19 +113,19 @@ setupColLabelContextMenu = function(querySettings) {
             console.log(key, textContent, axis);
         },
         items : {
-            // "test" : {
-            // name : "test",
-            // icon : null,
-            // disabled : false,
-            // callback : function(key, opt) {
-            // var textContent = this[0].textContent;
-            // console.log(key, textContent);
-            // console.log("href", window.location.href);
-            // console.log("host", window.location.host);
-            // console.log("pathname", window.location.pathname);
-            // console.log("search", window.location.search);
-            // }
-            // },
+            "test" : {
+                name : "test",
+                icon : null,
+                disabled : false,
+                callback : function(key, opt) {
+                    var textContent = this[0].textContent;
+                    console.log(key, textContent);
+                    console.log("href", window.location.href);
+                    console.log("host", window.location.host);
+                    console.log("pathname", window.location.pathname);
+                    console.log("search", window.location.search);
+                }
+            },
             "sort" : {
                 name : "sort",
                 icon : null,
@@ -186,7 +190,8 @@ setupColLabelContextMenu = function(querySettings) {
 /**
  *context menu uses http://medialize.github.io/jQuery-contextMenu
  */
-setupRowLabelContextMenu = function(querySettings) {
+setupRowLabelContextMenu = function(config) {
+    var querySettings = config['querySettings'];
     $.contextMenu({
         // selector : ".axis",
         selector : ".rowLabel",
@@ -277,7 +282,8 @@ setupRowLabelContextMenu = function(querySettings) {
 /**
  * context menu uses http://medialize.github.io/jQuery-contextMenu
  */
-setupCategoricCellContextMenu = function(querySettings) {
+setupCategoricCellContextMenu = function(config) {
+    var querySettings = config['querySettings'];
     $.contextMenu({
         // selector : ".axis",
         selector : ".categoric",
