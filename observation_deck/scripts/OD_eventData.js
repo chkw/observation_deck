@@ -106,6 +106,12 @@ function OD_eventMetadataAlbum() {
             }
             groupedEventIds[datatype].push(eventId);
         }
+        var types = getKeys(groupedEventIds);
+        for (var j = 0; j < types.length; j++) {
+            var type = types[j];
+            var length = groupedEventIds[type].length;
+            console.log('type', type, 'has', length, 'events');
+        }
         return groupedEventIds;
     };
 
@@ -178,8 +184,8 @@ function OD_eventMetadataAlbum() {
     /**
      * Get the specified event from the album.
      */
-    this.getEvent = function(id) {
-        var e = this.album[id];
+    this.getEvent = function(eventId) {
+        var e = this.album[eventId];
         return e;
     };
 
@@ -227,9 +233,14 @@ function OD_eventMetadataAlbum() {
                 // get this step's values
                 var eventId = steps[i]['name'];
                 var reverse = steps[i]['reverse'];
-                var allowedValues = album.getEvent(eventId).metadata['allowedValues'];
+                var eventObj = album.getEvent(eventId);
+                if ((eventObj == undefined) || (eventObj == null)) {
+                    console.log('no event found for sorting: ' + eventId);
+                    continue;
+                }
+                var allowedValues = eventObj.metadata['allowedValues'];
 
-                var vals = album.getEvent(eventId).data.getData([a, b]);
+                var vals = eventObj.data.getData([a, b]);
                 var valA = vals[0]['val'];
                 var valB = vals[1]['val'];
 
@@ -428,6 +439,30 @@ function OD_eventMetadataAlbum() {
         result['minVal'] = jStat.min(allAdjustedVals);
 
         return result;
+    };
+
+    /**
+     * for checking if some samples have differential expression
+     */
+    this.genewiseMedianRescaling = function() {
+        // TODO
+
+    };
+
+    /**
+     * for checking general expression level of gene
+     */
+    this.samplewiseMedianRescaling = function() {
+        // TODO
+
+    };
+
+    /**
+     * for checking if a differential expression is in an expressed gene or not
+     */
+    this.bivariateNormalization = function() {
+        // TODO
+
     };
 
     /**
