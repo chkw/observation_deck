@@ -84,6 +84,10 @@ getConfiguration = function(config) {
         if ('clinical' in mongoData) {
             mongoClinicalData(mongoData['clinical'], OD_eventAlbum);
         }
+
+        if ('expression' in mongoData) {
+            mongoExpressionData(mongoData['expression'], OD_eventAlbum);
+        }
     }
 
     return config;

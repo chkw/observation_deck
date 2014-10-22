@@ -250,7 +250,7 @@ function getExpressionData(url, OD_eventAlbum) {
 }
 
 /**
- *
+ *Add clinical data from mongo collection.
  * @param {Object} collection
  * @param {Object} OD_eventAlbum
  */
@@ -290,6 +290,49 @@ mongoClinicalData = function(collection, OD_eventAlbum) {
             var value = doc[key];
             var data = {};
             data[sampleId] = value;
+            eventObj.data.setData(data);
+        }
+    }
+    return null;
+};
+
+/**
+ *Add expression data from mongo collection.
+ * @param {Object} collection
+ * @param {Object} OD_eventAlbum
+ */
+mongoExpressionData = function(collection, OD_eventAlbum) {
+    // iter over doc (each doc = sample)
+    for (var i = 0; i < collection.length; i++) {
+        var doc = collection[i];
+
+        var gene = doc['gene'].trim();
+        var eventId = gene + '_mRNA';
+
+        // iter over samples
+        var samples = getKeys(doc);
+        for (var j = 0; j < samples.length; j++) {
+            var sample = samples[j];
+            if (isObjInArray(['_id', 'gene'], sample)) {
+                continue;
+            }
+            var eventObj = OD_eventAlbum.getEvent(eventId);
+
+            // add event if DNE
+            if (eventObj == null) {
+                OD_eventAlbum.addEvent({
+                    'id' : eventId,
+                    'name' : null,
+                    'displayName' : null,
+                    'description' : null,
+                    'datatype' : 'expression data',
+                    'allowedValues' : 'numeric'
+                }, []);
+                eventObj = OD_eventAlbum.getEvent(eventId);
+            }
+            var value = doc[sample];
+            var data = {};
+            data[sample] = parseFloat(value);
             eventObj.data.setData(data);
         }
     }
