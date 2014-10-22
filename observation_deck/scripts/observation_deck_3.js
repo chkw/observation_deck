@@ -358,7 +358,9 @@ setupCategoricCellContextMenu = function(config) {
 drawMatrix = function(containingDiv, config) {
     // TODO begin drawMatrix
     config["rowClickback"] = function(d, i) {
-        console.log("rowClickback: " + d);
+        var datatype = config['eventAlbum'].getEvent(d).metadata.datatype;
+        alert('open page for event: ' + d + ' of datatype: ' + datatype);
+        // console.log("rowClickback: " + d);
     };
 
     config["columnClickback"] = function(d, i) {
@@ -547,10 +549,7 @@ drawMatrix = function(containingDiv, config) {
         },
         "transform" : "translate(" + translateX + ", " + translateY + ")",
         "class" : function(d, i) {
-            var eventId = d;
-            var datatype = eventAlbum.getEvent(eventId).metadata.datatype;
-            datatype = datatype.replace(' ', '_');
-            return "rowLabel mono axis unselectable " + datatype;
+            return "rowLabel mono axis unselectable";
         }
     }).style("text-anchor", "end");
     rowLabels.on("click", config["rowClickback"]);
