@@ -455,7 +455,19 @@ drawMatrix = function(containingDiv, config) {
     var sortSteps = null;
     if ("colSort" in querySettings) {
         sortSteps = new sortingSteps(querySettings["colSort"]["steps"]);
+        for (var i = sortSteps.getSteps().length - 1; i >= 0; i--) {
+            var step = sortSteps.steps[i];
+            var name = step['name'];
+            if (eventAlbum.getEvent(name)) {
+                // event exists
+            } else {
+                // ignore events that are not found
+                console.log(name, 'not found, skip sorting by that event');
+                sortSteps.removeStep(name);
+            }
+        }
     }
+
     colNames = eventAlbum.multisortSamples(sortSteps);
 
     var colNameMapping = new Object();
@@ -535,7 +547,10 @@ drawMatrix = function(containingDiv, config) {
         },
         "transform" : "translate(" + translateX + ", " + translateY + ")",
         "class" : function(d, i) {
-            return "rowLabel mono axis unselectable";
+            var eventId = d;
+            var datatype = eventAlbum.getEvent(eventId).metadata.datatype;
+            datatype = datatype.replace(' ', '_');
+            return "rowLabel mono axis unselectable " + datatype;
         }
     }).style("text-anchor", "end");
     rowLabels.on("click", config["rowClickback"]);
