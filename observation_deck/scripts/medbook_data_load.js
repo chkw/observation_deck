@@ -259,18 +259,30 @@ mongoClinicalData = function(collection, OD_eventAlbum) {
     for (var i = 0; i < collection.length; i++) {
         var doc = collection[i];
 
-        var sampleId = doc['sample'].trim();
+        var sampleId = null;
+        if (hasOwnProperty(doc, 'sample')) {
+            sampleId = doc['sample'];
+        } else if (hasOwnProperty(doc, 'Sample')) {
+            sampleId = doc['Sample'];
+        } else {
+            // no gene identifier found
+            console.log('no sample ID found in clinical doc: ' + prettyJson(doc));
+            continue;
+        }
+
+        sampleId = sampleId.trim();
 
         // don't use this field
         if (sampleId == 'Patient ID') {
             continue;
         }
 
-        // iter over event names
+        // iter over event names (file columns)
         var keys = getKeys(doc);
         for (var j = 0; j < keys.length; j++) {
             var key = keys[j];
-            if (isObjInArray(['_id', 'sample'], key)) {
+            if (isObjInArray(['_id', 'sample', 'Sample'], key)) {
+                // skip these file columns
                 continue;
             }
             var eventObj = OD_eventAlbum.getEvent(key);
@@ -306,7 +318,18 @@ mongoExpressionData = function(collection, OD_eventAlbum) {
     for (var i = 0; i < collection.length; i++) {
         var doc = collection[i];
 
-        var gene = doc['id'].trim();
+        var gene = null;
+        if (hasOwnProperty(doc, 'gene')) {
+            gene = doc['gene'];
+        } else if (hasOwnProperty(doc, 'id')) {
+            gene = doc['id'];
+        } else {
+            // no gene identifier found
+            console.log('no gene identifier found in expression doc: ' + prettyJson(doc));
+            continue;
+        }
+
+        gene = gene.trim();
         var eventId = gene + '_mRNA';
 
         // iter over samples
@@ -314,6 +337,7 @@ mongoExpressionData = function(collection, OD_eventAlbum) {
         for (var j = 0; j < samples.length; j++) {
             var sample = samples[j];
             if (isObjInArray(['_id', 'gene', 'id'], sample)) {
+                // skip these 'samples'
                 continue;
             }
             var eventObj = OD_eventAlbum.getEvent(eventId);
