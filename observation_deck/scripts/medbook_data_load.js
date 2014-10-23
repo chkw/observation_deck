@@ -306,14 +306,14 @@ mongoExpressionData = function(collection, OD_eventAlbum) {
     for (var i = 0; i < collection.length; i++) {
         var doc = collection[i];
 
-        var gene = doc['gene'].trim();
+        var gene = doc['id'].trim();
         var eventId = gene + '_mRNA';
 
         // iter over samples
         var samples = getKeys(doc);
         for (var j = 0; j < samples.length; j++) {
             var sample = samples[j];
-            if (isObjInArray(['_id', 'gene'], sample)) {
+            if (isObjInArray(['_id', 'gene', 'id'], sample)) {
                 continue;
             }
             var eventObj = OD_eventAlbum.getEvent(eventId);
