@@ -37,9 +37,9 @@
  */
 buildObservationDeck = function(containerDivElem, config) {
     // console.log('buildObservationDeck');
-    config['containerDivId'] = containerDivElem.id;
-
     config = getConfiguration(config);
+
+    config['containerDivId'] = containerDivElem.id;
 
     drawMatrix(containerDivElem, config);
 
@@ -52,7 +52,12 @@ buildObservationDeck = function(containerDivElem, config) {
  */
 getConfiguration = function(config) {
     if (config == null) {
-        config = {};
+        config = {
+            'mongoData' : {
+                'clinical' : aaa,
+                'expression' : bbb
+            }
+        };
     }
 
     // look for od_config in cookies

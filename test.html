@@ -23,16 +23,18 @@
 		<script type="text/javascript" src="observation_deck/scripts/static.js"></script>
 		<script type="text/javascript" src="observation_deck/scripts/OD_eventData.js"></script>
 		<script type="text/javascript" src="observation_deck/scripts/medbook_data_load.js"></script>
+		<script type="text/javascript" src="observation_deck/scripts/a.js"></script>
+		<script type="text/javascript" src="observation_deck/scripts/b.js"></script>
 		<script type="text/javascript" src="observation_deck/scripts/observation_deck_3.js"></script>
 		<!-- <script type="text/javascript" src="observation_deck/scripts/observation_deck_jqplugin.js"></script> -->
 	</head>
 	<body>
 		<div id='testDiv'></div>
 		<script>
-            var clinicalDataFileUrl = 'observation_deck/data/cbioMedbook/data_clinical.txt';
-            var caseListsFileUrl = 'observation_deck/data/cbioMedbook/getCaseLists.txt';
-            var mutationDataFileUrl = 'observation_deck/data/cbioMedbook/mutations.maf';
-            var expressionDataFileUrl = 'observation_deck/data/cbioMedbook/expressionData.tab';
+            // var clinicalDataFileUrl = 'observation_deck/data/cbioMedbook/data_clinical.txt';
+            // var caseListsFileUrl = 'observation_deck/data/cbioMedbook/getCaseLists.txt';
+            // var mutationDataFileUrl = 'observation_deck/data/cbioMedbook/mutations.maf';
+            // var expressionDataFileUrl = 'observation_deck/data/cbioMedbook/expressionData.tab';
 
             var divElem = document.getElementById("testDiv");
 
@@ -42,18 +44,20 @@
             // 'expressionUrl' : expressionDataFileUrl
             // });
 
-            var clinicalResp = getResponse('observation_deck/data/meteorMedbook/clinicalData.json');
-            clinicalResp = parseJson(clinicalResp);
+            // var clinicalResp = getResponse('observation_deck/data/meteorMedbook/clinicalData.json');
+            // clinicalResp = parseJson(clinicalResp);
+            //
+            // var expressionResp = getResponse('observation_deck/data/meteorMedbook/expression50Data.json');
+            // expressionResp = parseJson(expressionResp);
 
-            var expressionResp = getResponse('observation_deck/data/meteorMedbook/expression50Data.json');
-            expressionResp = parseJson(expressionResp);
+            buildObservationDeck(divElem, null);
 
-            buildObservationDeck(divElem, {
-                'mongoData' : {
-                    'clinical' : clinicalResp,
-                    'expression' : expressionResp
-                }
-            });
+            // buildObservationDeck(divElem, {
+            // 'mongoData' : {
+            // 'clinical' : a,
+            // 'expression' : b
+            // }
+            // });
 		</script>
 	</body>
 </html>
