@@ -364,13 +364,23 @@ drawMatrix = function(containingDiv, config) {
     // TODO begin drawMatrix
     config["rowClickback"] = function(d, i) {
         var datatype = config['eventAlbum'].getEvent(d).metadata.datatype;
-        alert('open page for event: ' + d + ' of datatype: ' + datatype);
         // console.log("rowClickback: " + d);
+        // TODO meteor url: /wb/gene/<gene name>
+        if (datatype === 'expression data') {
+            var gene = d.replace('_mRNA', '');
+            var url = '/wb/gene/' + gene;
+            window.open(url, "_self");
+        } else {
+            alert('open page for event: ' + d + ' of datatype: ' + datatype);
+        }
     };
 
     config["columnClickback"] = function(d, i) {
-        alert('open page for sample: ' + d);
+        // alert('open page for sample: ' + d);
         // console.log("columnClickback: " + d);
+        // TODO meteor url: /wb/patient/<sample-name>
+        var url = '/wb/patient/' + d;
+        window.open(url, "_self");
     };
 
     config["cellClickback"] = function(d, i) {
