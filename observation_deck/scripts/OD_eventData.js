@@ -541,16 +541,32 @@ function OD_eventDataCollection() {
     };
 
     /**
-     * Get all data values.
+     * get the sample count for each value.  Restrict to sample list, if given.
      */
-    this.getValues = function(dedup) {
-        var vals = [];
-        var dataList = this.getData();
+    this.getValueCounts = function(sampleList) {
+        var valCounts = {};
+        // get sample data
+        var dataList = this.getData(sampleList);
+
+        // get the sample count for each value
         for (var i = 0; i < dataList.length; i++) {
             var dataObj = dataList[i];
             var val = dataObj['val'];
-            vals.push(val);
+            if (!hasOwnProperty(valCounts, val)) {
+                valCounts[val] = 0;
+            }
+            valCounts[val] = valCounts[val] + 1;
         }
+        return valCounts;
+    };
+
+    /**
+     * Get all data values.
+     */
+    this.getValues = function(dedup) {
+        var valueCounts = this.getValueCounts();
+        var vals = getKeys(valueCounts);
+
         if ((dedup != null) && (dedup == true)) {
             vals = eliminateDuplicates(vals);
         }
@@ -574,7 +590,9 @@ function OD_eventDataCollection() {
     };
 
     /**
-     * Order of samples is maintained... allows multi-sort.  If a specified ID is not found, then null is used for the value.
+     * Order of samples is maintained... allows multi-sort.
+     * If a specified ID is not found, then null is used for the value.
+     * Restrict to sampleIdList, if given.
      */
     this.getData = function(sampleIdList) {
         // a mapping of sampleId to index
