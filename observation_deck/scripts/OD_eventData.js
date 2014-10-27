@@ -778,7 +778,7 @@ function sampleSelectionCriteria() {
 
     this.addCriteria = function(eventId, value) {
         var criteria = {
-            "eventId" : feature,
+            "eventId" : eventId,
             "value" : value
         };
         for (var i in this.criteria) {
@@ -789,9 +789,9 @@ function sampleSelectionCriteria() {
         this.criteria.push(criteria);
     };
 
-    this.removeCriteria = function(feature, value) {
+    this.removeCriteria = function(eventId, value) {
         for (var i = 0; i < this.criteria.length; i++) {
-            if ((this.criteria[i]["eventId"] == feature) && (this.criteria[i]["value"] == value)) {
+            if ((this.criteria[i]["eventId"] == eventId) && (this.criteria[i]["value"] == value)) {
                 this.criteria.splice(i, 1);
                 break;
             }
