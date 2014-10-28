@@ -17,7 +17,7 @@ sync_meteor: observation_deck_plugin.js
 	\
 
 sync_dev: observation_deck_plugin.js
-	rsync -avP $< su2c-dev.ucsc.edu:~/observation_deck/observation_deck/scripts/. ;
+	rsync -avP $< su2c-dev.ucsc.edu:~/medbook_stuff/observation-deck/. ;
 	\
 
 observation_deck_plugin.js: $(SCRIPTS)

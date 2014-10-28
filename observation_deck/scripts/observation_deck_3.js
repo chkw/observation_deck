@@ -636,7 +636,7 @@ drawMatrix = function(containingDiv, config) {
             "fill" : colorMapper(val)
         };
         if (eventAlbum.getEvent(d['eventId']).metadata.allowedValues) {
-            attributes['class'] = 'categoric';
+            attributes['class'] = eventAlbum.getEvent(d['eventId']).metadata.allowedValues;
             attributes['eventId'] = d['eventId'];
             attributes['sampleId'] = d['id'];
             attributes['val'] = d['val'];
