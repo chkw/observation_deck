@@ -283,6 +283,9 @@ function OD_eventMetadataAlbum() {
         // TODO divide by SD
     };
 
+    /**
+     * rescale by z-score over each eventId
+     */
     this.zScoreExpressionRescaling = function() {
         console.log('zScoreExpressionRescaling');
 
@@ -306,7 +309,7 @@ function OD_eventMetadataAlbum() {
             var eventId = expressionEventIds[i];
 
             // get mean and sd
-            var eventStats = this.getEvent(eventId).data.getMeanAndSd();
+            var eventStats = this.getEvent(eventId).data.getStats();
             stats[eventId] = {};
             stats[eventId] = eventStats;
 
@@ -329,7 +332,6 @@ function OD_eventMetadataAlbum() {
         result['minVal'] = jStat.min(allAdjustedVals);
 
         return result;
-
     };
 
     /**
@@ -369,8 +371,8 @@ function OD_eventMetadataAlbum() {
         for (var i = 0; i < expressionEventIds.length; i++) {
             var eventId = expressionEventIds[i];
             meanVals[eventId] = {};
-            meanVals[eventId]['group1'] = this.getEvent(eventId).data.getMeanAndSd(group1SampleIds)['mean'];
-            meanVals[eventId]['group2'] = this.getEvent(eventId).data.getMeanAndSd(group2SampleIds)['mean'];
+            meanVals[eventId]['group1'] = this.getEvent(eventId).data.getStats(group1SampleIds)['mean'];
+            meanVals[eventId]['group2'] = this.getEvent(eventId).data.getStats(group2SampleIds)['mean'];
 
             // finally iter over all samples to adjust score
             var adjustment = (meanVals[eventId]['group2'] - meanVals[eventId]['group1']) / 2;
@@ -419,7 +421,7 @@ function OD_eventMetadataAlbum() {
 
         for (var i = 0; i < expressionEventIds.length; i++) {
             var eventId = expressionEventIds[i];
-            meanVals[eventId] = this.getEvent(eventId).data.getMeanAndSd(negSampleIds)['mean'];
+            meanVals[eventId] = this.getEvent(eventId).data.getStats(negSampleIds)['mean'];
 
             // second iter over all samples to adjust score
             var allEventData = this.getEvent(eventId).data.getData();
@@ -444,9 +446,53 @@ function OD_eventMetadataAlbum() {
     /**
      * for checking if some samples have differential expression
      */
-    this.genewiseMedianRescaling = function() {
+    this.eventwiseMedianRescaling = function() {
         // TODO
+        console.log('eventwiseMedianRescaling');
 
+        // get expression events
+        var allEventIds = this.getEventIdsByType();
+        if (!hasOwnProperty(allEventIds, 'expression data')) {
+            console.log('no expression');
+            return null;
+        }
+        var expressionEventIds = allEventIds['expression data'];
+
+        // compute average expression each gene
+        var stats = {};
+        var result = {
+            'stats' : stats
+        };
+
+        var allAdjustedVals = [];
+
+        for (var i = 0; i < expressionEventIds.length; i++) {
+            var eventId = expressionEventIds[i];
+
+            // get stats
+            var eventStats = this.getEvent(eventId).data.getStats();
+            stats[eventId] = {};
+            stats[eventId] = eventStats;
+
+            // finally iter over all samples to adjust score
+            var allEventData = this.getEvent(eventId).data.getData();
+            for (var k = 0; k < allEventData.length; k++) {
+                var data = allEventData[k];
+                var val = data['val'];
+                data['val_orig'] = val;
+                if (isNumerical(val)) {
+                    var newVal = (val - stats[eventId]['median']);
+                    data['val'] = newVal;
+                    allAdjustedVals.push(data['val']);
+                }
+            }
+        }
+
+        // find min/max of entire expression matrix
+        result['maxVal'] = jStat.max(allAdjustedVals);
+        result['minVal'] = jStat.min(allAdjustedVals);
+
+        return result;
     };
 
     /**
@@ -681,13 +727,15 @@ function OD_eventDataCollection() {
         return selectedIds;
     };
 
-    /**
-     *get mean and sd of samples vals.  Uses jStat library
+    /** *get mean,sd,median,meddev,meandev.  Uses jStat library
      */
-    this.getMeanAndSd = function(sampleIdList) {
+    this.getStats = function(sampleIdList) {
         var results = {
             'mean' : 0,
-            'sd' : 0
+            'sd' : 0,
+            'median' : 0,
+            'meddev' : 0,
+            'meandev' : 0
         };
 
         // a mapping of sampleId to index
@@ -712,6 +760,9 @@ function OD_eventDataCollection() {
         }
         results['mean'] = jStat.mean(vector);
         results['sd'] = jStat.stdev(vector);
+        results['median'] = jStat.median(vector);
+        results['meddev'] = jStat.meddev(vector);
+        results['meandev'] = jStat.meandev(vector);
 
         return results;
     };

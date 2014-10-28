@@ -424,7 +424,8 @@ drawMatrix = function(containingDiv, config) {
             var rescalingConfig = querySettings['yulia_rescaling'];
             rescalingData = eventAlbum.yuliaExpressionRescaling(rescalingConfig['eventId'], rescalingConfig['val']);
         } else {
-            rescalingData = eventAlbum.zScoreExpressionRescaling();
+            // rescalingData = eventAlbum.zScoreExpressionRescaling();
+            rescalingData = eventAlbum.eventwiseMedianRescaling();
         }
     } else {
         console.log('no expression data to rescale');
