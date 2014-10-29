@@ -308,8 +308,8 @@ setupCategoricCellContextMenu = function(config) {
             var cellElem = this[0];
         },
         items : {
-            "test" : {
-                name : "test expression rescaling",
+            "yulia expression rescaling" : {
+                name : "yulia expression rescaling",
                 icon : null,
                 disabled : false,
                 callback : function(key, opt) {
@@ -325,9 +325,27 @@ setupCategoricCellContextMenu = function(config) {
                     console.log("pathname", window.location.pathname);
                     console.log("search", window.location.search);
 
-                    querySettings["yulia_rescaling"] = {
+                    // TODO settings for rescaling
+                    querySettings['expression rescaling'] = {
+                        'method' : 'yulia_rescaling',
                         'eventId' : eventId,
                         'val' : val
+                    };
+
+                    setCookie('od_config', JSON.stringify(querySettings));
+
+                    var containerDivElem = document.getElementById(config['containerDivId']);
+                    buildObservationDeck(containerDivElem, config);
+                }
+            },
+            "eventwise median rescaling" : {
+                name : "eventwise median rescaling",
+                icon : null,
+                disabled : false,
+                callback : function(key, opt) {
+                    // TODO settings for rescaling
+                    querySettings['expression rescaling'] = {
+                        'method' : 'eventwiseMedianRescaling'
                     };
 
                     setCookie('od_config', JSON.stringify(querySettings));
@@ -419,16 +437,20 @@ drawMatrix = function(containingDiv, config) {
     // expression rescaling and color mapping
     var rescalingData = null;
 
-    if (hasOwnProperty(groupedEvents, 'expression data')) {
-        if (hasOwnProperty(querySettings, 'yulia_rescaling')) {
-            var rescalingConfig = querySettings['yulia_rescaling'];
-            rescalingData = eventAlbum.yuliaExpressionRescaling(rescalingConfig['eventId'], rescalingConfig['val']);
-        } else {
+    if (hasOwnProperty(groupedEvents, 'expression data') && hasOwnProperty(querySettings, 'expression rescaling')) {
+        var rescalingSettings = querySettings['expression rescaling'];
+        if (rescalingSettings['method'] === 'yulia_rescaling') {
+            rescalingData = eventAlbum.yuliaExpressionRescaling(rescalingSettings['eventId'], rescalingSettings['val']);
+        } else if (rescalingSettings['method'] === 'eventwiseMedianRescaling') {
             // rescalingData = eventAlbum.zScoreExpressionRescaling();
             rescalingData = eventAlbum.eventwiseMedianRescaling();
+        } else if (rescalingSettings['method'] === 'zScoreExpressionRescaling') {
+            rescalingData = eventAlbum.zScoreExpressionRescaling();
+        } else {
+            // no rescaling
         }
     } else {
-        console.log('no expression data to rescale');
+        console.log('no expression data rescaling');
     }
 
     // rescalingData = eventAlbum.betweenMeansExpressionRescaling('Small Cell v Adeno', 'Adeno', 'Small Cell');
