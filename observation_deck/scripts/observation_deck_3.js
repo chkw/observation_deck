@@ -79,6 +79,8 @@ setupContextMenus = function(config) {
     setupColLabelContextMenu(config);
     setupRowLabelContextMenu(config);
     setupCategoricCellContextMenu(config);
+    setupExpressionCellContextMenu(config);
+
 };
 
 /**
@@ -103,12 +105,12 @@ setupColLabelContextMenu = function(config) {
         selector : ".colLabel",
         callback : function(key, options) {
             // default callback
-            var textContent = this[0].textContent;
+            var eventId = this[0].__data__;
             var axis = this[0].getAttribute("class").indexOf("axis") >= 0 ? true : false;
             if (axis) {
                 axis = this[0].getAttribute("class").indexOf("rowLabel") >= 0 ? "row" : "column";
             }
-            console.log(key, textContent, axis);
+            console.log(key, eventId, axis);
         },
         items : {
             "reset" : {
@@ -136,12 +138,12 @@ setupRowLabelContextMenu = function(config) {
         selector : ".rowLabel",
         callback : function(key, options) {
             // default callback
-            var textContent = this[0].textContent;
+            var eventId = this[0].__data__;
             var axis = this[0].getAttribute("class").indexOf("axis") >= 0 ? true : false;
             if (axis) {
                 axis = this[0].getAttribute("class").indexOf("rowLabel") >= 0 ? "row" : "column";
             }
-            console.log(key, textContent, axis);
+            console.log(key, eventId, axis);
         },
         items : {
             // "test" : {
@@ -149,20 +151,23 @@ setupRowLabelContextMenu = function(config) {
             // icon : null,
             // disabled : false,
             // callback : function(key, opt) {
-            // var textContent = this[0].textContent;
-            // console.log(key, textContent);
+            // console.log('key', key);
+            // console.log('opt', opt);
+            // console.log('this[0].__data__', this[0].__data__);
+            // console.log('this[0].textContent', this[0].textContent);
             // console.log("href", window.location.href);
             // console.log("host", window.location.host);
             // console.log("pathname", window.location.pathname);
             // console.log("search", window.location.search);
             // }
             // },
+
             "sort" : {
                 name : "sort",
                 icon : null,
                 disabled : false,
                 callback : function(key, opt) {
-                    var textContent = this[0].textContent;
+                    var eventId = this[0].__data__;
 
                     var axis = this[0].getAttribute("class").indexOf("axis") >= 0 ? true : false;
                     if (axis) {
@@ -186,7 +191,7 @@ setupRowLabelContextMenu = function(config) {
                     } else {
                         sortSteps = new sortingSteps();
                     }
-                    sortSteps.addStep(textContent);
+                    sortSteps.addStep(eventId);
                     querySettings[sortType] = sortSteps;
 
                     setCookie('od_config', JSON.stringify(querySettings));
@@ -206,6 +211,68 @@ setupRowLabelContextMenu = function(config) {
                 icon : null,
                 disabled : true
             },
+            "reset" : {
+                name : "reset",
+                icon : null,
+                disabled : false,
+                callback : function(key, opt) {
+                    resetConfig(config);
+
+                    var containerDivElem = document.getElementById(config['containerDivId']);
+                    buildObservationDeck(containerDivElem, config);
+                }
+            }
+        }
+    });
+};
+
+/**
+ * context menu uses http://medialize.github.io/jQuery-contextMenu
+ */
+setupExpressionCellContextMenu = function(config) {
+    $.contextMenu({
+        // selector : ".axis",
+        selector : ".mrna_exp",
+        callback : function(key, options) {
+            // default callback
+            var cellElem = this[0];
+        },
+        items : {
+            "eventwise median rescaling" : {
+                name : "eventwise median rescaling",
+                icon : null,
+                disabled : false,
+                callback : function(key, opt) {
+                    // settings for rescaling
+                    var querySettings = config['querySettings'];
+                    querySettings['expression rescaling'] = {
+                        'method' : 'eventwiseMedianRescaling'
+                    };
+
+                    setCookie('od_config', JSON.stringify(querySettings));
+
+                    var containerDivElem = document.getElementById(config['containerDivId']);
+                    buildObservationDeck(containerDivElem, config);
+                }
+            },
+            "eventwise z-score rescaling" : {
+                name : "eventwise z-score rescaling",
+                icon : null,
+                disabled : false,
+                callback : function(key, opt) {
+                    // settings for rescaling
+                    var querySettings = config['querySettings'];
+                    querySettings['expression rescaling'] = {
+                        'method' : 'zScoreExpressionRescaling'
+                    };
+
+                    setCookie('od_config', JSON.stringify(querySettings));
+
+                    var containerDivElem = document.getElementById(config['containerDivId']);
+                    buildObservationDeck(containerDivElem, config);
+                }
+            },
+            "sep1" : "---------",
             "reset" : {
                 name : "reset",
                 icon : null,
@@ -250,29 +317,12 @@ setupCategoricCellContextMenu = function(config) {
                     console.log("pathname", window.location.pathname);
                     console.log("search", window.location.search);
 
-                    // TODO settings for rescaling
+                    // settings for rescaling
                     var querySettings = config['querySettings'];
                     querySettings['expression rescaling'] = {
                         'method' : 'yulia_rescaling',
                         'eventId' : eventId,
                         'val' : val
-                    };
-
-                    setCookie('od_config', JSON.stringify(querySettings));
-
-                    var containerDivElem = document.getElementById(config['containerDivId']);
-                    buildObservationDeck(containerDivElem, config);
-                }
-            },
-            "eventwise median rescaling" : {
-                name : "eventwise median rescaling",
-                icon : null,
-                disabled : false,
-                callback : function(key, opt) {
-                    // TODO settings for rescaling
-                    var querySettings = config['querySettings'];
-                    querySettings['expression rescaling'] = {
-                        'method' : 'eventwiseMedianRescaling'
                     };
 
                     setCookie('od_config', JSON.stringify(querySettings));
@@ -521,6 +571,17 @@ drawMatrix = function(containingDiv, config) {
     }).style("text-anchor", "end");
     rowLabels.on("click", config["rowClickback"]);
     rowLabels.on("contextmenu", config["rowRightClickback"]);
+    rowLabels.append("title").text(function(d) {
+        var eventObj = eventAlbum.getEvent(d);
+        var datatype = eventObj.metadata.datatype;
+        var s = 'event: ' + d + '\ndatatype: ' + datatype;
+
+        if ((datatype === 'expression data') && (rescalingData != null)) {
+            s = s + '\nrescalingData: ' + prettyJson(rescalingData['stats'][d]);
+        }
+
+        return s;
+    });
 
     // col labels
     var rotationDegrees = -90;
@@ -540,6 +601,10 @@ drawMatrix = function(containingDiv, config) {
     }).style("text-anchor", "start");
     colLabels.on("click", config["columnClickback"]);
     colLabels.on("contextmenu", config["columnRightClickback"]);
+    colLabels.append("title").text(function(d) {
+        var s = 'sample: ' + d;
+        return s;
+    });
 
     // TODO SVG elements for heatmap cells
     var dataList = eventAlbum.getAllDataAsList();
@@ -586,8 +651,13 @@ drawMatrix = function(containingDiv, config) {
             "stroke-width" : "2px",
             "fill" : colorMapper(val)
         };
-        if (eventAlbum.getEvent(d['eventId']).metadata.allowedValues) {
-            attributes['class'] = eventAlbum.getEvent(d['eventId']).metadata.allowedValues;
+        if (eventAlbum.getEvent(d['eventId']).metadata.allowedValues === 'categoric') {
+            attributes['class'] = 'categoric';
+            attributes['eventId'] = d['eventId'];
+            attributes['sampleId'] = d['id'];
+            attributes['val'] = d['val'];
+        } else if (eventAlbum.getEvent(d['eventId']).metadata.datatype === 'expression data') {
+            attributes['class'] = 'mrna_exp';
             attributes['eventId'] = d['eventId'];
             attributes['sampleId'] = d['id'];
             attributes['val'] = d['val'];
@@ -603,7 +673,7 @@ drawMatrix = function(containingDiv, config) {
     // heatmap titles
     heatMap.append("title").text(function(d) {
         // var s = "r:" + d['eventId'] + "\n\nc:" + d['id'] + "\n\nval:" + d['val'] + "\n\nval_orig:" + d['val_orig'];
-        var s = "r:" + d['eventId'] + "\n\nc:" + d['id'] + "\n\nval:" + d['val'];
+        var s = "event: " + d['eventId'] + "\nsample: " + d['id'] + "\nvalue: " + d['val'];
         return s;
     });
 
