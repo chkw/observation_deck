@@ -108,8 +108,23 @@ setupContextMenus = function(config) {
     setupCategoricCellContextMenu(config);
 };
 
+/**
+ * delete cookie and reset config
+ */
+resetConfig = function(config) {
+    deleteCookie('od_config');
+    var keys = getKeys(config);
+    for (var i = 0; i < keys.length; i++) {
+        var key = keys[i];
+        if (isObjInArray(['mongoData', 'containerDivId'], key)) {
+            continue;
+        } else {
+            delete config[key];
+        }
+    }
+};
+
 setupColLabelContextMenu = function(config) {
-    var querySettings = config['querySettings'];
     $.contextMenu({
         // selector : ".axis",
         selector : ".colLabel",
@@ -190,7 +205,7 @@ setupColLabelContextMenu = function(config) {
                 icon : null,
                 disabled : false,
                 callback : function(key, opt) {
-                    deleteCookie('od_config');
+                    resetConfig(config);
                     // var url = window.location.pathname;
                     // window.open(url, "_self");
                     var containerDivElem = document.getElementById(config['containerDivId']);
@@ -205,7 +220,6 @@ setupColLabelContextMenu = function(config) {
  *context menu uses http://medialize.github.io/jQuery-contextMenu
  */
 setupRowLabelContextMenu = function(config) {
-    var querySettings = config['querySettings'];
     $.contextMenu({
         // selector : ".axis",
         selector : ".rowLabel",
@@ -255,6 +269,7 @@ setupRowLabelContextMenu = function(config) {
                     }
 
                     var sortSteps = null;
+                    var querySettings = config['querySettings'];
                     if ( sortType in querySettings) {
                         sortSteps = new sortingSteps(querySettings[sortType]["steps"]);
                     } else {
@@ -285,7 +300,7 @@ setupRowLabelContextMenu = function(config) {
                 icon : null,
                 disabled : false,
                 callback : function(key, opt) {
-                    deleteCookie('od_config');
+                    resetConfig(config);
 
                     var containerDivElem = document.getElementById(config['containerDivId']);
                     buildObservationDeck(containerDivElem, config);
@@ -299,7 +314,6 @@ setupRowLabelContextMenu = function(config) {
  * context menu uses http://medialize.github.io/jQuery-contextMenu
  */
 setupCategoricCellContextMenu = function(config) {
-    var querySettings = config['querySettings'];
     $.contextMenu({
         // selector : ".axis",
         selector : ".categoric",
@@ -326,6 +340,7 @@ setupCategoricCellContextMenu = function(config) {
                     console.log("search", window.location.search);
 
                     // TODO settings for rescaling
+                    var querySettings = config['querySettings'];
                     querySettings['expression rescaling'] = {
                         'method' : 'yulia_rescaling',
                         'eventId' : eventId,
@@ -344,6 +359,7 @@ setupCategoricCellContextMenu = function(config) {
                 disabled : false,
                 callback : function(key, opt) {
                     // TODO settings for rescaling
+                    var querySettings = config['querySettings'];
                     querySettings['expression rescaling'] = {
                         'method' : 'eventwiseMedianRescaling'
                     };
@@ -360,7 +376,7 @@ setupCategoricCellContextMenu = function(config) {
                 icon : null,
                 disabled : false,
                 callback : function(key, opt) {
-                    deleteCookie('od_config');
+                    resetConfig(config);
 
                     var containerDivElem = document.getElementById(config['containerDivId']);
                     buildObservationDeck(containerDivElem, config);
