@@ -60,19 +60,11 @@ getConfiguration = function(config) {
     if ('mongoData' in config) {
         var mongoData = config['mongoData'];
         if ('clinical' in mongoData) {
-            if (mongoData['clinical'] === 'aaa') {
-                mongoClinicalData(aaa, OD_eventAlbum);
-            } else {
-                mongoClinicalData(mongoData['clinical'], OD_eventAlbum);
-            }
+            mongoClinicalData(mongoData['clinical'], OD_eventAlbum);
         }
 
         if ('expression' in mongoData) {
-            if (mongoData['expression'] === 'bbb') {
-                mongoExpressionData(bbb, OD_eventAlbum);
-            } else {
-                mongoExpressionData(mongoData['expression'], OD_eventAlbum);
-            }
+            mongoExpressionData(mongoData['expression'], OD_eventAlbum);
         }
     }
 
