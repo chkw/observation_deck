@@ -2,7 +2,7 @@
 # Package up observation deck scripts into one file.
 
 #SCRIPTS = jquery-1.11.1.js jquery.contextMenu.js d3.min.js jstat.min.js static.js OD_eventData.js medbook_data_load.js observation_deck_3.js
-SCRIPTS = jquery.contextMenu.js d3.min.js jstat.min.js static.js OD_eventData.js medbook_data_load.js a.js b.js observation_deck_3.js
+SCRIPTS = jquery.contextMenu.js d3.min.js jstat.min.js static.js OD_eventData.js medbook_data_load.js observation_deck_3.js
 
 TARGETS = observation_deck_plugin.js
 
