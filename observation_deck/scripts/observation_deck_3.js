@@ -577,7 +577,7 @@ drawMatrix = function(containingDiv, config) {
         var s = 'event: ' + d + '\ndatatype: ' + datatype;
 
         if ((datatype === 'expression data') && (rescalingData != null)) {
-            s = s + '\nrescalingData: ' + prettyJson(rescalingData['stats'][d]);
+            s = s + '\nraw data stats: ' + prettyJson(rescalingData['stats'][d]);
         }
 
         return s;

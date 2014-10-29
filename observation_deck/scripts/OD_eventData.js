@@ -725,9 +725,11 @@ function OD_eventDataCollection() {
      */
     this.getStats = function(sampleIdList) {
         var results = {
+            'min' : 0,
+            'max' : 0,
             'mean' : 0,
-            'sd' : 0,
             'median' : 0,
+            'sd' : 0,
             'meddev' : 0,
             'meandev' : 0
         };
@@ -757,6 +759,8 @@ function OD_eventDataCollection() {
         results['median'] = jStat.median(vector);
         results['meddev'] = jStat.meddev(vector);
         results['meandev'] = jStat.meandev(vector);
+        results['min'] = jStat.min(vector);
+        results['max'] = jStat.max(vector);
 
         return results;
     };
