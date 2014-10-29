@@ -50,7 +50,12 @@
             // var expressionResp = getResponse('observation_deck/data/meteorMedbook/expression50Data.json');
             // expressionResp = parseJson(expressionResp);
 
-            buildObservationDeck(divElem, null);
+            buildObservationDeck(divElem, {
+                'mongoData' : {
+                    'clinical' : 'aaa',
+                    'expression' : 'bbb'
+                }
+            });
 
             // buildObservationDeck(divElem, {
             // 'mongoData' : {

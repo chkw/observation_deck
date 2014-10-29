@@ -33,15 +33,6 @@ buildObservationDeck = function(containerDivElem, config) {
  *
  */
 getConfiguration = function(config) {
-    if (config == null) {
-        config = {
-            'mongoData' : {
-                'clinical' : aaa,
-                'expression' : bbb
-            }
-        };
-    }
-
     // look for od_config in cookies
     var querySettings = parseJson(getCookie('od_config')) || {};
     config['querySettings'] = querySettings;
@@ -69,11 +60,19 @@ getConfiguration = function(config) {
     if ('mongoData' in config) {
         var mongoData = config['mongoData'];
         if ('clinical' in mongoData) {
-            mongoClinicalData(mongoData['clinical'], OD_eventAlbum);
+            if (mongoData['clinical'] === 'aaa') {
+                mongoClinicalData(aaa, OD_eventAlbum);
+            } else {
+                mongoClinicalData(mongoData['clinical'], OD_eventAlbum);
+            }
         }
 
         if ('expression' in mongoData) {
-            mongoExpressionData(mongoData['expression'], OD_eventAlbum);
+            if (mongoData['expression'] === 'bbb') {
+                mongoExpressionData(bbb, OD_eventAlbum);
+            } else {
+                mongoExpressionData(mongoData['expression'], OD_eventAlbum);
+            }
         }
     }
 
