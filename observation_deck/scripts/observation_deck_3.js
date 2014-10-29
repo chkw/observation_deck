@@ -365,7 +365,9 @@ drawMatrix = function(containingDiv, config) {
     var groupedEvents = eventAlbum.getEventIdsByType();
     var eventList = [];
     for (var datatype in groupedEvents) {
-        eventList = eventList.concat(groupedEvents[datatype]);
+        var datatypeEventList = groupedEvents[datatype];
+        console.log('datatype', datatype, 'has', datatypeEventList.length, 'events');
+        eventList = eventList.concat(datatypeEventList);
     }
 
     var querySettings = config['querySettings'];

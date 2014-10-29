@@ -106,12 +106,6 @@ function OD_eventMetadataAlbum() {
             }
             groupedEventIds[datatype].push(eventId);
         }
-        var types = getKeys(groupedEventIds);
-        for (var j = 0; j < types.length; j++) {
-            var type = types[j];
-            var length = groupedEventIds[type].length;
-            console.log('type', type, 'has', length, 'events');
-        }
         return groupedEventIds;
     };
 
