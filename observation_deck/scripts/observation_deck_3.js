@@ -72,7 +72,7 @@ getConfiguration = function(config) {
     var eventList = [];
     for (var datatype in groupedEvents) {
         var datatypeEventList = groupedEvents[datatype];
-        console.log('datatype', datatype, 'has', datatypeEventList.length, 'events', '<-- getConfiguration');
+        // console.log('datatype', datatype, 'has', datatypeEventList.length, 'events', '<-- getConfiguration');
     }
 
     return config;
@@ -83,8 +83,12 @@ getConfiguration = function(config) {
  */
 setupContextMenus = function(config) {
     // config['querySettings']
-    // first destroy all old contextMenus
-    $.contextMenu('destroy');
+    // first destroy old contextMenus
+    var selectors = ['.colLabel', '.rowLabel', '.mrna_exp', '.categoric'];
+    for (var i = 0; i < selectors.length; i++) {
+        var selector = selectors[i];
+        $.contextMenu('destroy', selector);
+    }
     setupColLabelContextMenu(config);
     setupRowLabelContextMenu(config);
     setupCategoricCellContextMenu(config);
@@ -206,16 +210,6 @@ setupRowLabelContextMenu = function(config) {
                     setCookie('od_config', JSON.stringify(querySettings));
 
                     var containerDivElem = document.getElementById(config['containerDivId']);
-
-                    var groupedEvents = config['eventAlbum'].getEventIdsByType();
-
-                    var eventList = [];
-                    for (var datatype in groupedEvents) {
-                        var datatypeEventList = groupedEvents[datatype];
-                        console.log('datatype', datatype, 'has', datatypeEventList.length, 'events', '<-- sort in setupRowLabelContextMenu');
-                    }
-
-                    console.log(config);
                     buildObservationDeck(containerDivElem, config);
                 }
             },
@@ -426,7 +420,7 @@ drawMatrix = function(containingDiv, config) {
     var eventList = [];
     for (var datatype in groupedEvents) {
         var datatypeEventList = groupedEvents[datatype];
-        console.log('datatype', datatype, 'has', datatypeEventList.length, 'events', '<-- drawMatrix');
+        // console.log('datatype', datatype, 'has', datatypeEventList.length, 'events', '<-- drawMatrix');
         eventList = eventList.concat(datatypeEventList);
     }
 
