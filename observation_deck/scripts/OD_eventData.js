@@ -68,7 +68,7 @@ function tracebackToRoot(jqXmlHierarchy, eventType) {
     return tracebacks;
 }
 
-function OD_eventMetadataAlbum() {
+function OD_eventAlbum() {
     // TODO instead of writing XML parser, better to use jQuery XML DOM traversal due to better handling of browser differences
     // var xmlStr = getResponse(eventHierarchyUrl);
     // if (xmlStr === null) {
@@ -494,7 +494,86 @@ function OD_eventMetadataAlbum() {
      */
     this.samplewiseMedianRescaling = function() {
         // TODO
+        console.log('samplewiseMedianRescaling');
 
+        // get expression events
+        var allEventIds = this.getEventIdsByType();
+        if (!hasOwnProperty(allEventIds, 'expression data')) {
+            console.log('no expression');
+            return null;
+        }
+        var expressionEventIds = allEventIds['expression data'];
+
+        // compute average expression each sample
+        var stats = {};
+        var result = {
+            'stats' : stats
+        };
+
+        var allAdjustedVals = [];
+
+        var samples = this.getAllSampleIds();
+        for (var i = 0; i < samples.length; i++) {
+            var sample = samples[i];
+            stats[sample] = {};
+            // console.log(sample);
+            var sampleEventData = this.getEventData([sample]);
+            // console.log(prettyJson(sampleEventData));
+            // compute median over expression events
+            var sampleVals = [];
+            for (var j = 0; j < expressionEventIds.length; j++) {
+                var eventId = expressionEventIds[j];
+                if (hasOwnProperty(sampleEventData, eventId)) {
+                    var eventData = sampleEventData[eventId][0];
+                    if (eventData['id'] === sample) {
+                        var val = eventData['val'];
+                        eventData['val_orig'] = val;
+                        if (isNumerical(val)) {
+                            sampleVals.push(val);
+                            // console.log(sample + "->" + eventId + "->" + val);
+                        }
+                    }
+                } else {
+                    console.log(eventId + ' was not found for ' + sample);
+                    continue;
+                }
+            }
+            // console.log('sampleVals.length for ' + sample + ': ' + sampleVals.length);
+            var sampleMed = jStat.median(sampleVals);
+            // console.log('expression median for ' + sample + ': ' + sampleMed);
+            stats[sample]['samplewise median'] = sampleMed;
+
+            if (sampleMed == NaN) {
+                console.log('sample median for ' + sample + ' is NaN.');
+                continue;
+            }
+
+            // rescale values over expression events
+            for (var j = 0; j < expressionEventIds.length; j++) {
+                var eventId = expressionEventIds[j];
+                if (hasOwnProperty(sampleEventData, eventId)) {
+                    var eventData = sampleEventData[eventId][0];
+                    if (eventData['id'] === sample) {
+                        var val = eventData['val'];
+                        eventData['val_orig'] = val;
+                        if (isNumerical(val)) {
+                            var newVal = val - stats[sample]['samplewise median'];
+                            eventData['val'] = newVal;
+                            allAdjustedVals.push(val);
+                        }
+                    }
+                } else {
+                    console.log(eventId + ' was not found for ' + sample);
+                    continue;
+                }
+            }
+        }
+
+        // find min/max of entire expression matrix
+        result['maxVal'] = jStat.max(allAdjustedVals);
+        result['minVal'] = jStat.min(allAdjustedVals);
+
+        return result;
     };
 
     /**

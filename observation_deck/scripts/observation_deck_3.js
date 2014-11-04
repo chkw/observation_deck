@@ -37,34 +37,34 @@ getConfiguration = function(config) {
     var querySettings = parseJson(getCookie('od_config')) || {};
     config['querySettings'] = querySettings;
 
-    var OD_eventAlbum = null;
+    var od_eventAlbum = null;
     if ('eventAlbum' in config) {
-        OD_eventAlbum = config['eventAlbum'];
+        od_eventAlbum = config['eventAlbum'];
     } else {
-        OD_eventAlbum = new OD_eventMetadataAlbum();
-        config['eventAlbum'] = OD_eventAlbum;
+        od_eventAlbum = new OD_eventAlbum();
+        config['eventAlbum'] = od_eventAlbum;
     }
 
     if ('clinicalUrl' in config) {
-        getClinicalData(config['clinicalUrl'], OD_eventAlbum);
+        getClinicalData(config['clinicalUrl'], od_eventAlbum);
     }
 
     if ('expressionUrl' in config) {
-        getExpressionData(config['expressionUrl'], OD_eventAlbum);
+        getExpressionData(config['expressionUrl'], od_eventAlbum);
     }
 
     if ('mutationUrl' in config) {
-        getMutationData(config['mutationUrl'], OD_eventAlbum);
+        getMutationData(config['mutationUrl'], od_eventAlbum);
     }
 
     if ('mongoData' in config) {
         var mongoData = config['mongoData'];
         if ('clinical' in mongoData) {
-            mongoClinicalData(mongoData['clinical'], OD_eventAlbum);
+            mongoClinicalData(mongoData['clinical'], od_eventAlbum);
         }
 
         if ('expression' in mongoData) {
-            mongoExpressionData(mongoData['expression'], OD_eventAlbum);
+            mongoExpressionData(mongoData['expression'], od_eventAlbum);
         }
     }
 
@@ -251,6 +251,23 @@ setupExpressionCellContextMenu = function(config) {
             var cellElem = this[0];
         },
         items : {
+            "samplewise median rescaling" : {
+                name : "samplewise median rescaling",
+                icon : null,
+                disabled : false,
+                callback : function(key, opt) {
+                    // settings for rescaling
+                    var querySettings = config['querySettings'];
+                    querySettings['expression rescaling'] = {
+                        'method' : 'samplewiseMedianRescaling'
+                    };
+
+                    setCookie('od_config', JSON.stringify(querySettings));
+
+                    var containerDivElem = document.getElementById(config['containerDivId']);
+                    buildObservationDeck(containerDivElem, config);
+                }
+            },
             "eventwise median rescaling" : {
                 name : "eventwise median rescaling",
                 icon : null,
@@ -373,10 +390,15 @@ drawMatrix = function(containingDiv, config) {
     config["rowClickback"] = function(d, i) {
         var datatype = config['eventAlbum'].getEvent(d).metadata.datatype;
         // console.log("rowClickback: " + d);
-        // TODO meteor url: /wb/gene/<gene name>
         if (datatype === 'expression data') {
+            // mRNA url: /wb/gene/<gene name>
             var gene = d.replace('_mRNA', '');
             var url = '/wb/gene/' + gene;
+            window.open(url, "_self");
+        } else if (datatype === 'clinical data') {
+            // clinical url: /wb/clinical/<name>
+            var feature = d;
+            var url = '/wb/clinical/' + feature;
             window.open(url, "_self");
         } else {
             alert('open page for event: ' + d + ' of datatype: ' + datatype);
@@ -438,6 +460,8 @@ drawMatrix = function(containingDiv, config) {
             rescalingData = eventAlbum.eventwiseMedianRescaling();
         } else if (rescalingSettings['method'] === 'zScoreExpressionRescaling') {
             rescalingData = eventAlbum.zScoreExpressionRescaling();
+        } else if (rescalingSettings['method'] === 'samplewiseMedianRescaling') {
+            rescalingData = eventAlbum.samplewiseMedianRescaling();
         } else {
             // no rescaling
         }
