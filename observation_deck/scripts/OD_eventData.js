@@ -311,6 +311,9 @@ function OD_eventAlbum() {
             var allEventData = this.getEvent(eventId).data.getData();
             for (var k = 0; k < allEventData.length; k++) {
                 var data = allEventData[k];
+                if (hasOwnProperty(data, 'val_orig')) {
+                    data['val'] = data['val_orig'];
+                }
                 var val = data['val'];
                 data['val_orig'] = val;
                 if (isNumerical(val)) {
@@ -373,6 +376,9 @@ function OD_eventAlbum() {
             var allEventData = this.getEvent(eventId).data.getData();
             for (var k = 0; k < allEventData.length; k++) {
                 var data = allEventData[k];
+                if (hasOwnProperty(data, 'val_orig')) {
+                    data['val'] = data['val_orig'];
+                }
                 var val = data['val'];
                 data['val_orig'] = val;
                 if (isNumerical(val)) {
@@ -421,6 +427,9 @@ function OD_eventAlbum() {
             var allEventData = this.getEvent(eventId).data.getData();
             for (var j = 0; j < allEventData.length; j++) {
                 var data = allEventData[j];
+                if (hasOwnProperty(data, 'val_orig')) {
+                    data['val'] = data['val_orig'];
+                }
                 var val = data['val'];
                 data['val_orig'] = val;
                 if (isNumerical(val)) {
@@ -472,6 +481,9 @@ function OD_eventAlbum() {
             var allEventData = this.getEvent(eventId).data.getData();
             for (var k = 0; k < allEventData.length; k++) {
                 var data = allEventData[k];
+                if (hasOwnProperty(data, 'val_orig')) {
+                    data['val'] = data['val_orig'];
+                }
                 var val = data['val'];
                 data['val_orig'] = val;
                 if (isNumerical(val)) {
@@ -526,6 +538,9 @@ function OD_eventAlbum() {
                 if (hasOwnProperty(sampleEventData, eventId)) {
                     var eventData = sampleEventData[eventId][0];
                     if (eventData['id'] === sample) {
+                        if (hasOwnProperty(eventData, 'val_orig')) {
+                            eventData['val'] = eventData['val_orig'];
+                        }
                         var val = eventData['val'];
                         eventData['val_orig'] = val;
                         if (isNumerical(val)) {
@@ -554,6 +569,9 @@ function OD_eventAlbum() {
                 if (hasOwnProperty(sampleEventData, eventId)) {
                     var eventData = sampleEventData[eventId][0];
                     if (eventData['id'] === sample) {
+                        if (hasOwnProperty(eventData, 'val_orig')) {
+                            eventData['val'] = eventData['val_orig'];
+                        }
                         var val = eventData['val'];
                         eventData['val_orig'] = val;
                         if (isNumerical(val)) {
@@ -827,7 +845,13 @@ function OD_eventDataCollection() {
             if ( sampleId in allSampleIds) {
                 var index = allSampleIds[sampleId];
                 var data = this.dataCollection[index];
-                var val = data['val'];
+                var val = null;
+                // be sure to use original values
+                if (hasOwnProperty(data, 'val_orig')) {
+                    val = data['val_orig'];
+                } else {
+                    val = data['val'];
+                }
                 if (isNumerical(val)) {
                     vector.push(val);
                 }
