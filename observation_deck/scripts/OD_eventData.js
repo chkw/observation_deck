@@ -92,6 +92,10 @@ function OD_eventAlbum() {
         return this;
     };
 
+    this.deleteEvent = function(eventId) {
+        delete this.album[eventId];
+    };
+
     /**
      * Get the eventIds grouped by datatype.
      */
@@ -271,10 +275,6 @@ function OD_eventAlbum() {
         });
 
         return sampleIds;
-    };
-
-    this.scaledExpressionRescaling = function() {
-        // TODO divide by SD
     };
 
     /**
@@ -649,6 +649,10 @@ function OD_eventMetadata(obj) {
     this.allowedValues = obj['allowedValues'];
     this.parents = {};
     this.children = {};
+    this.weightedGeneVector = [];
+    if (hasOwnProperty(obj, 'weightedGeneVector')) {
+        this.weightedGeneVector = obj['weightedGeneVector'];
+    }
 
     this.addParent = function(parentId) {
         this.parents[parentId] = parentId;
@@ -663,6 +667,37 @@ function OD_eventMetadata(obj) {
     this.computeCompositeScore = function(sampleIdList) {
         // TODO compute composite score over specified samples in child tree
         return null;
+    };
+
+    /**
+     * For a signature of weighted genes, sort by weight... heaviest at top
+     */
+    this.sortSignatureVector = function(reverse) {
+
+        /**
+         * comparator for weighted gene vector
+         */
+        var compareWeightedGenes = function(a, b) {
+            var weightA = a['weight'];
+            var weightB = b['weight'];
+            return compareAsNumeric(weightA, weightB);
+        };
+
+        var sig = this.weightedGeneVector.slice(0);
+        sig.sort(compareWeightedGenes);
+
+        // output sorted list of geness
+        var geneList = [];
+        for (var i = 0; i < sig.length; i++) {
+            geneList.push(sig[i]['gene']);
+        }
+
+        if (reverse) {
+        } else {
+            geneList.reverse();
+        }
+
+        return geneList;
     };
 }
 
