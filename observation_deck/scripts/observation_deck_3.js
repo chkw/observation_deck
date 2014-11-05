@@ -38,6 +38,8 @@ getConfiguration = function(config) {
     config['querySettings'] = querySettings;
 
     var od_eventAlbum = null;
+
+    // detect pre-configured event album obj
     if ('eventAlbum' in config) {
         od_eventAlbum = config['eventAlbum'];
     } else {
@@ -45,18 +47,23 @@ getConfiguration = function(config) {
         config['eventAlbum'] = od_eventAlbum;
     }
 
-    if ('clinicalUrl' in config) {
-        getClinicalData(config['clinicalUrl'], od_eventAlbum);
+    // data to be retrieved via url
+    if ('dataUrl' in config) {
+        var dataUrlConfig = config['dataUrl'];
+        if ('clinicalUrl' in dataUrlConfig) {
+            getClinicalData(dataUrlConfig['clinicalUrl'], od_eventAlbum);
+        }
+
+        if ('expressionUrl' in dataUrlConfig) {
+            getExpressionData(dataUrlConfig['expressionUrl'], od_eventAlbum);
+        }
+
+        if ('mutationUrl' in dataUrlConfig) {
+            getMutationData(dataUrlConfig['mutationUrl'], od_eventAlbum);
+        }
     }
 
-    if ('expressionUrl' in config) {
-        getExpressionData(config['expressionUrl'], od_eventAlbum);
-    }
-
-    if ('mutationUrl' in config) {
-        getMutationData(config['mutationUrl'], od_eventAlbum);
-    }
-
+    // data passed in as mongo documents
     if ('mongoData' in config) {
         var mongoData = config['mongoData'];
         if ('clinical' in mongoData) {
@@ -65,6 +72,17 @@ getConfiguration = function(config) {
 
         if ('expression' in mongoData) {
             mongoExpressionData(mongoData['expression'], od_eventAlbum);
+        }
+    }
+
+    // signature data
+    if ('signature' in config) {
+        var signatureConfig = config['signature'];
+        if ('expression' in signatureConfig) {
+            var expressionSigConfig = signatureConfig['expression'];
+            if ('file' in expressionSigConfig) {
+                getSignature(expressionSigConfig['file'], od_eventAlbum);
+            }
         }
     }
 
@@ -93,18 +111,18 @@ setupContextMenus = function(config) {
     setupRowLabelContextMenu(config);
     setupCategoricCellContextMenu(config);
     setupExpressionCellContextMenu(config);
-
 };
 
 /**
  * delete cookie and reset config
  */
 resetConfig = function(config) {
+    var persistentKeys = ['dataUrl', 'eventAlbum', 'mongoData', 'containerDivId', 'signature'];
     deleteCookie('od_config');
     var keys = getKeys(config);
     for (var i = 0; i < keys.length; i++) {
         var key = keys[i];
-        if (isObjInArray(['mongoData', 'containerDivId'], key)) {
+        if (isObjInArray(persistentKeys, key)) {
             continue;
         } else {
             delete config[key];
@@ -112,32 +130,49 @@ resetConfig = function(config) {
     }
 };
 
+/**
+ * Create a context menu item for use with jQuery-contextMenu.
+ */
+createResetContextMenuItem = function(config) {
+    var obj = {
+        name : "reset",
+        icon : null,
+        disabled : false,
+        callback : function(key, opt) {
+            resetConfig(config);
+
+            var containerDivElem = document.getElementById(config['containerDivId']);
+            buildObservationDeck(containerDivElem, config);
+        }
+    };
+    return obj;
+};
+
 setupColLabelContextMenu = function(config) {
     $.contextMenu({
         // selector : ".axis",
         selector : ".colLabel",
         callback : function(key, options) {
-            // default callback
-            var eventId = this[0].__data__;
-            var axis = this[0].getAttribute("class").indexOf("axis") >= 0 ? true : false;
-            if (axis) {
-                axis = this[0].getAttribute("class").indexOf("rowLabel") >= 0 ? "row" : "column";
-            }
-            console.log(key, eventId, axis);
+            // default callback used when no callback specified for item
+            console.log('default callback');
+            var elem = this[0];
+            console.log('key:', key);
+            console.log('options:', options);
+            console.log('eventId:', elem.__data__);
+            console.log('elemClass:', elem.getAttribute("class"));
+            console.log('elemId:', elem.getAttribute("id"));
+            console.log("href:", window.location.href);
+            console.log("host:", window.location.host);
+            console.log("pathname:", window.location.pathname);
+            console.log("search:", window.location.search);
         },
         items : {
-            "reset" : {
-                name : "reset",
-                icon : null,
-                disabled : false,
-                callback : function(key, opt) {
-                    resetConfig(config);
-                    // var url = window.location.pathname;
-                    // window.open(url, "_self");
-                    var containerDivElem = document.getElementById(config['containerDivId']);
-                    buildObservationDeck(containerDivElem, config);
-                }
-            }
+            // "test" : {
+            // name : "test",
+            // icon : null,
+            // disabled : false,
+            // },
+            'reset' : createResetContextMenuItem(config)
         }
     });
 };
@@ -151,51 +186,16 @@ setupRowLabelContextMenu = function(config) {
         selector : ".rowLabel",
         callback : function(key, options) {
             // default callback
-            var eventId = this[0].__data__;
-            var axis = this[0].getAttribute("class").indexOf("axis") >= 0 ? true : false;
-            if (axis) {
-                axis = this[0].getAttribute("class").indexOf("rowLabel") >= 0 ? "row" : "column";
-            }
-            console.log(key, eventId, axis);
+            var elem = this[0];
         },
         items : {
-            // "test" : {
-            // name : "test",
-            // icon : null,
-            // disabled : false,
-            // callback : function(key, opt) {
-            // console.log('key', key);
-            // console.log('opt', opt);
-            // console.log('this[0].__data__', this[0].__data__);
-            // console.log('this[0].textContent', this[0].textContent);
-            // console.log("href", window.location.href);
-            // console.log("host", window.location.host);
-            // console.log("pathname", window.location.pathname);
-            // console.log("search", window.location.search);
-            // }
-            // },
-
             "sort" : {
                 name : "sort",
                 icon : null,
                 disabled : false,
                 callback : function(key, opt) {
                     var eventId = this[0].__data__;
-
-                    var axis = this[0].getAttribute("class").indexOf("axis") >= 0 ? true : false;
-                    if (axis) {
-                        axis = this[0].getAttribute("class").indexOf("rowLabel") >= 0 ? "row" : "column";
-                    } else {
-                        console.log("exit out because not a row or a column");
-                        return;
-                    }
-
-                    var sortType = "colSort";
-                    if (axis == "row") {
-                        // do nothing, colSort is the default.
-                    } else {
-                        sortType = "rowSort";
-                    }
+                    var sortType = 'colSort';
 
                     var sortSteps = null;
                     var querySettings = config['querySettings'];
@@ -224,17 +224,7 @@ setupRowLabelContextMenu = function(config) {
                 icon : null,
                 disabled : true
             },
-            "reset" : {
-                name : "reset",
-                icon : null,
-                disabled : false,
-                callback : function(key, opt) {
-                    resetConfig(config);
-
-                    var containerDivElem = document.getElementById(config['containerDivId']);
-                    buildObservationDeck(containerDivElem, config);
-                }
-            }
+            "reset" : createResetContextMenuItem(config)
         }
     });
 };
@@ -248,7 +238,7 @@ setupExpressionCellContextMenu = function(config) {
         selector : ".mrna_exp",
         callback : function(key, options) {
             // default callback
-            var cellElem = this[0];
+            var elem = this[0];
         },
         items : {
             "samplewise median rescaling" : {
@@ -303,17 +293,7 @@ setupExpressionCellContextMenu = function(config) {
                 }
             },
             "sep1" : "---------",
-            "reset" : {
-                name : "reset",
-                icon : null,
-                disabled : false,
-                callback : function(key, opt) {
-                    resetConfig(config);
-
-                    var containerDivElem = document.getElementById(config['containerDivId']);
-                    buildObservationDeck(containerDivElem, config);
-                }
-            }
+            "reset" : createResetContextMenuItem(config)
         }
     });
 };
@@ -327,7 +307,7 @@ setupCategoricCellContextMenu = function(config) {
         selector : ".categoric",
         callback : function(key, options) {
             // default callback
-            var cellElem = this[0];
+            var elem = this[0];
         },
         items : {
             "yulia expression rescaling" : {
@@ -362,17 +342,7 @@ setupCategoricCellContextMenu = function(config) {
                 }
             },
             "sep1" : "---------",
-            "reset" : {
-                name : "reset",
-                icon : null,
-                disabled : false,
-                callback : function(key, opt) {
-                    resetConfig(config);
-
-                    var containerDivElem = document.getElementById(config['containerDivId']);
-                    buildObservationDeck(containerDivElem, config);
-                }
-            }
+            "reset" : createResetContextMenuItem(config)
         }
     });
 };

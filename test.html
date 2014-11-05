@@ -50,10 +50,17 @@
             // var expressionResp = getResponse('observation_deck/data/meteorMedbook/expression50Data.json');
             // expressionResp = parseJson(expressionResp);
 
+            var signatureFile = 'observation_deck/data/meteorMedbook/smallcell-50.tab';
+
             buildObservationDeck(divElem, {
                 'mongoData' : {
                     'clinical' : aaa,
                     'expression' : bbb
+                },
+                'signature' : {
+                    'expression' : {
+                        'file' : signatureFile
+                    }
                 }
             });
 
