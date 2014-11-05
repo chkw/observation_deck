@@ -305,7 +305,7 @@ mongoClinicalData = function(collection, OD_eventAlbum) {
             eventObj.data.setData(data);
         }
     }
-    return null;
+    return eventObj;
 };
 
 /**
@@ -360,6 +360,35 @@ mongoExpressionData = function(collection, OD_eventAlbum) {
             eventObj.data.setData(data);
         }
     }
-    return null;
+    return eventObj;
+};
+
+/**
+ *Get a signature.  This one does not load sample data.
+ * @param {Object} url
+ * @param {Object} OD_eventAlbum
+ */
+getSignature = function(url, OD_eventAlbum) {
+    var response = getResponse(url);
+    var parsedResponse = d3.tsv.parse(response);
+
+    var eventId = 'small cell signature';
+
+    var eventObj = OD_eventAlbum.getEvent(eventId);
+
+    // add event if DNE
+    if (eventObj == null) {
+        OD_eventAlbum.addEvent({
+            'id' : eventId,
+            'name' : null,
+            'displayName' : null,
+            'description' : null,
+            'datatype' : 'expression signature',
+            'allowedValues' : 'numeric',
+            'weightedGeneVector' : parsedResponse
+        }, []);
+        eventObj = OD_eventAlbum.getEvent(eventId);
+    }
+    return eventObj;
 };
 
