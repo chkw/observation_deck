@@ -214,6 +214,9 @@ function OD_eventAlbum() {
      *
      */
     this.multisortEvents = function(rowSortSteps, colSortSteps) {
+        console.log('multisortEvents');
+        console.log('rowSortSteps', rowSortSteps);
+        console.log('colSortSteps', colSortSteps);
         // default ordering
         var groupedEvents = this.getEventIdsByType();
         var eventList = [];

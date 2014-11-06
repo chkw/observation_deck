@@ -225,8 +225,8 @@ setupRowLabelContextMenu = function(config) {
                     }
                 },
                 callback : function(key, opt) {
-                    var eventId = this[0]['eventId'];
-                    var sortType = 'rowsSort';
+                    var eventId = this[0].getAttribute('eventId');
+                    var sortType = 'rowSort';
 
                     var sortSteps = null;
                     var querySettings = config['querySettings'];
