@@ -158,7 +158,7 @@ setupColLabelContextMenu = function(config) {
             var elem = this[0];
             console.log('key:', key);
             console.log('options:', options);
-            console.log('eventId:', elem.__data__);
+            console.log('eventId:', elem.getAttribute('eventId'));
             console.log('elemClass:', elem.getAttribute("class"));
             console.log('elemId:', elem.getAttribute("id"));
             console.log("href:", window.location.href);
@@ -190,12 +190,43 @@ setupRowLabelContextMenu = function(config) {
         },
         items : {
             "sort" : {
-                name : "sort",
+                name : "sort samples",
                 icon : null,
                 disabled : false,
                 callback : function(key, opt) {
-                    var eventId = this[0].__data__;
+                    var eventId = this[0].getAttribute('eventId');
                     var sortType = 'colSort';
+
+                    var sortSteps = null;
+                    var querySettings = config['querySettings'];
+                    if ( sortType in querySettings) {
+                        sortSteps = new sortingSteps(querySettings[sortType]["steps"]);
+                    } else {
+                        sortSteps = new sortingSteps();
+                    }
+                    sortSteps.addStep(eventId);
+                    querySettings[sortType] = sortSteps;
+
+                    setCookie('od_config', JSON.stringify(querySettings));
+
+                    var containerDivElem = document.getElementById(config['containerDivId']);
+                    buildObservationDeck(containerDivElem, config);
+                }
+            },
+            "sig_sort" : {
+                name : "sort expression events",
+                icon : null,
+                disabled : function(key, opt) {
+                    var datatype = this[0].getAttribute('datatype');
+                    if (datatype === 'expression signature') {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                },
+                callback : function(key, opt) {
+                    var eventId = this[0]['eventId'];
+                    var sortType = 'rowsSort';
 
                     var sortSteps = null;
                     var querySettings = config['querySettings'];
@@ -478,23 +509,23 @@ drawMatrix = function(containingDiv, config) {
 
     // get column names and map to numbers
     var colNames = null;
-    var sortSteps = null;
+    var colSortSteps = null;
     if ("colSort" in querySettings) {
-        sortSteps = new sortingSteps(querySettings["colSort"]["steps"]);
-        for (var i = sortSteps.getSteps().length - 1; i >= 0; i--) {
-            var step = sortSteps.steps[i];
+        colSortSteps = new sortingSteps(querySettings["colSort"]["steps"]);
+        for (var i = colSortSteps.getSteps().length - 1; i >= 0; i--) {
+            var step = colSortSteps.steps[i];
             var name = step['name'];
             if (eventAlbum.getEvent(name)) {
                 // event exists
             } else {
                 // ignore events that are not found
                 console.log(name, 'not found, skip sorting by that event');
-                sortSteps.removeStep(name);
+                colSortSteps.removeStep(name);
             }
         }
     }
 
-    colNames = eventAlbum.multisortSamples(sortSteps);
+    colNames = eventAlbum.multisortSamples(colSortSteps);
 
     var colNameMapping = new Object();
     for (var i in colNames) {
@@ -502,25 +533,27 @@ drawMatrix = function(containingDiv, config) {
         colNameMapping[name] = i;
     }
 
-    // map row names to row numbers
-    var rowNames = [];
-    if (sortSteps != null) {
-        var steps = sortSteps.getSteps();
-        for (var b = 0; b < steps.length; b++) {
-            var step = steps[b];
-            var eventId = step['name'];
-            rowNames.push(eventId);
+    // get row names and map to numbers
+
+    var rowSortSteps = null;
+    if ('rowSort' in querySettings) {
+        rowSortSteps = new sortingSteps(querySettings["rowSort"]["steps"]);
+        for (var i = rowSortSteps.getSteps().length - 1; i >= 0; i--) {
+            var step = rowSortSteps.steps[i];
+            var name = step['name'];
+            if (eventAlbum.getEvent(name)) {
+                // event exists
+            } else {
+                // ignore events that are not found
+                console.log(name, 'not found, skip sorting by that event');
+                rowSortSteps.removeStep(name);
+            }
         }
-        rowNames.reverse();
     }
 
-    for (var c = 0; c < eventList.length; c++) {
-        var eventId = eventList[c];
-        if (! isObjInArray(rowNames, eventId)) {
-            rowNames.push(eventId);
-        }
-    }
+    rowNames = eventAlbum.multisortEvents(rowSortSteps, colSortSteps);
 
+    // assign row numbers to row names
     var rowNameMapping = new Object();
     for (var i in rowNames) {
         var name = rowNames[i];
@@ -573,7 +606,16 @@ drawMatrix = function(containingDiv, config) {
         },
         "transform" : "translate(" + translateX + ", " + translateY + ")",
         "class" : function(d, i) {
-            return "rowLabel mono axis unselectable";
+            var s = "rowLabel mono axis unselectable";
+            return s;
+        },
+        'eventId' : function(d, i) {
+            return d;
+        },
+        'datatype' : function(d, i) {
+            var eventObj = eventAlbum.getEvent(d);
+            var datatype = eventObj.metadata.datatype;
+            return datatype;
         }
     }).style("text-anchor", "end");
     rowLabels.on("click", config["rowClickback"]);

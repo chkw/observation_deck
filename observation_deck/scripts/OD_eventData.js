@@ -211,6 +211,51 @@ function OD_eventAlbum() {
     };
 
     /**
+     *
+     */
+    this.multisortEvents = function(rowSortSteps, colSortSteps) {
+        // default ordering
+        var groupedEvents = this.getEventIdsByType();
+        var eventList = [];
+        for (var datatype in groupedEvents) {
+            var datatypeEventList = groupedEvents[datatype];
+            eventList = eventList.concat(datatypeEventList);
+        }
+
+        // bubble up colSort events
+        var rowNames = [];
+        if (colSortSteps != null) {
+            // bring sorting rows up to top
+            var steps = colSortSteps.getSteps();
+            for (var b = 0; b < steps.length; b++) {
+                var step = steps[b];
+                var eventId = step['name'];
+                rowNames.push(eventId);
+            }
+            rowNames.reverse();
+        }
+
+        // fill in rest of the list
+        for (var r = 0; r < eventList.length; r++) {
+            var eventId = eventList[r];
+            if (! isObjInArray(rowNames, eventId)) {
+                rowNames.push(eventId);
+            }
+        }
+
+        if (rowSortSteps != null) {
+            var steps = rowSortSteps.getSteps();
+            for (var b = 0; b < steps.length; b++) {
+                var step = steps[b];
+                var eventId = step['name'];
+                console.log('row sorting step: ' + prettyJson(step));
+            }
+        }
+
+        return rowNames;
+    };
+
+    /**
      * If sortingSteps is null, then just return the sampleIds without sorting.
      */
     this.multisortSamples = function(sortingSteps) {
