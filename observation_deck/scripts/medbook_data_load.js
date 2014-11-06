@@ -392,3 +392,7 @@ getSignature = function(url, OD_eventAlbum) {
     return eventObj;
 };
 
+loadSignatureObj = function(obj, OD_eventAlbum) {
+    OD_eventAlbum.addEvent(obj['metadata'], obj['data']);
+    eventObj = OD_eventAlbum.getEvent(obj['metadata']['id']);
+};

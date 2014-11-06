@@ -53,11 +53,9 @@ getConfiguration = function(config) {
         if ('clinicalUrl' in dataUrlConfig) {
             getClinicalData(dataUrlConfig['clinicalUrl'], od_eventAlbum);
         }
-
         if ('expressionUrl' in dataUrlConfig) {
             getExpressionData(dataUrlConfig['expressionUrl'], od_eventAlbum);
         }
-
         if ('mutationUrl' in dataUrlConfig) {
             getMutationData(dataUrlConfig['mutationUrl'], od_eventAlbum);
         }
@@ -69,7 +67,6 @@ getConfiguration = function(config) {
         if ('clinical' in mongoData) {
             mongoClinicalData(mongoData['clinical'], od_eventAlbum);
         }
-
         if ('expression' in mongoData) {
             mongoExpressionData(mongoData['expression'], od_eventAlbum);
         }
@@ -82,6 +79,9 @@ getConfiguration = function(config) {
             var expressionSigConfig = signatureConfig['expression'];
             if ('file' in expressionSigConfig) {
                 getSignature(expressionSigConfig['file'], od_eventAlbum);
+            }
+            if ('object' in expressionSigConfig) {
+                loadSignatureObj(expressionSigConfig['object'], od_eventAlbum);
             }
         }
     }
