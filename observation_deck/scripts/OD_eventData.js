@@ -226,17 +226,18 @@ function OD_eventAlbum() {
         }
 
         // bubble up colSort events
-        var rowNames = [];
+        var bubbledUpEvents = [];
         if (colSortSteps != null) {
             // bring sorting rows up to top
             var steps = colSortSteps.getSteps();
             for (var b = 0; b < steps.length; b++) {
                 var step = steps[b];
                 var eventId = step['name'];
-                rowNames.push(eventId);
+                bubbledUpEvents.push(eventId);
             }
-            rowNames.reverse();
+            bubbledUpEvents.reverse();
         }
+        var rowNames = bubbledUpEvents.slice(0);
 
         // fill in rest of the list
         for (var r = 0; r < eventList.length; r++) {
@@ -246,8 +247,8 @@ function OD_eventAlbum() {
             }
         }
 
-        if (rowSortSteps != null) {
-            var steps = rowSortSteps.getSteps();
+        if ((rowSortSteps != null) && ('expression data' in groupedEvents)) {
+            var steps = rowSortSteps.getSteps().reverse();
             for (var b = 0; b < steps.length; b++) {
                 var step = steps[b];
                 var eventId = step['name'];
@@ -270,9 +271,15 @@ function OD_eventAlbum() {
                         var orderedGene = orderedGeneList[c];
                         var orderedGene_eventId = orderedGene + "_mRNA";
                         var index = expressionEventIds.indexOf(orderedGene_eventId);
-                        if (index >= 0) {
+                        // if (index >= 0) {
+                        if ((index >= 0) && (!isObjInArray(bubbledUpEvents, orderedGene_eventId))) {
                             // only add expression events that have records in the event album
                             processedExpressionEventList.push(orderedGene_eventId);
+                            delete expressionEventIds[index];
+                        }
+
+                        if (isObjInArray(bubbledUpEvents, orderedGene_eventId)) {
+                            // skip bubbled up expression events
                             delete expressionEventIds[index];
                         }
                     }
@@ -283,13 +290,20 @@ function OD_eventAlbum() {
                     }
 
                     // assemble all datatypes together
-                    var eventList = [];
+                    var eventList = bubbledUpEvents.slice(0);
                     for (var datatype in groupedEvents) {
                         if (datatype === 'expression data') {
                             eventList = eventList.concat(processedExpressionEventList);
                         } else {
                             var datatypeEventList = groupedEvents[datatype];
-                            eventList = eventList.concat(datatypeEventList);
+                            for (var i in datatypeEventList) {
+                                var eventId = datatypeEventList[i];
+                                if (isObjInArray(eventList, eventId)) {
+                                    // skip
+                                } else {
+                                    eventList.push(eventId);
+                                }
+                            }
                         }
                     }
 
@@ -655,7 +669,7 @@ function OD_eventAlbum() {
             // console.log('expression median for ' + sample + ': ' + sampleMed);
             stats[sample]['samplewise median'] = sampleMed;
 
-            if (sampleMed == NaN) {
+            if (isNaN(sampleMed)) {
                 console.log('sample median for ' + sample + ' is NaN.');
                 continue;
             }

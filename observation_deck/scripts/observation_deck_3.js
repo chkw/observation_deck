@@ -475,6 +475,8 @@ drawMatrix = function(containingDiv, config) {
         } else {
             // no rescaling
         }
+    } else if (hasOwnProperty(groupedEvents, 'expression data')) {
+        rescalingData = eventAlbum.eventwiseMedianRescaling();
     } else {
         console.log('no expression data rescaling');
     }
