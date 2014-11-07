@@ -392,7 +392,22 @@ getSignature = function(url, OD_eventAlbum) {
     return eventObj;
 };
 
+/**
+ * obj contains a metadata and a data.  The data is the mongo documents which is a list of records, with 'id' and 'val'.
+ * @param {Object} obj
+ * @param {Object} OD_eventAlbum
+ */
 loadSignatureObj = function(obj, OD_eventAlbum) {
-    OD_eventAlbum.addEvent(obj['metadata'], obj['data']);
+    var sigScoresMongoDocs = obj['data'];
+
+    var sigScoresData = {};
+    for (var qq = 0; qq < sigScoresMongoDocs.length; qq++) {
+        var doc = sigScoresMongoDocs[qq];
+        var id = doc['id'];
+        var val = doc['val'];
+        sigScoresData[id] = val;
+    }
+
+    OD_eventAlbum.addEvent(obj['metadata'], sigScoresData);
     eventObj = OD_eventAlbum.getEvent(obj['metadata']['id']);
 };
