@@ -251,7 +251,56 @@ function OD_eventAlbum() {
             for (var b = 0; b < steps.length; b++) {
                 var step = steps[b];
                 var eventId = step['name'];
-                console.log('row sorting step: ' + prettyJson(step));
+                var reverse = step['reverse'];
+                var eventObj = this.getEvent(eventId);
+                var datatype = eventObj.metadata.datatype;
+                if (datatype === 'expression signature') {
+                    // TODO sort expression events by signature weight
+                    console.log('expression signature: ' + eventId);
+
+                    var orderedGeneList = eventObj.metadata.sortSignatureVector();
+                    if (reverse) {
+                        orderedGeneList.reverse();
+                    }
+
+                    var expressionEventIds = groupedEvents['expression data'].slice(0);
+
+                    var processedExpressionEventList = [];
+                    for (var c = 0; c < orderedGeneList.length; c++) {
+                        var orderedGene = orderedGeneList[c];
+                        var orderedGene_eventId = orderedGene + "_mRNA";
+                        var index = expressionEventIds.indexOf(orderedGene_eventId);
+                        if (index >= 0) {
+                            // only add expression events that have records in the event album
+                            processedExpressionEventList.push(orderedGene_eventId);
+                            delete expressionEventIds[index];
+                        }
+                    }
+
+                    // add events that did not appear in signature
+                    for (var d in expressionEventIds) {
+                        processedExpressionEventList.push(expressionEventIds[d]);
+                    }
+
+                    // assemble all datatypes together
+                    var eventList = [];
+                    for (var datatype in groupedEvents) {
+                        if (datatype === 'expression data') {
+                            eventList = eventList.concat(processedExpressionEventList);
+                        } else {
+                            var datatypeEventList = groupedEvents[datatype];
+                            eventList = eventList.concat(datatypeEventList);
+                        }
+                    }
+
+                    rowNames = eventList;
+                    console.log('rowNames.length', rowNames.length);
+
+                    // only do this for the first step
+                    break;
+                } else {
+                    continue;
+                }
             }
         }
 

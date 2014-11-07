@@ -372,7 +372,7 @@ getSignature = function(url, OD_eventAlbum) {
     var response = getResponse(url);
     var parsedResponse = d3.tsv.parse(response);
 
-    var eventId = 'small cell signature';
+    var eventId = url.split('/').pop();
 
     var eventObj = OD_eventAlbum.getEvent(eventId);
 

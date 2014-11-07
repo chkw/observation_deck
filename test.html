@@ -51,6 +51,7 @@
             // expressionResp = parseJson(expressionResp);
 
             var signatureFile = 'observation_deck/data/meteorMedbook/smallcell-50.tab';
+            var AR_signatureFile = 'observation_deck/data/meteorMedbook/ar_sig.tab';
 
             buildObservationDeck(divElem, {
                 'mongoData' : {
@@ -59,7 +60,7 @@
                 },
                 'signature' : {
                     'expression' : {
-                        'file' : signatureFile
+                        'file' : [signatureFile, AR_signatureFile]
                     }
                 }
             });

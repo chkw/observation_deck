@@ -78,10 +78,19 @@ getConfiguration = function(config) {
         if ('expression' in signatureConfig) {
             var expressionSigConfig = signatureConfig['expression'];
             if ('file' in expressionSigConfig) {
-                getSignature(expressionSigConfig['file'], od_eventAlbum);
+                var fileNames = expressionSigConfig['file'];
+                for (var i = 0; i < fileNames.length; i++) {
+                    var fileName = fileNames[i];
+                    console.log(fileName);
+                    getSignature(fileName, od_eventAlbum);
+                }
             }
             if ('object' in expressionSigConfig) {
-                loadSignatureObj(expressionSigConfig['object'], od_eventAlbum);
+                var objects = expressionSigConfig['object'];
+                for (var i = 0; i < objects.length; i++) {
+                    var object = objects[i];
+                    loadSignatureObj(object, od_eventAlbum);
+                }
             }
         }
     }
@@ -551,7 +560,7 @@ drawMatrix = function(containingDiv, config) {
         }
     }
 
-    rowNames = eventAlbum.multisortEvents(rowSortSteps, colSortSteps);
+    var rowNames = eventAlbum.multisortEvents(rowSortSteps, colSortSteps);
 
     // assign row numbers to row names
     var rowNameMapping = new Object();
