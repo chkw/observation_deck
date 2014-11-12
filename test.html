@@ -25,6 +25,7 @@
 		<script type="text/javascript" src="observation_deck/scripts/medbook_data_load.js"></script>
 		<script type="text/javascript" src="observation_deck/scripts/a.js"></script>
 		<script type="text/javascript" src="observation_deck/scripts/b.js"></script>
+		<script type="text/javascript" src="observation_deck/scripts/signatures.js"></script>
 		<script type="text/javascript" src="observation_deck/scripts/observation_deck_3.js"></script>
 		<!-- <script type="text/javascript" src="observation_deck/scripts/observation_deck_jqplugin.js"></script> -->
 	</head>
@@ -50,8 +51,8 @@
             // var expressionResp = getResponse('observation_deck/data/meteorMedbook/expression50Data.json');
             // expressionResp = parseJson(expressionResp);
 
-            var signatureFile = 'observation_deck/data/meteorMedbook/smallcell-50.tab';
-            var AR_signatureFile = 'observation_deck/data/meteorMedbook/ar_sig.tab';
+            // var signatureFile = 'observation_deck/data/meteorMedbook/smallcell-50.tab';
+            // var AR_signatureFile = 'observation_deck/data/meteorMedbook/ar_sig.tab';
 
             buildObservationDeck(divElem, {
                 'mongoData' : {
@@ -60,7 +61,7 @@
                 },
                 'signature' : {
                     'expression' : {
-                        'file' : [signatureFile, AR_signatureFile]
+                        'object' : [smallCellSigEventObj, arSigEventObj]
                     }
                 }
             });
