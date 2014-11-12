@@ -198,6 +198,23 @@ setupRowLabelContextMenu = function(config) {
             var elem = this[0];
         },
         items : {
+            "hide_null_samples" : {
+                name : "hide null samples",
+                icon : null,
+                disabled : false,
+                callback : function(key, opt) {
+                    var eventId = this[0].getAttribute('eventId');
+                    var eventObj = config['eventAlbum'].getEvent(eventId);
+                    // TODO qqq
+                    var querySettings = config['querySettings'];
+                    querySettings['required events'] = [eventId];
+
+                    setCookie('od_config', JSON.stringify(querySettings));
+
+                    var containerDivElem = document.getElementById(config['containerDivId']);
+                    buildObservationDeck(containerDivElem, config);
+                }
+            },
             "sort" : {
                 name : "sort samples",
                 icon : null,
@@ -538,6 +555,30 @@ drawMatrix = function(containingDiv, config) {
 
     colNames = eventAlbum.multisortSamples(colSortSteps);
 
+    // TODO enforce required events in config['querySettings']['required events']
+    var samplesToHide = [];
+    if ('required events' in querySettings) {
+        var requiredEventId = querySettings['required events'][0];
+        console.log("requiredEventId", requiredEventId);
+        var requiredEventObj = eventAlbum.getEvent(requiredEventId);
+        var nullSamples = requiredEventObj.data.getNullSamples();
+        samplesToHide = samplesToHide.concat(nullSamples);
+    }
+    samplesToHide = eliminateDuplicates(samplesToHide);
+    // console.log('samplesToHide:' + samplesToHide.length);
+
+    var newColNames = [];
+    for (var ci = 0; ci < colNames.length; ci++) {
+        var colName = colNames[ci];
+        if (isObjInArray(samplesToHide, colName)) {
+            continue;
+        } else {
+            newColNames.push(colName);
+        }
+    }
+    colNames = newColNames;
+    // console.log('colNames:' + colNames);
+
     var colNameMapping = new Object();
     for (var i in colNames) {
         var name = colNames[i];
@@ -671,6 +712,11 @@ drawMatrix = function(containingDiv, config) {
     var heatMap = svg.selectAll(".cell").data(dataList).enter().append(function(d) {
         var group = document.createElementNS(svgNamespaceUri, "g");
         group.setAttributeNS(null, "class", "cell");
+
+        var colName = d['id'];
+        if (! hasOwnProperty(colNameMapping, colName)) {
+            return group;
+        }
 
         var x = (colNameMapping[d['id']] * gridSize);
         var y = (rowNameMapping[d['eventId']] * gridSize);
