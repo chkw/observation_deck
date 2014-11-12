@@ -824,7 +824,7 @@ function OD_eventDataCollection() {
     };
 
     /**
-     * get the sample count for each value.  Restrict to sample list, if given.
+     * get the sample count for each value.  Useful for something like histogram.  Restrict to sample list, if given.
      */
     this.getValueCounts = function(sampleList) {
         var valCounts = {};
@@ -914,6 +914,21 @@ function OD_eventDataCollection() {
             return ids;
         }
         return getKeys(ids);
+    };
+
+    /**
+     *Get the sampleIds with null data values
+     */
+    this.getNullSamples = function(inputIds) {
+        var resultIds = [];
+        var sampleData = this.getData(inputIds);
+        for (var i = 0; i < sampleData.length; i++) {
+            var data = sampleData[i];
+            if (data['val'] == null) {
+                resultIds.push(data['id']);
+            }
+        }
+        return resultIds;
     };
 
     /**
