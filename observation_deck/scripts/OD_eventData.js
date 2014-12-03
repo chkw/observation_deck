@@ -211,7 +211,7 @@ function OD_eventAlbum() {
     };
 
     /**
-     *
+     * hierarchical sort
      */
     this.multisortEvents = function(rowSortSteps, colSortSteps) {
         console.log('multisortEvents');
@@ -743,6 +743,7 @@ function OD_eventAlbum() {
                 this.getEvent(eventId).data.setData(missingData);
             }
         }
+        return this;
     };
 }
 

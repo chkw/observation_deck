@@ -95,6 +95,13 @@ getConfiguration = function(config) {
         }
     }
 
+    // specify the samples that should be displayed
+    if ('displayedSamples' in config) {
+        var displayedSamples = config['displayedSamples'];
+    } else {
+        config['displayedSamples'] = [];
+    }
+
     var groupedEvents = config['eventAlbum'].getEventIdsByType();
     var eventList = [];
     for (var datatype in groupedEvents) {
@@ -565,14 +572,19 @@ drawMatrix = function(containingDiv, config) {
         samplesToHide = samplesToHide.concat(nullSamples);
     }
     samplesToHide = eliminateDuplicates(samplesToHide);
-    // console.log('samplesToHide:' + samplesToHide.length);
 
+    // colNames after hiding null samples
     var newColNames = [];
     for (var ci = 0; ci < colNames.length; ci++) {
         var colName = colNames[ci];
-        if (isObjInArray(samplesToHide, colName)) {
+        if (isObjInArray(config['displayedSamples'], colName)) {
+            // make sure displayedSamples are shown
+            newColNames.push(colName);
+        } else if (isObjInArray(samplesToHide, colName)) {
+            // samples have been specified for hiding
             continue;
-        } else {
+        } else if (config['displayedSamples'].length == 0) {
+            // no displayedSamples specified, so show them all by default
             newColNames.push(colName);
         }
     }
