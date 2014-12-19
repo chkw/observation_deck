@@ -277,6 +277,27 @@ setupRowLabelContextMenu = function(config) {
                     buildObservationDeck(containerDivElem, config);
                 }
             },
+            "hide_datatype" : {
+                name : 'hide this datatype',
+                icon : null,
+                disabled : false,
+                callback : function(key, opt) {
+                    // set cookie for hiding datatype
+                    var datatype = this[0].getAttribute('datatype');
+                    var querySettings = config['querySettings'];
+
+                    if (!('hiddenDatatypes' in querySettings)) {
+                        querySettings['hiddenDatatypes'] = [];
+                    }
+                    querySettings['hiddenDatatypes'].push(datatype);
+                    querySettings['hiddenDatatypes'] = eliminateDuplicates(querySettings['hiddenDatatypes']);
+                    setCookie('od_config', JSON.stringify(querySettings));
+
+                    // trigger redrawing
+                    var containerDivElem = document.getElementById(config['containerDivId']);
+                    buildObservationDeck(containerDivElem, config);
+                }
+            },
             "sep1" : "---------",
             "expand" : {
                 name : "expand",

@@ -211,7 +211,7 @@ function OD_eventAlbum() {
     };
 
     /**
-     * hierarchical sort
+     * multi-sorting of events
      */
     this.multisortEvents = function(rowSortSteps, colSortSteps) {
         console.log('multisortEvents');
@@ -782,7 +782,7 @@ function OD_eventMetadata(obj) {
     };
 
     /**
-     * For a signature of weighted genes, sort by weight... heaviest at top
+     * For an event that is a signature of weighted genes, sort genes by weight... heaviest at top
      */
     this.sortSignatureVector = function(reverse) {
 
