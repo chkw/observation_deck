@@ -638,6 +638,19 @@ drawMatrix = function(containingDiv, config) {
 
     var rowNames = eventAlbum.multisortEvents(rowSortSteps, colSortSteps);
 
+    // hide rows of datatype, preserving relative ordering
+    var hiddenDatatypes = querySettings['hiddenDatatypes'] || [];
+    var shownNames = [];
+    for (var i = 0; i < rowNames.length; i++) {
+        var rowName = rowNames[i];
+        var datatype = eventAlbum.getEvent(rowName).metadata.datatype;
+        if (isObjInArray(hiddenDatatypes, datatype)) {
+            continue;
+        }
+        shownNames.push(rowName);
+    }
+    rowNames = shownNames;
+
     // assign row numbers to row names
     var rowNameMapping = new Object();
     for (var i in rowNames) {
@@ -742,7 +755,17 @@ drawMatrix = function(containingDiv, config) {
 
     // TODO SVG elements for heatmap cells
     var dataList = eventAlbum.getAllDataAsList();
-    var heatMap = svg.selectAll(".cell").data(dataList).enter().append(function(d) {
+    var showDataList = [];
+    for (var i = 0; i < dataList.length; i++) {
+        var dataListObj = dataList[i];
+        var eventId = dataListObj['eventId'];
+        if (!isObjInArray(rowNames, eventId)) {
+            continue;
+        } else {
+            showDataList.push(dataListObj);
+        }
+    }
+    var heatMap = svg.selectAll(".cell").data(showDataList).enter().append(function(d) {
         var group = document.createElementNS(svgNamespaceUri, "g");
         group.setAttributeNS(null, "class", "cell");
 
