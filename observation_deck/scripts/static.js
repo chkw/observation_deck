@@ -1,1 +1,0 @@
-../../../staticJs/static.js
