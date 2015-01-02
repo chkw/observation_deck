@@ -260,7 +260,7 @@ mongoClinicalData = function(collection, OD_eventAlbum) {
         var doc = collection[i];
 
         var sampleId = null;
-        if (hasOwnProperty(doc, 'sample')) {
+        if (utils.hasOwnProperty(doc, 'sample')) {
             sampleId = doc['sample'];
         } else if (hasOwnProperty(doc, 'Sample')) {
             sampleId = doc['Sample'];
@@ -278,10 +278,10 @@ mongoClinicalData = function(collection, OD_eventAlbum) {
         }
 
         // iter over event names (file columns)
-        var keys = getKeys(doc);
+        var keys = utils.getKeys(doc);
         for (var j = 0; j < keys.length; j++) {
             var key = keys[j];
-            if (isObjInArray(['_id', 'sample', 'Sample'], key)) {
+            if (utils.isObjInArray(['_id', 'sample', 'Sample'], key)) {
                 // skip these file columns
                 continue;
             }
@@ -319,13 +319,13 @@ mongoExpressionData = function(collection, OD_eventAlbum) {
         var doc = collection[i];
 
         var gene = null;
-        if (hasOwnProperty(doc, 'gene')) {
+        if (utils.hasOwnProperty(doc, 'gene')) {
             gene = doc['gene'];
-        } else if (hasOwnProperty(doc, 'id')) {
+        } else if (utils.hasOwnProperty(doc, 'id')) {
             gene = doc['id'];
         } else {
             // no gene identifier found
-            console.log('no gene identifier found in expression doc: ' + prettyJson(doc));
+            console.log('no gene identifier found in expression doc: ' + utils.prettyJson(doc));
             continue;
         }
 
@@ -333,10 +333,10 @@ mongoExpressionData = function(collection, OD_eventAlbum) {
         var eventId = gene + '_mRNA';
 
         // iter over samples
-        var samples = getKeys(doc);
+        var samples = utils.getKeys(doc);
         for (var j = 0; j < samples.length; j++) {
             var sample = samples[j];
-            if (isObjInArray(['_id', 'gene', 'id'], sample)) {
+            if (utils.isObjInArray(['_id', 'gene', 'id'], sample)) {
                 // skip these 'samples'
                 continue;
             }

@@ -101,11 +101,11 @@ function OD_eventAlbum() {
      */
     this.getEventIdsByType = function() {
         var groupedEventIds = {};
-        var eventIdList = getKeys(this.album);
+        var eventIdList = utils.getKeys(this.album);
         for (var i = 0; i < eventIdList.length; i++) {
             var eventId = eventIdList[i];
             var datatype = this.getEvent(eventId).metadata.datatype;
-            if (!hasOwnProperty(groupedEventIds, datatype)) {
+            if (!utils.hasOwnProperty(groupedEventIds, datatype)) {
                 groupedEventIds[datatype] = [];
             }
             groupedEventIds[datatype].push(eventId);
@@ -119,7 +119,7 @@ function OD_eventAlbum() {
     this.getEventData = function(sampleIds) {
         var result = {};
         // iter over eventIds
-        var eventIdList = getKeys(this.album);
+        var eventIdList = utils.getKeys(this.album);
         for (var i = 0; i < eventIdList.length; i++) {
             var eventId = eventIdList[i];
             var eventData = this.getEvent(eventId).data;
@@ -136,7 +136,7 @@ function OD_eventAlbum() {
     this.getAllDataAsList = function() {
         var allDataList = [];
         var allDataObj = this.getEventData();
-        var eventNameList = getKeys(allDataObj);
+        var eventNameList = utils.getKeys(allDataObj);
         for (var i = 0; i < eventNameList.length; i++) {
             var eventName = eventNameList[i];
             var eventData = allDataObj[eventName].slice();
@@ -153,13 +153,13 @@ function OD_eventAlbum() {
      */
     this.getAllSampleIds = function() {
         var sampleIds = [];
-        var eventIdList = getKeys(this.album);
+        var eventIdList = utils.getKeys(this.album);
         for (var i = 0; i < eventIdList.length; i++) {
             var eventId = eventIdList[i];
             var eventSampleIds = this.getEvent(eventId).data.getAllSampleIds();
             sampleIds = sampleIds.concat(eventSampleIds);
         }
-        return eliminateDuplicates(sampleIds);
+        return utils.eliminateDuplicates(sampleIds);
     };
 
     /**
@@ -242,7 +242,7 @@ function OD_eventAlbum() {
         // fill in rest of the list
         for (var r = 0; r < eventList.length; r++) {
             var eventId = eventList[r];
-            if (! isObjInArray(rowNames, eventId)) {
+            if (! utils.isObjInArray(rowNames, eventId)) {
                 rowNames.push(eventId);
             }
         }
@@ -272,13 +272,13 @@ function OD_eventAlbum() {
                         var orderedGene_eventId = orderedGene + "_mRNA";
                         var index = expressionEventIds.indexOf(orderedGene_eventId);
                         // if (index >= 0) {
-                        if ((index >= 0) && (!isObjInArray(bubbledUpEvents, orderedGene_eventId))) {
+                        if ((index >= 0) && (!utils.isObjInArray(bubbledUpEvents, orderedGene_eventId))) {
                             // only add expression events that have records in the event album
                             processedExpressionEventList.push(orderedGene_eventId);
                             delete expressionEventIds[index];
                         }
 
-                        if (isObjInArray(bubbledUpEvents, orderedGene_eventId)) {
+                        if (utils.isObjInArray(bubbledUpEvents, orderedGene_eventId)) {
                             // skip bubbled up expression events
                             delete expressionEventIds[index];
                         }
@@ -298,7 +298,7 @@ function OD_eventAlbum() {
                             var datatypeEventList = groupedEvents[datatype];
                             for (var i in datatypeEventList) {
                                 var eventId = datatypeEventList[i];
-                                if (isObjInArray(eventList, eventId)) {
+                                if (utils.isObjInArray(eventList, eventId)) {
                                     // skip
                                 } else {
                                     eventList.push(eventId);
@@ -356,15 +356,15 @@ function OD_eventAlbum() {
                 // select correct comparator
                 var comparator = null;
                 if (allowedValues == 'numeric') {
-                    comparator = compareAsNumeric;
+                    comparator = utils.compareAsNumeric;
                 } else if (allowedValues == 'categoric') {
-                    comparator = compareAsString;
+                    comparator = utils.compareAsString;
                 } else if (allowedValues == 'expression') {
-                    comparator = compareAsNumeric;
+                    comparator = utils.compareAsNumeric;
                 } else if (allowedValues == 'date') {
-                    comparator = compareAsDate;
+                    comparator = utils.compareAsDate;
                 } else {
-                    comparator = compareAsString;
+                    comparator = utils.compareAsString;
                 }
 
                 // compare this step's values
@@ -566,7 +566,7 @@ function OD_eventAlbum() {
 
         // get expression events
         var allEventIds = this.getEventIdsByType();
-        if (!hasOwnProperty(allEventIds, 'expression data')) {
+        if (!utils.hasOwnProperty(allEventIds, 'expression data')) {
             console.log('no expression');
             return null;
         }
@@ -592,12 +592,12 @@ function OD_eventAlbum() {
             var allEventData = this.getEvent(eventId).data.getData();
             for (var k = 0; k < allEventData.length; k++) {
                 var data = allEventData[k];
-                if (hasOwnProperty(data, 'val_orig')) {
+                if (utils.hasOwnProperty(data, 'val_orig')) {
                     data['val'] = data['val_orig'];
                 }
                 var val = data['val'];
                 data['val_orig'] = val;
-                if (isNumerical(val)) {
+                if (utils.isNumerical(val)) {
                     var newVal = (val - stats[eventId]['median']);
                     data['val'] = newVal;
                     allAdjustedVals.push(data['val']);
@@ -722,8 +722,8 @@ function OD_eventAlbum() {
 
         // get all sample IDs for event
         var allEventIdsByCategory = this.getEventIdsByType();
-        for (var i = 0; i < getKeys(allEventIdsByCategory).length; i++) {
-            var category = getKeys(allEventIdsByCategory)[i];
+        for (var i = 0; i < utils.getKeys(allEventIdsByCategory).length; i++) {
+            var category = utils.getKeys(allEventIdsByCategory)[i];
             for (var j = 0; j < allEventIdsByCategory[category].length; j++) {
                 var eventId = allEventIdsByCategory[category][j];
                 var eventData = this.getEvent(eventId).data;
@@ -733,7 +733,7 @@ function OD_eventAlbum() {
                 };
 
                 // find missing data
-                var missingSampleIds = keepReplicates(allAlbumSampleIds.concat(allEventSampleIds), 2, true);
+                var missingSampleIds = utils.keepReplicates(allAlbumSampleIds.concat(allEventSampleIds), 2, true);
                 var missingData = {};
                 for (var k = 0; k < missingSampleIds.length; k++) {
                     var id = missingSampleIds[k];
@@ -762,7 +762,7 @@ function OD_eventMetadata(obj) {
     this.parents = {};
     this.children = {};
     this.weightedGeneVector = [];
-    if (hasOwnProperty(obj, 'weightedGeneVector')) {
+    if (utils.hasOwnProperty(obj, 'weightedGeneVector')) {
         this.weightedGeneVector = obj['weightedGeneVector'];
     }
 
@@ -836,7 +836,7 @@ function OD_eventDataCollection() {
         for (var i = 0; i < dataList.length; i++) {
             var dataObj = dataList[i];
             var val = dataObj['val'];
-            if (!hasOwnProperty(valCounts, val)) {
+            if (!utils.hasOwnProperty(valCounts, val)) {
                 valCounts[val] = 0;
             }
             valCounts[val] = valCounts[val] + 1;
@@ -849,10 +849,10 @@ function OD_eventDataCollection() {
      */
     this.getValues = function(dedup) {
         var valueCounts = this.getValueCounts();
-        var vals = getKeys(valueCounts);
+        var vals = utils.getKeys(valueCounts);
 
         if ((dedup != null) && (dedup == true)) {
-            vals = eliminateDuplicates(vals);
+            vals = utils.eliminateDuplicates(vals);
         }
         return vals;
     };
@@ -883,7 +883,7 @@ function OD_eventDataCollection() {
         var allSampleIds = this.getAllSampleIds(true);
 
         if (sampleIdList == null) {
-            sampleIdList = getKeys(allSampleIds);
+            sampleIdList = utils.getKeys(allSampleIds);
         }
         var returnData = [];
 
@@ -914,7 +914,7 @@ function OD_eventDataCollection() {
         if (indices) {
             return ids;
         }
-        return getKeys(ids);
+        return utils.getKeys(ids);
     };
 
     /**
@@ -997,7 +997,7 @@ function OD_eventDataCollection() {
         var allSampleIds = this.getAllSampleIds(true);
 
         if (sampleIdList == null) {
-            sampleIdList = getKeys(allSampleIds);
+            sampleIdList = utils.getKeys(allSampleIds);
         }
 
         var vector = [];
@@ -1009,12 +1009,12 @@ function OD_eventDataCollection() {
                 var data = this.dataCollection[index];
                 var val = null;
                 // be sure to use original values
-                if (hasOwnProperty(data, 'val_orig')) {
+                if (utils.hasOwnProperty(data, 'val_orig')) {
                     val = data['val_orig'];
                 } else {
                     val = data['val'];
                 }
-                if (isNumerical(val)) {
+                if (utils.isNumerical(val)) {
                     vector.push(val);
                 }
             }

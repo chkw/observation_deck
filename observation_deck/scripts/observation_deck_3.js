@@ -34,7 +34,7 @@ buildObservationDeck = function(containerDivElem, config) {
  */
 getConfiguration = function(config) {
     // look for od_config in cookies
-    var querySettings = parseJson(getCookie('od_config')) || {};
+    var querySettings = utils.parseJson(utils.getCookie('od_config')) || {};
     config['querySettings'] = querySettings;
 
     var od_eventAlbum = null;
@@ -134,11 +134,11 @@ setupContextMenus = function(config) {
  */
 resetConfig = function(config) {
     var persistentKeys = ['dataUrl', 'eventAlbum', 'mongoData', 'containerDivId', 'signature'];
-    deleteCookie('od_config');
-    var keys = getKeys(config);
+    utils.deleteCookie('od_config');
+    var keys = utils.getKeys(config);
     for (var i = 0; i < keys.length; i++) {
         var key = keys[i];
-        if (isObjInArray(persistentKeys, key)) {
+        if (utils.isObjInArray(persistentKeys, key)) {
             continue;
         } else {
             delete config[key];
@@ -216,7 +216,7 @@ setupRowLabelContextMenu = function(config) {
                     var querySettings = config['querySettings'];
                     querySettings['required events'] = [eventId];
 
-                    setCookie('od_config', JSON.stringify(querySettings));
+                    utils.setCookie('od_config', JSON.stringify(querySettings));
 
                     var containerDivElem = document.getElementById(config['containerDivId']);
                     buildObservationDeck(containerDivElem, config);
@@ -240,7 +240,7 @@ setupRowLabelContextMenu = function(config) {
                     sortSteps.addStep(eventId);
                     querySettings[sortType] = sortSteps;
 
-                    setCookie('od_config', JSON.stringify(querySettings));
+                    utils.setCookie('od_config', JSON.stringify(querySettings));
 
                     var containerDivElem = document.getElementById(config['containerDivId']);
                     buildObservationDeck(containerDivElem, config);
@@ -271,7 +271,7 @@ setupRowLabelContextMenu = function(config) {
                     sortSteps.addStep(eventId);
                     querySettings[sortType] = sortSteps;
 
-                    setCookie('od_config', JSON.stringify(querySettings));
+                    utils.setCookie('od_config', JSON.stringify(querySettings));
 
                     var containerDivElem = document.getElementById(config['containerDivId']);
                     buildObservationDeck(containerDivElem, config);
@@ -290,8 +290,8 @@ setupRowLabelContextMenu = function(config) {
                         querySettings['hiddenDatatypes'] = [];
                     }
                     querySettings['hiddenDatatypes'].push(datatype);
-                    querySettings['hiddenDatatypes'] = eliminateDuplicates(querySettings['hiddenDatatypes']);
-                    setCookie('od_config', JSON.stringify(querySettings));
+                    querySettings['hiddenDatatypes'] = utils.eliminateDuplicates(querySettings['hiddenDatatypes']);
+                    utils.setCookie('od_config', JSON.stringify(querySettings));
 
                     // trigger redrawing
                     var containerDivElem = document.getElementById(config['containerDivId']);
@@ -337,7 +337,7 @@ setupExpressionCellContextMenu = function(config) {
                         'method' : 'samplewiseMedianRescaling'
                     };
 
-                    setCookie('od_config', JSON.stringify(querySettings));
+                    utils.setCookie('od_config', JSON.stringify(querySettings));
 
                     var containerDivElem = document.getElementById(config['containerDivId']);
                     buildObservationDeck(containerDivElem, config);
@@ -354,7 +354,7 @@ setupExpressionCellContextMenu = function(config) {
                         'method' : 'eventwiseMedianRescaling'
                     };
 
-                    setCookie('od_config', JSON.stringify(querySettings));
+                    utils.setCookie('od_config', JSON.stringify(querySettings));
 
                     var containerDivElem = document.getElementById(config['containerDivId']);
                     buildObservationDeck(containerDivElem, config);
@@ -371,7 +371,7 @@ setupExpressionCellContextMenu = function(config) {
                         'method' : 'zScoreExpressionRescaling'
                     };
 
-                    setCookie('od_config', JSON.stringify(querySettings));
+                    utils.setCookie('od_config', JSON.stringify(querySettings));
 
                     var containerDivElem = document.getElementById(config['containerDivId']);
                     buildObservationDeck(containerDivElem, config);
@@ -420,7 +420,7 @@ setupCategoricCellContextMenu = function(config) {
                         'val' : val
                     };
 
-                    setCookie('od_config', JSON.stringify(querySettings));
+                    utils.setCookie('od_config', JSON.stringify(querySettings));
 
                     var containerDivElem = document.getElementById(config['containerDivId']);
                     buildObservationDeck(containerDivElem, config);
@@ -487,7 +487,7 @@ drawMatrix = function(containingDiv, config) {
         d3.event.preventDefault();
     };
 
-    var thisElement = removeChildElems(containingDiv);
+    var thisElement = utils.removeChildElems(containingDiv);
 
     // get eventList
     var eventAlbum = config['eventAlbum'];
@@ -506,7 +506,7 @@ drawMatrix = function(containingDiv, config) {
     // expression rescaling and color mapping
     var rescalingData = null;
 
-    if (hasOwnProperty(groupedEvents, 'expression data') && hasOwnProperty(querySettings, 'expression rescaling')) {
+    if (utils.hasOwnProperty(groupedEvents, 'expression data') && utils.hasOwnProperty(querySettings, 'expression rescaling')) {
         var rescalingSettings = querySettings['expression rescaling'];
         if (rescalingSettings['method'] === 'yulia_rescaling') {
             rescalingData = eventAlbum.yuliaExpressionRescaling(rescalingSettings['eventId'], rescalingSettings['val']);
@@ -520,7 +520,7 @@ drawMatrix = function(containingDiv, config) {
         } else {
             // no rescaling
         }
-    } else if (hasOwnProperty(groupedEvents, 'expression data')) {
+    } else if (utils.hasOwnProperty(groupedEvents, 'expression data')) {
         rescalingData = eventAlbum.eventwiseMedianRescaling();
     } else {
         console.log('no expression data rescaling');
@@ -528,11 +528,11 @@ drawMatrix = function(containingDiv, config) {
 
     // rescalingData = eventAlbum.betweenMeansExpressionRescaling('Small Cell v Adeno', 'Adeno', 'Small Cell');
 
-    var expressionColorMapper = centeredRgbaColorMapper(false);
+    var expressionColorMapper = utils.centeredRgbaColorMapper(false);
     if (rescalingData != null) {
         var minExpVal = rescalingData['minVal'];
         var maxExpVal = rescalingData['maxVal'];
-        expressionColorMapper = centeredRgbaColorMapper(false, 0, minExpVal, maxExpVal);
+        expressionColorMapper = utils.centeredRgbaColorMapper(false, 0, minExpVal, maxExpVal);
     }
 
     // assign color mappers
@@ -548,13 +548,13 @@ drawMatrix = function(containingDiv, config) {
             var numbers = [];
             for (var j = 0; j < vals.length; j++) {
                 var val = vals[j];
-                if (isNumerical(val)) {
+                if (utils.isNumerical(val)) {
                     numbers.push(val);
                 }
             }
             var minVal = Math.min.apply(null, numbers);
             var maxVal = Math.max.apply(null, numbers);
-            colorMappers[eventId] = centeredRgbaColorMapper(false, 0, minVal, maxVal);
+            colorMappers[eventId] = utils.centeredRgbaColorMapper(false, 0, minVal, maxVal);
         } else if (allowedValues == 'expression') {
             // shared expression color mapper
             colorMappers[eventId] = expressionColorMapper;
@@ -592,16 +592,16 @@ drawMatrix = function(containingDiv, config) {
         var nullSamples = requiredEventObj.data.getNullSamples();
         samplesToHide = samplesToHide.concat(nullSamples);
     }
-    samplesToHide = eliminateDuplicates(samplesToHide);
+    samplesToHide = utils.eliminateDuplicates(samplesToHide);
 
     // colNames after hiding null samples
     var newColNames = [];
     for (var ci = 0; ci < colNames.length; ci++) {
         var colName = colNames[ci];
-        if (isObjInArray(config['displayedSamples'], colName)) {
+        if (utils.isObjInArray(config['displayedSamples'], colName)) {
             // make sure displayedSamples are shown
             newColNames.push(colName);
-        } else if (isObjInArray(samplesToHide, colName)) {
+        } else if (utils.isObjInArray(samplesToHide, colName)) {
             // samples have been specified for hiding
             continue;
         } else if (config['displayedSamples'].length == 0) {
@@ -644,7 +644,7 @@ drawMatrix = function(containingDiv, config) {
     for (var i = 0; i < rowNames.length; i++) {
         var rowName = rowNames[i];
         var datatype = eventAlbum.getEvent(rowName).metadata.datatype;
-        if (isObjInArray(hiddenDatatypes, datatype)) {
+        if (utils.isObjInArray(hiddenDatatypes, datatype)) {
             continue;
         }
         shownNames.push(rowName);
@@ -660,8 +660,8 @@ drawMatrix = function(containingDiv, config) {
 
     // setup margins
 
-    var longestColumnName = lengthOfLongestString(colNames);
-    var longestRowName = lengthOfLongestString(rowNames);
+    var longestColumnName = utils.lengthOfLongestString(colNames);
+    var longestRowName = utils.lengthOfLongestString(rowNames);
 
     var margin = {
         "top" : ((longestColumnName > 3) ? (9 * longestColumnName) : 30),
@@ -723,8 +723,8 @@ drawMatrix = function(containingDiv, config) {
         var datatype = eventObj.metadata.datatype;
         var s = 'event: ' + d + '\ndatatype: ' + datatype;
 
-        if ((datatype === 'expression data') && (rescalingData != null) && (hasOwnProperty(rescalingData, 'stats'))) {
-            s = s + '\nraw data stats: ' + prettyJson(rescalingData['stats'][d]);
+        if ((datatype === 'expression data') && (rescalingData != null) && (utils.hasOwnProperty(rescalingData, 'stats'))) {
+            s = s + '\nraw data stats: ' + utils.prettyJson(rescalingData['stats'][d]);
         }
 
         return s;
@@ -759,18 +759,18 @@ drawMatrix = function(containingDiv, config) {
     for (var i = 0; i < dataList.length; i++) {
         var dataListObj = dataList[i];
         var eventId = dataListObj['eventId'];
-        if (!isObjInArray(rowNames, eventId)) {
+        if (!utils.isObjInArray(rowNames, eventId)) {
             continue;
         } else {
             showDataList.push(dataListObj);
         }
     }
     var heatMap = svg.selectAll(".cell").data(showDataList).enter().append(function(d) {
-        var group = document.createElementNS(svgNamespaceUri, "g");
+        var group = document.createElementNS(utils.svgNamespaceUri, "g");
         group.setAttributeNS(null, "class", "cell");
 
         var colName = d['id'];
-        if (! hasOwnProperty(colNameMapping, colName)) {
+        if (! utils.hasOwnProperty(colNameMapping, colName)) {
             return group;
         }
 
@@ -792,7 +792,7 @@ drawMatrix = function(containingDiv, config) {
             // background for icons
             attributes["fill"] = "white";
         }
-        group.appendChild(createSvgRectElement(x, y, rx, ry, width, height, attributes));
+        group.appendChild(utils.createSvgRectElement(x, y, rx, ry, width, height, attributes));
 
         // draw icons .. possibly multiple ones
         if ((type == null) || (d['val'] == null)) {
@@ -824,7 +824,7 @@ drawMatrix = function(containingDiv, config) {
             attributes['sampleId'] = d['id'];
             attributes['val'] = d['val'];
         }
-        group.appendChild(createSvgRectElement(x, y, rx, ry, width, height, attributes));
+        group.appendChild(utils.createSvgRectElement(x, y, rx, ry, width, height, attributes));
 
         return group;
     });
