@@ -792,7 +792,7 @@ function OD_eventMetadata(obj) {
         var compareWeightedGenes = function(a, b) {
             var weightA = a['weight'];
             var weightB = b['weight'];
-            return compareAsNumeric(weightA, weightB);
+            return utils.compareAsNumeric(weightA, weightB);
         };
 
         var sig = this.weightedGeneVector.slice(0);
