@@ -48,16 +48,18 @@ getConfiguration = function(config) {
     }
 
     // data to be retrieved via url
+    var dataLoader = medbookDataLoader;
+
     if ('dataUrl' in config) {
         var dataUrlConfig = config['dataUrl'];
         if ('clinicalUrl' in dataUrlConfig) {
-            getClinicalData(dataUrlConfig['clinicalUrl'], od_eventAlbum);
+            dataLoader.getClinicalData(dataUrlConfig['clinicalUrl'], od_eventAlbum);
         }
         if ('expressionUrl' in dataUrlConfig) {
-            getExpressionData(dataUrlConfig['expressionUrl'], od_eventAlbum);
+            dataLoader.getExpressionData(dataUrlConfig['expressionUrl'], od_eventAlbum);
         }
         if ('mutationUrl' in dataUrlConfig) {
-            getMutationData(dataUrlConfig['mutationUrl'], od_eventAlbum);
+            dataLoader.getMutationData(dataUrlConfig['mutationUrl'], od_eventAlbum);
         }
     }
 
@@ -65,10 +67,10 @@ getConfiguration = function(config) {
     if ('mongoData' in config) {
         var mongoData = config['mongoData'];
         if ('clinical' in mongoData) {
-            mongoClinicalData(mongoData['clinical'], od_eventAlbum);
+            dataLoader.mongoClinicalData(mongoData['clinical'], od_eventAlbum);
         }
         if ('expression' in mongoData) {
-            mongoExpressionData(mongoData['expression'], od_eventAlbum);
+            dataLoader.mongoExpressionData(mongoData['expression'], od_eventAlbum);
         }
     }
 
@@ -82,14 +84,14 @@ getConfiguration = function(config) {
                 for (var i = 0; i < fileNames.length; i++) {
                     var fileName = fileNames[i];
                     console.log(fileName);
-                    getSignature(fileName, od_eventAlbum);
+                    dataLoader.getSignature(fileName, od_eventAlbum);
                 }
             }
             if ('object' in expressionSigConfig) {
                 var objects = expressionSigConfig['object'];
                 for (var i = 0; i < objects.length; i++) {
                     var object = objects[i];
-                    loadSignatureObj(object, od_eventAlbum);
+                    dataLoader.loadSignatureObj(object, od_eventAlbum);
                 }
             }
         }
