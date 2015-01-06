@@ -43,7 +43,7 @@ getConfiguration = function(config) {
     if ('eventAlbum' in config) {
         od_eventAlbum = config['eventAlbum'];
     } else {
-        od_eventAlbum = new OD_eventAlbum();
+        od_eventAlbum = new eventData.OD_eventAlbum();
         config['eventAlbum'] = od_eventAlbum;
     }
 
@@ -235,9 +235,9 @@ setupRowLabelContextMenu = function(config) {
                     var sortSteps = null;
                     var querySettings = config['querySettings'];
                     if ( sortType in querySettings) {
-                        sortSteps = new sortingSteps(querySettings[sortType]["steps"]);
+                        sortSteps = new eventData.sortingSteps(querySettings[sortType]["steps"]);
                     } else {
-                        sortSteps = new sortingSteps();
+                        sortSteps = new eventData.sortingSteps();
                     }
                     sortSteps.addStep(eventId);
                     querySettings[sortType] = sortSteps;
@@ -266,9 +266,9 @@ setupRowLabelContextMenu = function(config) {
                     var sortSteps = null;
                     var querySettings = config['querySettings'];
                     if ( sortType in querySettings) {
-                        sortSteps = new sortingSteps(querySettings[sortType]["steps"]);
+                        sortSteps = new eventData.sortingSteps(querySettings[sortType]["steps"]);
                     } else {
-                        sortSteps = new sortingSteps();
+                        sortSteps = new eventData.sortingSteps();
                     }
                     sortSteps.addStep(eventId);
                     querySettings[sortType] = sortSteps;
@@ -569,7 +569,7 @@ drawMatrix = function(containingDiv, config) {
     var colNames = null;
     var colSortSteps = null;
     if ("colSort" in querySettings) {
-        colSortSteps = new sortingSteps(querySettings["colSort"]["steps"]);
+        colSortSteps = new eventData.sortingSteps(querySettings["colSort"]["steps"]);
         for (var i = colSortSteps.getSteps().length - 1; i >= 0; i--) {
             var step = colSortSteps.steps[i];
             var name = step['name'];
@@ -624,7 +624,7 @@ drawMatrix = function(containingDiv, config) {
 
     var rowSortSteps = null;
     if ('rowSort' in querySettings) {
-        rowSortSteps = new sortingSteps(querySettings["rowSort"]["steps"]);
+        rowSortSteps = new eventData.sortingSteps(querySettings["rowSort"]["steps"]);
         for (var i = rowSortSteps.getSteps().length - 1; i >= 0; i--) {
             var step = rowSortSteps.steps[i];
             var name = step['name'];
