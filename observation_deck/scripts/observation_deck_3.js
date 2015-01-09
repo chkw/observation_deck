@@ -556,10 +556,10 @@ drawMatrix = function(containingDiv, config) {
 
     // rescalingData = eventAlbum.betweenMeansExpressionRescaling('Small Cell v Adeno', 'Adeno', 'Small Cell');
 
-    // TODO pivot sorting of expression data
+    // pivot sorting of expression data
+    var pivotSortedEvents = null;
     if (utils.hasOwnProperty(querySettings, 'pivot_sort')) {
-        var sortedEvents = eventAlbum.pivotSort(querySettings['pivot_sort']['pivot_event']);
-        console.log('sortedEvents', utils.prettyJson(sortedEvents));
+        pivotSortedEvents = eventAlbum.pivotSort(querySettings['pivot_sort']['pivot_event']);
     }
 
     var expressionColorMapper = utils.centeredRgbaColorMapper(false);
@@ -671,6 +671,11 @@ drawMatrix = function(containingDiv, config) {
     }
 
     var rowNames = eventAlbum.multisortEvents(rowSortSteps, colSortSteps);
+
+    // TODO qqq
+    if (pivotSortedEvents != null) {
+        rowNames = utils.eliminateDuplicates(pivotSortedEvents.concat(rowNames));
+    }
 
     // hide rows of datatype, preserving relative ordering
     var hiddenDatatypes = querySettings['hiddenDatatypes'] || [];

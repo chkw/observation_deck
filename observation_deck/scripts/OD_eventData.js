@@ -224,49 +224,35 @@ var eventData = {};
                 console.log('eventObj not found for', pivotEvent);
                 return null;
             }
-            // console.log('pEventObj', pEventObj);
 
             pSampleIds = pEventObj.data.getAllSampleIds();
             pNullSampleIds = pEventObj.data.getNullSamples();
 
-            // console.log('pSampleIds', pSampleIds.length);
-            // console.log('pNullSampleIds', pNullSampleIds.length);
-
             // keep only IDs that appear less than 2 times
             pNonNullSampleIds = utils.keepReplicates(pSampleIds.concat(pNullSampleIds), 2, true);
 
-            // console.log('pNonNullSampleIds', pNonNullSampleIds);
-
             // compute MI scores over events
             var eventGroup = this.getEventIdsByType()[pEventObj.metadata.datatype];
-            // console.log('eventGroup', eventGroup.length);
 
             var miScores = [];
             for (var i = 0; i < eventGroup.length; i++) {
                 var eventId = eventGroup[i];
-                if (eventId === pivotEvent) {
-                    continue;
-                }
+
+                // if (eventId === pivotEvent) {
+                // continue;
+                // }
+
                 var eventObj = this.getEvent(eventId);
-                // console.log('eventObj', eventObj);
 
                 var eventAllSamples = eventObj.data.getAllSampleIds();
                 var eventNullSamples = eventObj.data.getNullSamples();
                 var eventNonNullSamples = utils.keepReplicates(eventAllSamples.concat(eventNullSamples), 2, true);
 
-                // console.log('eventAllSamples', eventAllSamples.length);
-                // console.log('eventNullSamples', eventNullSamples.length);
-                // console.log('eventNonNullSamples', eventNonNullSamples.length);
-
                 var commonNonNullSamples = utils.keepReplicates(eventNonNullSamples.concat(pNonNullSampleIds));
-                // console.log('commonNonNullSamples', commonNonNullSamples.length);
 
                 // ordering of samples is maintained as in the list parameter
                 var eventData1 = pEventObj.data.getData(commonNonNullSamples);
                 var eventData2 = eventObj.data.getData(commonNonNullSamples);
-
-                // console.log('eventData1', eventData1);
-                // console.log('eventData2', eventData2);
 
                 var vector1 = [];
                 var vector2 = [];
@@ -274,11 +260,8 @@ var eventData = {};
                     vector1.push(eventData1[j]['val_orig']);
                     vector2.push(eventData2[j]['val_orig']);
                 }
-                // console.log('vector1', vector1);
-                // console.log('vector2', vector2);
 
                 var mi = utils.mutualInformation(vector1, vector2);
-                // console.log('mi', mi);
                 miScores.push({
                     'event' : eventId,
                     'score' : mi
@@ -287,7 +270,6 @@ var eventData = {};
 
             // sort by MI scores
             miScores.sort(utils.sort_by('score'));
-            // console.log('miScores', utils.prettyJson(miScores));
 
             var sortedEvents = [];
             for (var i = 0; i < miScores.length; i++) {
