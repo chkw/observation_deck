@@ -558,7 +558,8 @@ drawMatrix = function(containingDiv, config) {
 
     // TODO pivot sorting of expression data
     if (utils.hasOwnProperty(querySettings, 'pivot_sort')) {
-        eventAlbum.pivotSort(querySettings['pivot_sort']['pivot_event']);
+        var sortedEvents = eventAlbum.pivotSort(querySettings['pivot_sort']['pivot_event']);
+        console.log('sortedEvents', utils.prettyJson(sortedEvents));
     }
 
     var expressionColorMapper = utils.centeredRgbaColorMapper(false);
