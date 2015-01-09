@@ -214,6 +214,68 @@ var eventData = {};
         };
 
         /**
+         * Pivot sort
+         */
+        this.pivotSort = function(pivotEvent) {
+            console.log('eventAlbum.pivotSort:', pivotEvent);
+            // TODO get pivot event
+            pEventObj = this.getEvent(pivotEvent);
+            if (pEventObj == null) {
+                console.log('eventObj not found for', pivotEvent);
+                return null;
+            }
+            console.log('pEventObj', pEventObj);
+
+            pSampleIds = pEventObj.data.getAllSampleIds();
+            pNullSampleIds = pEventObj.data.getNullSamples();
+
+            console.log('pSampleIds', pSampleIds.length);
+            console.log('pNullSampleIds', pNullSampleIds.length);
+
+            // keep only IDs that appear less than 2 times
+            pNonNullSampleIds = utils.keepReplicates(pSampleIds.concat(pNullSampleIds), 2, true);
+
+            console.log('pNonNullSampleIds', pNonNullSampleIds);
+
+            // TODO compute MI scores over events
+            var eventGroup = this.getEventIdsByType()[pEventObj.metadata.datatype];
+            console.log('eventGroup', eventGroup.length);
+
+            for (var i = 0; i < eventGroup.length; i++) {
+                var eventId = eventGroup[i];
+                if (eventId === pivotEvent) {
+                    continue;
+                }
+                var eventObj = this.getEvent(eventId);
+                console.log('eventObj', eventObj);
+
+                var eventAllSamples = eventObj.data.getAllSampleIds();
+                var eventNullSamples = eventObj.data.getNullSamples();
+                var eventNonNullSamples = utils.keepReplicates(eventAllSamples.concat(eventNullSamples), 2, true);
+
+                console.log('eventAllSamples', eventAllSamples.length);
+                console.log('eventNullSamples', eventNullSamples.length);
+                console.log('eventNonNullSamples', eventNonNullSamples.length);
+
+                var commonNonNullSamples = utils.keepReplicates(eventNonNullSamples.concat(pNonNullSampleIds));
+                console.log('commonNonNullSamples', commonNonNullSamples.length);
+
+                // ordering of samples is maintained as in the list parameter
+                var eventData1 = pEventObj.data.getData(commonNonNullSamples);
+                var eventData2 = eventObj.data.getData(commonNonNullSamples);
+
+                console.log('eventData1', eventData1);
+                console.log('eventData2', eventData2);
+
+                var vector1 = [];
+                var vector2 = [];
+                // TODO qqq continue here
+            }
+
+            // TODO sort by MI scores
+        };
+
+        /**
          * multi-sorting of events
          */
         this.multisortEvents = function(rowSortSteps, colSortSteps) {

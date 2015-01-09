@@ -10,7 +10,7 @@
  * 2) D3.js <http://d3js.org/>
  * 3) jQuery-contextMenu <https://medialize.github.io/jQuery-contextMenu/>
  * 4) jStat
- * 5) static.js
+ * 5) utils.js
  * 6) OD_eventData.js
  */
 
@@ -207,6 +207,32 @@ setupRowLabelContextMenu = function(config) {
             var elem = this[0];
         },
         items : {
+            "pivot_sort" : {
+                name : 'pivot sort',
+                icon : null,
+                disabled : function() {
+                    var datatype = this[0].getAttribute('datatype');
+                    if (datatype === 'expression data') {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                },
+                callback : function(key, opt) {
+                    var eventId = this[0].getAttribute('eventId');
+                    var querySettings = config['querySettings'];
+
+                    querySettings['pivot_sort'] = {
+                        'pivot_event' : eventId
+                    };
+
+                    utils.setCookie('od_config', JSON.stringify(querySettings));
+
+                    // trigger redrawing
+                    var containerDivElem = document.getElementById(config['containerDivId']);
+                    buildObservationDeck(containerDivElem, config);
+                }
+            },
             "hide_null_samples" : {
                 name : "hide null samples",
                 icon : null,
@@ -529,6 +555,11 @@ drawMatrix = function(containingDiv, config) {
     }
 
     // rescalingData = eventAlbum.betweenMeansExpressionRescaling('Small Cell v Adeno', 'Adeno', 'Small Cell');
+
+    // TODO pivot sorting of expression data
+    if (utils.hasOwnProperty(querySettings, 'pivot_sort')) {
+        eventAlbum.pivotSort(querySettings['pivot_sort']['pivot_event']);
+    }
 
     var expressionColorMapper = utils.centeredRgbaColorMapper(false);
     if (rescalingData != null) {
