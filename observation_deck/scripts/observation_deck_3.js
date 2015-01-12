@@ -556,12 +556,6 @@ drawMatrix = function(containingDiv, config) {
 
     // rescalingData = eventAlbum.betweenMeansExpressionRescaling('Small Cell v Adeno', 'Adeno', 'Small Cell');
 
-    // pivot sorting of expression data
-    var pivotSortedEvents = null;
-    if (utils.hasOwnProperty(querySettings, 'pivot_sort')) {
-        pivotSortedEvents = eventAlbum.pivotSort(querySettings['pivot_sort']['pivot_event']);
-    }
-
     var expressionColorMapper = utils.centeredRgbaColorMapper(false);
     if (rescalingData != null) {
         var minExpVal = rescalingData['minVal'];
@@ -672,9 +666,31 @@ drawMatrix = function(containingDiv, config) {
 
     var rowNames = eventAlbum.multisortEvents(rowSortSteps, colSortSteps);
 
-    // TODO qqq
-    if (pivotSortedEvents != null) {
+    // TODO pivot sorting of expression data
+    var pivotScores = null;
+    if (utils.hasOwnProperty(querySettings, 'pivot_sort')) {
+        // pivotScores = eventAlbum.pivotSort(querySettings['pivot_sort']['pivot_event'], utils.mutualInformation);
+        pivotScores = eventAlbum.pivotSort(querySettings['pivot_sort']['pivot_event']);
+
+        if ( typeof rescalingData === 'undefined') {
+            rescalingData = {};
+            rescalingData['stats'] = {};
+        }
+
+        var pivotSortedEvents = [];
+        var pivotScoresObj = {};
+        for (var i = 0; i < pivotScores.length; i++) {
+            var eventId = pivotScores[i]['event'];
+            var score = pivotScores[i]['score'];
+            pivotSortedEvents.push(eventId);
+
+            rescalingData['stats'][eventId] = {
+                'pivotScore' : score
+            };
+        }
         rowNames = utils.eliminateDuplicates(pivotSortedEvents.concat(rowNames));
+
+        //console.log('pivotScoresObj', utils.prettyJson(pivotScoresObj));
     }
 
     // hide rows of datatype, preserving relative ordering

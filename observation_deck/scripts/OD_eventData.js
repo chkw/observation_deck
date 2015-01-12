@@ -214,9 +214,9 @@ var eventData = {};
         };
 
         /**
-         * Pivot sort
+         * Pivot sort returns array of objects with 'event' and 'score', sorted by score. Default scoring metric is pearson rho.
          */
-        this.pivotSort = function(pivotEvent) {
+        this.pivotSort = function(pivotEvent, scoringAlgorithm) {
             console.log('eventAlbum.pivotSort:', pivotEvent);
             // get pivot event
             pEventObj = this.getEvent(pivotEvent);
@@ -231,10 +231,15 @@ var eventData = {};
             // keep only IDs that appear less than 2 times
             pNonNullSampleIds = utils.keepReplicates(pSampleIds.concat(pNullSampleIds), 2, true);
 
-            // compute MI scores over events
+            // compute scores over events
             var eventGroup = this.getEventIdsByType()[pEventObj.metadata.datatype];
 
-            var miScores = [];
+            // scoring algorithm
+            if ( typeof scoringAlgorithm === 'undefined') {
+                scoringAlgorithm = jStat.corrcoeff;
+            }
+
+            var scores = [];
             for (var i = 0; i < eventGroup.length; i++) {
                 var eventId = eventGroup[i];
 
@@ -261,21 +266,17 @@ var eventData = {};
                     vector2.push(eventData2[j]['val_orig']);
                 }
 
-                var mi = utils.mutualInformation(vector1, vector2);
-                miScores.push({
+                var score = scoringAlgorithm(vector1, vector2);
+                scores.push({
                     'event' : eventId,
-                    'score' : mi
+                    'score' : score
                 });
             }
 
-            // sort by MI scores
-            miScores.sort(utils.sort_by('score'));
+            // sort by scores
+            scores.sort(utils.sort_by('score'));
 
-            var sortedEvents = [];
-            for (var i = 0; i < miScores.length; i++) {
-                sortedEvents.push(miScores[i]['event']);
-            }
-            return sortedEvents;
+            return scores;
         };
 
         /**
