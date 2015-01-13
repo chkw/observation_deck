@@ -667,10 +667,20 @@ drawMatrix = function(containingDiv, config) {
     var rowNames = eventAlbum.multisortEvents(rowSortSteps, colSortSteps);
 
     // TODO pivot sorting of expression data
+    // var allPivotScores = {
+    // 'pearson' : eventAlbum.getAllPivotScores('expression data'),
+    // 'mutual_information' : eventAlbum.getAllPivotScores('expression data', utils.mutualInformation)
+    // };
+    // console.log('allPivotScores', utils.prettyJson(allPivotScores));
+
     var pivotScores = null;
     if (utils.hasOwnProperty(querySettings, 'pivot_sort')) {
-        // pivotScores = eventAlbum.pivotSort(querySettings['pivot_sort']['pivot_event'], utils.mutualInformation);
-        pivotScores = eventAlbum.pivotSort(querySettings['pivot_sort']['pivot_event']);
+        var pivotSortSettings = querySettings['pivot_sort'];
+        // pivotScores = eventAlbum.pivotSort(pivotSortSettings['pivot_event'], utils.mutualInformation);
+        pivotScores = eventAlbum.pivotSort(pivotSortSettings['pivot_event']);
+
+        // pivotScores = eventAlbum.pivotSort_2(pivotSortSettings['pivot_event'], utils.mutualInformation);
+        // pivotScores = eventAlbum.pivotSort_2(pivotSortSettings['pivot_event']);
 
         if ( typeof rescalingData === 'undefined') {
             rescalingData = {};

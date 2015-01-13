@@ -214,10 +214,72 @@ var eventData = {};
         };
 
         /**
+         * Get all pivot scores for each pivot in a datatype.
+         */
+        this.getAllPivotScores = function(datatype, scoringAlgorithm) {
+            var allPivotScores = {};
+
+            var groupedEvents = this.getEventIdsByType();
+            if (! utils.hasOwnProperty(groupedEvents, datatype)) {
+                return allPivotScores;
+            }
+
+            var events = groupedEvents[datatype];
+            for (var i = 0; i < events.length; i++) {
+                var pivotEvent = events[i];
+                var scores = this.pivotSort(pivotEvent, scoringAlgorithm);
+                allPivotScores[pivotEvent] = scores;
+            }
+
+            return allPivotScores;
+        };
+
+        /**
+         * Pivot sort results separated by absolute value of Pearson rho.
+         */
+        this.pivotSort_2 = function(pivotEvent, scoringAlgorithm) {
+            var pearsonScores = this.pivotSort(pivotEvent, jStat.corrcoeff);
+            var pearsonSigns = {};
+            for (var i = 0; i < pearsonScores.length; i++) {
+                var scoreObj = pearsonScores[i];
+                var eventId = scoreObj['event'];
+                var score = scoreObj['score'];
+                pearsonSigns[eventId] = (score < 0) ? -1 : 1;
+            }
+
+            var algScores = this.pivotSort(pivotEvent, scoringAlgorithm);
+            var posList = [];
+            var negList = [];
+            for (var i = 0; i < algScores.length; i++) {
+                var scoreObj = algScores[i];
+                var eventId = scoreObj['event'];
+                var score = scoreObj['score'];
+                if (pearsonSigns[eventId] < 0) {
+                    negList.push(scoreObj);
+                } else {
+                    posList.push(scoreObj);
+                }
+            }
+
+            // sort by scores
+            posList.sort(utils.sort_by('score'));
+            negList.sort(utils.sort_by('score'), true);
+
+            return posList.concat(negList);
+        };
+
+        /**
          * Pivot sort returns array of objects with 'event' and 'score', sorted by score. Default scoring metric is pearson rho.
          */
         this.pivotSort = function(pivotEvent, scoringAlgorithm) {
             console.log('eventAlbum.pivotSort:', pivotEvent);
+
+            // scoring algorithm
+            if ( typeof scoringAlgorithm === 'undefined') {
+                console.log('using default scoringAlgorithm, jStat.corrcoeff');
+                scoringAlgorithm = jStat.corrcoeff;
+            }
+
             // get pivot event
             pEventObj = this.getEvent(pivotEvent);
             if (pEventObj == null) {
@@ -233,11 +295,6 @@ var eventData = {};
 
             // compute scores over events
             var eventGroup = this.getEventIdsByType()[pEventObj.metadata.datatype];
-
-            // scoring algorithm
-            if ( typeof scoringAlgorithm === 'undefined') {
-                scoringAlgorithm = jStat.corrcoeff;
-            }
 
             var scores = [];
             for (var i = 0; i < eventGroup.length; i++) {
