@@ -34,6 +34,7 @@ buildObservationDeck = function(containerDivElem, config) {
  */
 getConfiguration = function(config) {
     // look for od_config in cookies
+    console.log('cookie', utils.getCookie('od_config'));
     var querySettings = utils.parseJson(utils.getCookie('od_config')) || {};
     config['querySettings'] = querySettings;
 
