@@ -234,6 +234,17 @@ var medbookDataLoader = {};
      * @param {Object} OD_eventAlbum
      */
     mdl.getExpressionData = function(url, OD_eventAlbum) {
+        mdl.getSampleByGeneData(url, OD_eventAlbum, '_mRNA', 'expression data', 'numeric');
+    };
+
+    mdl.getViperData = function(url, OD_eventAlbum) {
+        mdl.getSampleByGeneData(url, OD_eventAlbum, '_viper', 'viper data', 'numeric');
+    };
+
+    /**
+     *
+     */
+    mdl.getSampleByGeneData = function(url, OD_eventAlbum, geneSuffix, datatype, allowedValues) {
         var response = utils.getResponse(url);
         var parsedResponse = d3.tsv.parse(response);
 
@@ -242,12 +253,12 @@ var medbookDataLoader = {};
             var geneId = data[''];
             delete data[''];
             OD_eventAlbum.addEvent({
-                'id' : geneId + '_mRNA',
+                'id' : geneId + geneSuffix,
                 'name' : null,
                 'displayName' : null,
                 'description' : null,
-                'datatype' : 'expression data',
-                'allowedValues' : 'expression'
+                'datatype' : datatype,
+                'allowedValues' : allowedValues
             }, data);
         }
     };
@@ -263,10 +274,15 @@ var medbookDataLoader = {};
             var doc = collection[i];
 
             var sampleId = null;
+            // TODO col name for this field has been inconsistent, so try to detect it here
             if (utils.hasOwnProperty(doc, 'sample')) {
                 sampleId = doc['sample'];
             } else if (hasOwnProperty(doc, 'Sample')) {
                 sampleId = doc['Sample'];
+            } else if (hasOwnProperty(doc, 'Patient ID')) {
+                sampleId = doc['Patient ID'];
+            } else if (hasOwnProperty(doc, 'Patient ID ')) {
+                sampleId = doc['Patient ID '];
             } else {
                 // no gene identifier found
                 console.log('no sample ID found in clinical doc: ' + prettyJson(doc));
@@ -276,7 +292,7 @@ var medbookDataLoader = {};
             sampleId = sampleId.trim();
 
             // don't use this field
-            if (sampleId == 'Patient ID') {
+            if ((sampleId === 'Patient ID') || (sampleId === 'Patient ID ')) {
                 continue;
             }
 
