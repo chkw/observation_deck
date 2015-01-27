@@ -115,6 +115,40 @@ getConfiguration = function(config) {
     return config;
 };
 
+/**
+ * Get event IDs that are in the cookies.  Currently only gets the expression events.
+ */
+getCookieEvents = function() {
+    var eventList = [];
+    var cookieObj = utils.parseJson(utils.getCookie('od_config'));
+    if ((cookieObj == null) || ((utils.getKeys(cookieObj)).length == 0)) {
+        return [];
+    }
+    if (u.hasOwnProperty(cookieObj, 'pivot_sort')) {
+        eventList.push(cookieObj['pivot_sort']['pivot_event']);
+    }
+    if (u.hasOwnProperty(cookieObj, 'colSort')) {
+        var steps = cookieObj['colSort']['steps'];
+        for (var i = 0; i < steps.length; i++) {
+            var step = steps[i];
+            eventList.push(step['name']);
+        }
+    }
+    if (u.hasOwnProperty(cookieObj, 'required events')) {
+        eventList = eventList.concat(cookieObj['required events']);
+    }
+
+    var geneList = [];
+    for (var i = 0; i < eventList.length; i++) {
+        var eventId = eventList[i];
+        if (u.endsWith(eventId, '_mRNA')) {
+            geneList.push(eventId.replace('_mRNA', ''));
+        }
+    }
+
+    return utils.eliminateDuplicates(geneList);
+};
+
 /*
  *
  */

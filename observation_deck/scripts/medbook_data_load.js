@@ -253,6 +253,7 @@ var medbookDataLoader = {};
             var geneId = data[''];
             delete data[''];
             OD_eventAlbum.addEvent({
+                'geneSuffix' : geneSuffix,
                 'id' : geneId + geneSuffix,
                 'name' : null,
                 'displayName' : null,
