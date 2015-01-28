@@ -242,123 +242,133 @@ setupRowLabelContextMenu = function(config) {
             var elem = this[0];
         },
         items : {
-            "pivot_sort" : {
-                name : 'pivot sort',
-                icon : null,
-                disabled : function() {
-                    var datatype = this[0].getAttribute('datatype');
-                    if (datatype === 'expression data') {
-                        return false;
-                    } else {
-                        return true;
-                    }
-                },
-                callback : function(key, opt) {
-                    var eventId = this[0].getAttribute('eventId');
-                    var querySettings = config['querySettings'];
+            'sort_fold' : {
+                'name' : 'sort...',
+                'items' : {
+                    "pivot_sort" : {
+                        name : 'expression events by this pivot',
+                        icon : null,
+                        disabled : function() {
+                            var datatype = this[0].getAttribute('datatype');
+                            if (datatype === 'expression data') {
+                                return false;
+                            } else {
+                                return true;
+                            }
+                        },
+                        callback : function(key, opt) {
+                            var eventId = this[0].getAttribute('eventId');
+                            var querySettings = config['querySettings'];
 
-                    querySettings['pivot_sort'] = {
-                        'pivot_event' : eventId
-                    };
+                            querySettings['pivot_sort'] = {
+                                'pivot_event' : eventId
+                            };
 
-                    utils.setCookie('od_config', JSON.stringify(querySettings));
+                            utils.setCookie('od_config', JSON.stringify(querySettings));
 
-                    // trigger redrawing
-                    var containerDivElem = document.getElementById(config['containerDivId']);
-                    buildObservationDeck(containerDivElem, config);
+                            // trigger redrawing
+                            var containerDivElem = document.getElementById(config['containerDivId']);
+                            buildObservationDeck(containerDivElem, config);
+                        }
+                    },
+                    "sort" : {
+                        name : "samples",
+                        icon : null,
+                        disabled : false,
+                        callback : function(key, opt) {
+                            var eventId = this[0].getAttribute('eventId');
+                            var sortType = 'colSort';
+
+                            var sortSteps = null;
+                            var querySettings = config['querySettings'];
+                            if ( sortType in querySettings) {
+                                sortSteps = new eventData.sortingSteps(querySettings[sortType]["steps"]);
+                            } else {
+                                sortSteps = new eventData.sortingSteps();
+                            }
+                            sortSteps.addStep(eventId);
+                            querySettings[sortType] = sortSteps;
+
+                            utils.setCookie('od_config', JSON.stringify(querySettings));
+
+                            var containerDivElem = document.getElementById(config['containerDivId']);
+                            buildObservationDeck(containerDivElem, config);
+                        }
+                    },
+                    "sig_sort" : {
+                        name : "expression events by signature weight",
+                        icon : null,
+                        disabled : function(key, opt) {
+                            var datatype = this[0].getAttribute('datatype');
+                            if (datatype === 'expression signature') {
+                                return false;
+                            } else {
+                                return true;
+                            }
+                        },
+                        callback : function(key, opt) {
+                            var eventId = this[0].getAttribute('eventId');
+                            var sortType = 'rowSort';
+
+                            var sortSteps = null;
+                            var querySettings = config['querySettings'];
+                            if ( sortType in querySettings) {
+                                sortSteps = new eventData.sortingSteps(querySettings[sortType]["steps"]);
+                            } else {
+                                sortSteps = new eventData.sortingSteps();
+                            }
+                            sortSteps.addStep(eventId);
+                            querySettings[sortType] = sortSteps;
+
+                            utils.setCookie('od_config', JSON.stringify(querySettings));
+
+                            var containerDivElem = document.getElementById(config['containerDivId']);
+                            buildObservationDeck(containerDivElem, config);
+                        }
+                    },
                 }
             },
-            "hide_null_samples" : {
-                name : "hide null samples",
-                icon : null,
-                disabled : false,
-                callback : function(key, opt) {
-                    var eventId = this[0].getAttribute('eventId');
-                    var eventObj = config['eventAlbum'].getEvent(eventId);
-                    // TODO qqq
-                    var querySettings = config['querySettings'];
-                    querySettings['required events'] = [eventId];
+            'hide_fold' : {
+                'name' : 'hide...',
+                'items' : {
+                    "hide_null_samples" : {
+                        name : "null samples in this row",
+                        icon : null,
+                        disabled : false,
+                        callback : function(key, opt) {
+                            var eventId = this[0].getAttribute('eventId');
+                            var eventObj = config['eventAlbum'].getEvent(eventId);
+                            // TODO qqq
+                            var querySettings = config['querySettings'];
+                            querySettings['required events'] = [eventId];
 
-                    utils.setCookie('od_config', JSON.stringify(querySettings));
+                            utils.setCookie('od_config', JSON.stringify(querySettings));
 
-                    var containerDivElem = document.getElementById(config['containerDivId']);
-                    buildObservationDeck(containerDivElem, config);
-                }
-            },
-            "sort" : {
-                name : "sort samples",
-                icon : null,
-                disabled : false,
-                callback : function(key, opt) {
-                    var eventId = this[0].getAttribute('eventId');
-                    var sortType = 'colSort';
+                            var containerDivElem = document.getElementById(config['containerDivId']);
+                            buildObservationDeck(containerDivElem, config);
+                        }
+                    },
+                    "hide_datatype" : {
+                        name : 'this datatype',
+                        icon : null,
+                        disabled : false,
+                        callback : function(key, opt) {
+                            // set cookie for hiding datatype
+                            var datatype = this[0].getAttribute('datatype');
+                            var querySettings = config['querySettings'];
 
-                    var sortSteps = null;
-                    var querySettings = config['querySettings'];
-                    if ( sortType in querySettings) {
-                        sortSteps = new eventData.sortingSteps(querySettings[sortType]["steps"]);
-                    } else {
-                        sortSteps = new eventData.sortingSteps();
+                            if (!('hiddenDatatypes' in querySettings)) {
+                                querySettings['hiddenDatatypes'] = [];
+                            }
+                            querySettings['hiddenDatatypes'].push(datatype);
+                            querySettings['hiddenDatatypes'] = utils.eliminateDuplicates(querySettings['hiddenDatatypes']);
+                            utils.setCookie('od_config', JSON.stringify(querySettings));
+
+                            // trigger redrawing
+                            var containerDivElem = document.getElementById(config['containerDivId']);
+                            buildObservationDeck(containerDivElem, config);
+                        }
                     }
-                    sortSteps.addStep(eventId);
-                    querySettings[sortType] = sortSteps;
-
-                    utils.setCookie('od_config', JSON.stringify(querySettings));
-
-                    var containerDivElem = document.getElementById(config['containerDivId']);
-                    buildObservationDeck(containerDivElem, config);
-                }
-            },
-            "sig_sort" : {
-                name : "sort expression events",
-                icon : null,
-                disabled : function(key, opt) {
-                    var datatype = this[0].getAttribute('datatype');
-                    if (datatype === 'expression signature') {
-                        return false;
-                    } else {
-                        return true;
-                    }
-                },
-                callback : function(key, opt) {
-                    var eventId = this[0].getAttribute('eventId');
-                    var sortType = 'rowSort';
-
-                    var sortSteps = null;
-                    var querySettings = config['querySettings'];
-                    if ( sortType in querySettings) {
-                        sortSteps = new eventData.sortingSteps(querySettings[sortType]["steps"]);
-                    } else {
-                        sortSteps = new eventData.sortingSteps();
-                    }
-                    sortSteps.addStep(eventId);
-                    querySettings[sortType] = sortSteps;
-
-                    utils.setCookie('od_config', JSON.stringify(querySettings));
-
-                    var containerDivElem = document.getElementById(config['containerDivId']);
-                    buildObservationDeck(containerDivElem, config);
-                }
-            },
-            "hide_datatype" : {
-                name : 'hide this datatype',
-                icon : null,
-                disabled : false,
-                callback : function(key, opt) {
-                    // set cookie for hiding datatype
-                    var datatype = this[0].getAttribute('datatype');
-                    var querySettings = config['querySettings'];
-
-                    if (!('hiddenDatatypes' in querySettings)) {
-                        querySettings['hiddenDatatypes'] = [];
-                    }
-                    querySettings['hiddenDatatypes'].push(datatype);
-                    querySettings['hiddenDatatypes'] = utils.eliminateDuplicates(querySettings['hiddenDatatypes']);
-                    utils.setCookie('od_config', JSON.stringify(querySettings));
-
-                    // trigger redrawing
-                    var containerDivElem = document.getElementById(config['containerDivId']);
-                    buildObservationDeck(containerDivElem, config);
                 }
             },
             "sep1" : "---------",
@@ -390,10 +400,10 @@ setupExpressionCellContextMenu = function(config) {
         },
         items : {
             'rescaling_fold' : {
-                'name' : 'rescale scores',
+                'name' : 'rescale scores...',
                 'items' : {
                     "samplewise median rescaling" : {
-                        name : "samplewise median rescaling",
+                        name : "by sample median",
                         icon : null,
                         disabled : false,
                         callback : function(key, opt) {
@@ -410,7 +420,7 @@ setupExpressionCellContextMenu = function(config) {
                         }
                     },
                     "eventwise median rescaling" : {
-                        name : "eventwise median rescaling",
+                        name : "by event median",
                         icon : null,
                         disabled : false,
                         callback : function(key, opt) {
@@ -427,7 +437,7 @@ setupExpressionCellContextMenu = function(config) {
                         }
                     },
                     "eventwise z-score rescaling" : {
-                        name : "eventwise z-score rescaling",
+                        name : "by event z-score",
                         icon : null,
                         disabled : false,
                         callback : function(key, opt) {
