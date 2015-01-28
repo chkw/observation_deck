@@ -389,55 +389,60 @@ setupExpressionCellContextMenu = function(config) {
             var elem = this[0];
         },
         items : {
-            "samplewise median rescaling" : {
-                name : "samplewise median rescaling",
-                icon : null,
-                disabled : false,
-                callback : function(key, opt) {
-                    // settings for rescaling
-                    var querySettings = config['querySettings'];
-                    querySettings['expression rescaling'] = {
-                        'method' : 'samplewiseMedianRescaling'
-                    };
+            'rescaling_fold' : {
+                'name' : 'rescale scores',
+                'items' : {
+                    "samplewise median rescaling" : {
+                        name : "samplewise median rescaling",
+                        icon : null,
+                        disabled : false,
+                        callback : function(key, opt) {
+                            // settings for rescaling
+                            var querySettings = config['querySettings'];
+                            querySettings['expression rescaling'] = {
+                                'method' : 'samplewiseMedianRescaling'
+                            };
 
-                    utils.setCookie('od_config', JSON.stringify(querySettings));
+                            utils.setCookie('od_config', JSON.stringify(querySettings));
 
-                    var containerDivElem = document.getElementById(config['containerDivId']);
-                    buildObservationDeck(containerDivElem, config);
-                }
-            },
-            "eventwise median rescaling" : {
-                name : "eventwise median rescaling",
-                icon : null,
-                disabled : false,
-                callback : function(key, opt) {
-                    // settings for rescaling
-                    var querySettings = config['querySettings'];
-                    querySettings['expression rescaling'] = {
-                        'method' : 'eventwiseMedianRescaling'
-                    };
+                            var containerDivElem = document.getElementById(config['containerDivId']);
+                            buildObservationDeck(containerDivElem, config);
+                        }
+                    },
+                    "eventwise median rescaling" : {
+                        name : "eventwise median rescaling",
+                        icon : null,
+                        disabled : false,
+                        callback : function(key, opt) {
+                            // settings for rescaling
+                            var querySettings = config['querySettings'];
+                            querySettings['expression rescaling'] = {
+                                'method' : 'eventwiseMedianRescaling'
+                            };
 
-                    utils.setCookie('od_config', JSON.stringify(querySettings));
+                            utils.setCookie('od_config', JSON.stringify(querySettings));
 
-                    var containerDivElem = document.getElementById(config['containerDivId']);
-                    buildObservationDeck(containerDivElem, config);
-                }
-            },
-            "eventwise z-score rescaling" : {
-                name : "eventwise z-score rescaling",
-                icon : null,
-                disabled : false,
-                callback : function(key, opt) {
-                    // settings for rescaling
-                    var querySettings = config['querySettings'];
-                    querySettings['expression rescaling'] = {
-                        'method' : 'zScoreExpressionRescaling'
-                    };
+                            var containerDivElem = document.getElementById(config['containerDivId']);
+                            buildObservationDeck(containerDivElem, config);
+                        }
+                    },
+                    "eventwise z-score rescaling" : {
+                        name : "eventwise z-score rescaling",
+                        icon : null,
+                        disabled : false,
+                        callback : function(key, opt) {
+                            // settings for rescaling
+                            var querySettings = config['querySettings'];
+                            querySettings['expression rescaling'] = {
+                                'method' : 'zScoreExpressionRescaling'
+                            };
 
-                    utils.setCookie('od_config', JSON.stringify(querySettings));
+                            utils.setCookie('od_config', JSON.stringify(querySettings));
 
-                    var containerDivElem = document.getElementById(config['containerDivId']);
-                    buildObservationDeck(containerDivElem, config);
+                            var containerDivElem = document.getElementById(config['containerDivId']);
+                            buildObservationDeck(containerDivElem, config);
+                        }
+                    }
                 }
             },
             "sep1" : "---------",
@@ -459,7 +464,7 @@ setupCategoricCellContextMenu = function(config) {
         },
         items : {
             "yulia expression rescaling" : {
-                name : "yulia expression rescaling",
+                name : "rescale mRNA values using this category",
                 icon : null,
                 disabled : false,
                 callback : function(key, opt) {
