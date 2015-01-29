@@ -322,7 +322,7 @@ var medbookDataLoader = {};
     };
 
     /**
-     *Get a signature.  This one does not load sample data.
+     *Get a signature via url.  This one does not load sample data.
      * @param {Object} url
      * @param {Object} OD_eventAlbum
      */
@@ -368,6 +368,36 @@ var medbookDataLoader = {};
 
         OD_eventAlbum.addEvent(obj['metadata'], sigScoresData);
         eventObj = OD_eventAlbum.getEvent(obj['metadata']['id']);
+    };
+
+    // TODO qqq
+    mdl.loadSignatureWeightsObj = function(obj, OD_eventAlbum) {
+        var sigWtsMongoDocs = null;
+
+        var eventId = null;
+
+        var eventObj = OD_eventAlbum.getEvent(eventId);
+
+        // TODO weightedGeneVector may need to be converted to Array of {'gene':gene,'weight':weight}
+        var weightedGeneVector = null;
+
+        if (eventObj == null) {
+            // create eventObj
+            OD_eventAlbum.addEvent({
+                'id' : eventId,
+                'name' : null,
+                'displayName' : null,
+                'description' : null,
+                'datatype' : 'expression signature',
+                'allowedValues' : 'numeric',
+                'weightedGeneVector' : weightedGeneVector
+            }, []);
+            eventObj = OD_eventAlbum.getEvent(eventId);
+        } else {
+            // add 'weightedGeneVector' to existing eventObj
+            eventObj.metadata.weightedGeneVector = weightedGeneVector;
+        }
+        return eventObj;
     };
 
 })(medbookDataLoader);
