@@ -205,28 +205,41 @@ setupColLabelContextMenu = function(config) {
     $.contextMenu({
         // selector : ".axis",
         selector : ".colLabel",
-        callback : function(key, options) {
-            // default callback used when no callback specified for item
-            console.log('default callback');
-            var elem = this[0];
-            console.log('key:', key);
-            console.log('options:', options);
-            console.log('eventId:', elem.getAttribute('eventId'));
-            console.log('elemClass:', elem.getAttribute("class"));
-            console.log('elemId:', elem.getAttribute("id"));
-            console.log("href:", window.location.href);
-            console.log("host:", window.location.host);
-            console.log("pathname:", window.location.pathname);
-            console.log("search:", window.location.search);
+        build : function($trigger, contextmenuEvent) {
+            // https://medialize.github.io/jQuery-contextMenu/demo/dynamic-create.html
+            // this callback is executed every time the menu is to be shown
+            // its results are destroyed every time the menu is hidden
+            // e is the original contextmenu event, containing e.pageX and e.pageY (amongst other data)
+            // console.log('dynamic on-demand contextMenu');
+            // console.log('$trigger', $trigger);
+            // console.log('contextmenuEvent', contextmenuEvent);
+            var sampleId = ($trigger)[0].innerHTML.split('<')[0];
+            return {
+                // callback : function(key, options) {
+                // // default callback used when no callback specified for item
+                // console.log('default callback');
+                // var elem = this[0];
+                // console.log('key:', key);
+                // console.log('options:', options);
+                // console.log('elem', elem);
+                // console.log('eventId:', elem.getAttribute('eventId'));
+                // console.log('elemClass:', elem.getAttribute("class"));
+                // console.log('elemId:', elem.getAttribute("id"));
+                // console.log("href:", window.location.href);
+                // console.log("host:", window.location.host);
+                // console.log("pathname:", window.location.pathname);
+                // console.log("search:", window.location.search);
+                // },
+                items : {
+                    "title" : {
+                        name : sampleId,
+                        icon : null,
+                        disabled : true,
+                    },
+                    'reset' : createResetContextMenuItem(config)
+                }
+            };
         },
-        items : {
-            // "test" : {
-            // name : "test",
-            // icon : null,
-            // disabled : false,
-            // },
-            'reset' : createResetContextMenuItem(config)
-        }
     });
 };
 
@@ -325,7 +338,7 @@ setupRowLabelContextMenu = function(config) {
                             var containerDivElem = document.getElementById(config['containerDivId']);
                             buildObservationDeck(containerDivElem, config);
                         }
-                    },
+                    }
                 }
             },
             'hide_fold' : {
