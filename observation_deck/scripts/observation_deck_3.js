@@ -253,149 +253,162 @@ setupRowLabelContextMenu = function(config) {
         callback : function(key, options) {
             // default callback
             var elem = this[0];
+            console.log('elem', elem);
         },
-        items : {
-            'sort_fold' : {
-                'name' : 'sort...',
-                'items' : {
-                    "pivot_sort" : {
-                        name : 'expression events by this pivot',
-                        icon : null,
-                        disabled : function() {
-                            var datatype = this[0].getAttribute('datatype');
-                            if (datatype === 'expression data') {
-                                return false;
-                            } else {
-                                return true;
+        build : function($trigger, contextmenuEvent) {
+            var eventId = ($trigger)[0].innerHTML.split('<')[0];
+            var items = {
+                'title' : {
+                    name : eventId,
+                    icon : null,
+                    disabled : true,
+                },
+                "sep1" : "---------",
+                'sort_fold' : {
+                    'name' : 'sort...',
+                    'items' : {
+                        "pivot_sort" : {
+                            name : 'expression events by this pivot',
+                            icon : null,
+                            disabled : function() {
+                                var datatype = this[0].getAttribute('datatype');
+                                if (datatype === 'expression data') {
+                                    return false;
+                                } else {
+                                    return true;
+                                }
+                            },
+                            callback : function(key, opt) {
+                                var eventId = this[0].getAttribute('eventId');
+                                var querySettings = config['querySettings'];
+
+                                querySettings['pivot_sort'] = {
+                                    'pivot_event' : eventId
+                                };
+
+                                utils.setCookie('od_config', JSON.stringify(querySettings));
+
+                                // trigger redrawing
+                                var containerDivElem = document.getElementById(config['containerDivId']);
+                                buildObservationDeck(containerDivElem, config);
                             }
                         },
-                        callback : function(key, opt) {
-                            var eventId = this[0].getAttribute('eventId');
-                            var querySettings = config['querySettings'];
+                        "sort" : {
+                            name : "samples",
+                            icon : null,
+                            disabled : false,
+                            callback : function(key, opt) {
+                                var eventId = this[0].getAttribute('eventId');
+                                var sortType = 'colSort';
 
-                            querySettings['pivot_sort'] = {
-                                'pivot_event' : eventId
-                            };
+                                var sortSteps = null;
+                                var querySettings = config['querySettings'];
+                                if ( sortType in querySettings) {
+                                    sortSteps = new eventData.sortingSteps(querySettings[sortType]["steps"]);
+                                } else {
+                                    sortSteps = new eventData.sortingSteps();
+                                }
+                                sortSteps.addStep(eventId);
+                                querySettings[sortType] = sortSteps;
 
-                            utils.setCookie('od_config', JSON.stringify(querySettings));
+                                utils.setCookie('od_config', JSON.stringify(querySettings));
 
-                            // trigger redrawing
-                            var containerDivElem = document.getElementById(config['containerDivId']);
-                            buildObservationDeck(containerDivElem, config);
-                        }
-                    },
-                    "sort" : {
-                        name : "samples",
-                        icon : null,
-                        disabled : false,
-                        callback : function(key, opt) {
-                            var eventId = this[0].getAttribute('eventId');
-                            var sortType = 'colSort';
-
-                            var sortSteps = null;
-                            var querySettings = config['querySettings'];
-                            if ( sortType in querySettings) {
-                                sortSteps = new eventData.sortingSteps(querySettings[sortType]["steps"]);
-                            } else {
-                                sortSteps = new eventData.sortingSteps();
-                            }
-                            sortSteps.addStep(eventId);
-                            querySettings[sortType] = sortSteps;
-
-                            utils.setCookie('od_config', JSON.stringify(querySettings));
-
-                            var containerDivElem = document.getElementById(config['containerDivId']);
-                            buildObservationDeck(containerDivElem, config);
-                        }
-                    },
-                    "sig_sort" : {
-                        name : "expression events by signature weight",
-                        icon : null,
-                        disabled : function(key, opt) {
-                            var datatype = this[0].getAttribute('datatype');
-                            if (datatype === 'expression signature') {
-                                return false;
-                            } else {
-                                return true;
+                                var containerDivElem = document.getElementById(config['containerDivId']);
+                                buildObservationDeck(containerDivElem, config);
                             }
                         },
-                        callback : function(key, opt) {
-                            var eventId = this[0].getAttribute('eventId');
-                            var sortType = 'rowSort';
+                        "sig_sort" : {
+                            name : "expression events by signature weight",
+                            icon : null,
+                            disabled : function(key, opt) {
+                                var datatype = this[0].getAttribute('datatype');
+                                if (datatype === 'expression signature') {
+                                    return false;
+                                } else {
+                                    return true;
+                                }
+                            },
+                            callback : function(key, opt) {
+                                var eventId = this[0].getAttribute('eventId');
+                                var sortType = 'rowSort';
 
-                            var sortSteps = null;
-                            var querySettings = config['querySettings'];
-                            if ( sortType in querySettings) {
-                                sortSteps = new eventData.sortingSteps(querySettings[sortType]["steps"]);
-                            } else {
-                                sortSteps = new eventData.sortingSteps();
+                                var sortSteps = null;
+                                var querySettings = config['querySettings'];
+                                if ( sortType in querySettings) {
+                                    sortSteps = new eventData.sortingSteps(querySettings[sortType]["steps"]);
+                                } else {
+                                    sortSteps = new eventData.sortingSteps();
+                                }
+                                sortSteps.addStep(eventId);
+                                querySettings[sortType] = sortSteps;
+
+                                utils.setCookie('od_config', JSON.stringify(querySettings));
+
+                                var containerDivElem = document.getElementById(config['containerDivId']);
+                                buildObservationDeck(containerDivElem, config);
                             }
-                            sortSteps.addStep(eventId);
-                            querySettings[sortType] = sortSteps;
-
-                            utils.setCookie('od_config', JSON.stringify(querySettings));
-
-                            var containerDivElem = document.getElementById(config['containerDivId']);
-                            buildObservationDeck(containerDivElem, config);
                         }
                     }
-                }
-            },
-            'hide_fold' : {
-                'name' : 'hide...',
-                'items' : {
-                    "hide_null_samples" : {
-                        name : "null samples in this row",
-                        icon : null,
-                        disabled : false,
-                        callback : function(key, opt) {
-                            var eventId = this[0].getAttribute('eventId');
-                            var eventObj = config['eventAlbum'].getEvent(eventId);
-                            // TODO qqq
-                            var querySettings = config['querySettings'];
-                            querySettings['required events'] = [eventId];
+                },
+                'hide_fold' : {
+                    'name' : 'hide...',
+                    'items' : {
+                        "hide_null_samples" : {
+                            name : "null samples in this row",
+                            icon : null,
+                            disabled : false,
+                            callback : function(key, opt) {
+                                var eventId = this[0].getAttribute('eventId');
+                                var eventObj = config['eventAlbum'].getEvent(eventId);
+                                // TODO qqq
+                                var querySettings = config['querySettings'];
+                                querySettings['required events'] = [eventId];
 
-                            utils.setCookie('od_config', JSON.stringify(querySettings));
+                                utils.setCookie('od_config', JSON.stringify(querySettings));
 
-                            var containerDivElem = document.getElementById(config['containerDivId']);
-                            buildObservationDeck(containerDivElem, config);
-                        }
-                    },
-                    "hide_datatype" : {
-                        name : 'this datatype',
-                        icon : null,
-                        disabled : false,
-                        callback : function(key, opt) {
-                            // set cookie for hiding datatype
-                            var datatype = this[0].getAttribute('datatype');
-                            var querySettings = config['querySettings'];
-
-                            if (!('hiddenDatatypes' in querySettings)) {
-                                querySettings['hiddenDatatypes'] = [];
+                                var containerDivElem = document.getElementById(config['containerDivId']);
+                                buildObservationDeck(containerDivElem, config);
                             }
-                            querySettings['hiddenDatatypes'].push(datatype);
-                            querySettings['hiddenDatatypes'] = utils.eliminateDuplicates(querySettings['hiddenDatatypes']);
-                            utils.setCookie('od_config', JSON.stringify(querySettings));
+                        },
+                        "hide_datatype" : {
+                            name : 'this datatype',
+                            icon : null,
+                            disabled : false,
+                            callback : function(key, opt) {
+                                // set cookie for hiding datatype
+                                var datatype = this[0].getAttribute('datatype');
+                                var querySettings = config['querySettings'];
 
-                            // trigger redrawing
-                            var containerDivElem = document.getElementById(config['containerDivId']);
-                            buildObservationDeck(containerDivElem, config);
+                                if (!('hiddenDatatypes' in querySettings)) {
+                                    querySettings['hiddenDatatypes'] = [];
+                                }
+                                querySettings['hiddenDatatypes'].push(datatype);
+                                querySettings['hiddenDatatypes'] = utils.eliminateDuplicates(querySettings['hiddenDatatypes']);
+                                utils.setCookie('od_config', JSON.stringify(querySettings));
+
+                                // trigger redrawing
+                                var containerDivElem = document.getElementById(config['containerDivId']);
+                                buildObservationDeck(containerDivElem, config);
+                            }
                         }
                     }
-                }
-            },
-            "sep1" : "---------",
-            "expand" : {
-                name : "expand",
-                icon : null,
-                disabled : true
-            },
-            "collapse" : {
-                name : "collapse",
-                icon : null,
-                disabled : true
-            },
-            "reset" : createResetContextMenuItem(config)
+                },
+                "sep1" : "---------",
+                "expand" : {
+                    name : "expand",
+                    icon : null,
+                    disabled : true
+                },
+                "collapse" : {
+                    name : "collapse",
+                    icon : null,
+                    disabled : true
+                },
+                "reset" : createResetContextMenuItem(config)
+            };
+            return {
+                'items' : items
+            };
         }
     });
 };
