@@ -234,12 +234,12 @@ setupColLabelContextMenu = function(config) {
                     "title" : {
                         name : sampleId,
                         icon : null,
-                        disabled : true,
+                        disabled : true
                     },
                     'reset' : createResetContextMenuItem(config)
                 }
             };
-        },
+        }
     });
 };
 
@@ -261,7 +261,7 @@ setupRowLabelContextMenu = function(config) {
                 'title' : {
                     name : eventId,
                     icon : null,
-                    disabled : true,
+                    disabled : true
                 },
                 "sep1" : "---------",
                 'sort_fold' : {
