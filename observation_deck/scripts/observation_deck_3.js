@@ -112,6 +112,8 @@ getConfiguration = function(config) {
         // console.log('datatype', datatype, 'has', datatypeEventList.length, 'events', '<-- getConfiguration');
     }
 
+    config['eventAlbum'].deleteEvent('Docetaxel');
+
     return config;
 };
 
