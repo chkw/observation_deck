@@ -431,65 +431,79 @@ setupExpressionCellContextMenu = function(config) {
             // default callback
             var elem = this[0];
         },
-        items : {
-            'rescaling_fold' : {
-                'name' : 'rescale scores...',
-                'items' : {
-                    "samplewise median rescaling" : {
-                        name : "by sample median",
-                        icon : null,
-                        disabled : false,
-                        callback : function(key, opt) {
-                            // settings for rescaling
-                            var querySettings = config['querySettings'];
-                            querySettings['expression rescaling'] = {
-                                'method' : 'samplewiseMedianRescaling'
-                            };
+        build : function($trigger, contextmenuEvent) {
+            var triggerElem = ($trigger)[0];
+            var eventId = triggerElem.getAttribute('eventId');
+            var sampleId = triggerElem.getAttribute('sampleId');
+            var items = {
+                'title' : {
+                    name : eventId + ' for ' + sampleId,
+                    icon : null,
+                    disabled : true
+                },
+                "sep1" : "---------",
+                'rescaling_fold' : {
+                    'name' : 'rescale scores...',
+                    'items' : {
+                        "samplewise median rescaling" : {
+                            name : "by sample median",
+                            icon : null,
+                            disabled : false,
+                            callback : function(key, opt) {
+                                // settings for rescaling
+                                var querySettings = config['querySettings'];
+                                querySettings['expression rescaling'] = {
+                                    'method' : 'samplewiseMedianRescaling'
+                                };
 
-                            utils.setCookie('od_config', JSON.stringify(querySettings));
+                                utils.setCookie('od_config', JSON.stringify(querySettings));
 
-                            var containerDivElem = document.getElementById(config['containerDivId']);
-                            buildObservationDeck(containerDivElem, config);
-                        }
-                    },
-                    "eventwise median rescaling" : {
-                        name : "by event median",
-                        icon : null,
-                        disabled : false,
-                        callback : function(key, opt) {
-                            // settings for rescaling
-                            var querySettings = config['querySettings'];
-                            querySettings['expression rescaling'] = {
-                                'method' : 'eventwiseMedianRescaling'
-                            };
+                                var containerDivElem = document.getElementById(config['containerDivId']);
+                                buildObservationDeck(containerDivElem, config);
+                            }
+                        },
+                        "eventwise median rescaling" : {
+                            name : "by event median",
+                            icon : null,
+                            disabled : false,
+                            callback : function(key, opt) {
+                                // settings for rescaling
+                                var querySettings = config['querySettings'];
+                                querySettings['expression rescaling'] = {
+                                    'method' : 'eventwiseMedianRescaling'
+                                };
 
-                            utils.setCookie('od_config', JSON.stringify(querySettings));
+                                utils.setCookie('od_config', JSON.stringify(querySettings));
 
-                            var containerDivElem = document.getElementById(config['containerDivId']);
-                            buildObservationDeck(containerDivElem, config);
-                        }
-                    },
-                    "eventwise z-score rescaling" : {
-                        name : "by event z-score",
-                        icon : null,
-                        disabled : false,
-                        callback : function(key, opt) {
-                            // settings for rescaling
-                            var querySettings = config['querySettings'];
-                            querySettings['expression rescaling'] = {
-                                'method' : 'zScoreExpressionRescaling'
-                            };
+                                var containerDivElem = document.getElementById(config['containerDivId']);
+                                buildObservationDeck(containerDivElem, config);
+                            }
+                        },
+                        "eventwise z-score rescaling" : {
+                            name : "by event z-score",
+                            icon : null,
+                            disabled : false,
+                            callback : function(key, opt) {
+                                // settings for rescaling
+                                var querySettings = config['querySettings'];
+                                querySettings['expression rescaling'] = {
+                                    'method' : 'zScoreExpressionRescaling'
+                                };
 
-                            utils.setCookie('od_config', JSON.stringify(querySettings));
+                                utils.setCookie('od_config', JSON.stringify(querySettings));
 
-                            var containerDivElem = document.getElementById(config['containerDivId']);
-                            buildObservationDeck(containerDivElem, config);
+                                var containerDivElem = document.getElementById(config['containerDivId']);
+                                buildObservationDeck(containerDivElem, config);
+                            }
                         }
                     }
-                }
-            },
-            "sep1" : "---------",
-            "reset" : createResetContextMenuItem(config)
+                },
+                "sep1" : "---------",
+                "reset" : createResetContextMenuItem(config)
+            };
+            return {
+                'items' : items
+            };
         }
     });
 };
@@ -505,40 +519,55 @@ setupCategoricCellContextMenu = function(config) {
             // default callback
             var elem = this[0];
         },
-        items : {
-            "yulia expression rescaling" : {
-                name : "rescale mRNA values using this category",
-                icon : null,
-                disabled : false,
-                callback : function(key, opt) {
-                    var cellElem = this[0];
-                    var childrenElems = cellElem.children;
-                    var eventId = cellElem.getAttribute('eventId');
-                    var sampleId = cellElem.getAttribute('sampleId');
-                    var val = cellElem.getAttribute('val');
+        build : function($trigger, contextmenuEvent) {
+            var triggerElem = ($trigger)[0];
+            var eventId = triggerElem.getAttribute('eventId');
+            var sampleId = triggerElem.getAttribute('sampleId');
+            var items = {
+                'title' : {
+                    name : eventId + ' for ' + sampleId,
+                    icon : null,
+                    disabled : true
+                },
+                "sep1" : "---------",
+                "yulia expression rescaling" : {
+                    name : "rescale mRNA values using this category",
+                    icon : null,
+                    disabled : false,
+                    callback : function(key, opt) {
+                        var cellElem = this[0];
+                        var childrenElems = cellElem.children;
+                        var eventId = cellElem.getAttribute('eventId');
+                        var sampleId = cellElem.getAttribute('sampleId');
+                        var val = cellElem.getAttribute('val');
 
-                    console.log('key:', key, 'eventId:', eventId, 'val:', val);
-                    console.log("href", window.location.href);
-                    console.log("host", window.location.host);
-                    console.log("pathname", window.location.pathname);
-                    console.log("search", window.location.search);
+                        console.log('key:', key, 'eventId:', eventId, 'val:', val);
+                        console.log("href", window.location.href);
+                        console.log("host", window.location.host);
+                        console.log("pathname", window.location.pathname);
+                        console.log("search", window.location.search);
 
-                    // settings for rescaling
-                    var querySettings = config['querySettings'];
-                    querySettings['expression rescaling'] = {
-                        'method' : 'yulia_rescaling',
-                        'eventId' : eventId,
-                        'val' : val
-                    };
+                        // settings for rescaling
+                        var querySettings = config['querySettings'];
+                        querySettings['expression rescaling'] = {
+                            'method' : 'yulia_rescaling',
+                            'eventId' : eventId,
+                            'val' : val
+                        };
 
-                    utils.setCookie('od_config', JSON.stringify(querySettings));
+                        utils.setCookie('od_config', JSON.stringify(querySettings));
 
-                    var containerDivElem = document.getElementById(config['containerDivId']);
-                    buildObservationDeck(containerDivElem, config);
-                }
-            },
-            "sep1" : "---------",
-            "reset" : createResetContextMenuItem(config)
+                        var containerDivElem = document.getElementById(config['containerDivId']);
+                        buildObservationDeck(containerDivElem, config);
+                    }
+                },
+                "sep1" : "---------",
+                "reset" : createResetContextMenuItem(config)
+
+            };
+            return {
+                'items' : items
+            };
         }
     });
 };
