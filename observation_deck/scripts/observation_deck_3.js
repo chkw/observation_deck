@@ -301,7 +301,7 @@ setupRowLabelContextMenu = function(config) {
                             }
                         },
                         "sort" : {
-                            name : "samples",
+                            name : "samples by this event",
                             icon : null,
                             disabled : false,
                             callback : function(key, opt) {
