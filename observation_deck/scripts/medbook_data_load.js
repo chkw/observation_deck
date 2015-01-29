@@ -98,26 +98,6 @@ var medbookDataLoader = {};
         return parsedResponse;
     };
 
-    mdl.getClinicalData_old = function(url, OD_eventAlbum) {
-        var response = utils.getResponse(url);
-        var parsedResponse = d3.tsv.parse(response);
-        var transposed = this.transposeClinicalData(parsedResponse, 'CASE_ID');
-
-        for (var eventType in transposed) {
-            var data = transposed[eventType];
-            var id = eventType;
-            var allowedValues = (utils.endsWith(id.toLowerCase(), '_score')) ? 'numeric' : 'categoric';
-            OD_eventAlbum.addEvent({
-                'id' : id,
-                'name' : null,
-                'displayName' : null,
-                'description' : null,
-                'datatype' : 'clinical data',
-                'allowedValues' : allowedValues
-            }, data);
-        }
-    };
-
     /**
      * The mutation data file is a maf file and looks like this:
 
@@ -176,48 +156,6 @@ var medbookDataLoader = {};
         }
 
         return dataByGene;
-    };
-
-    /**
-     *
-     * @param {Object} url
-     */
-    mdl.getMutationData_old = function(url) {
-        var response = utils.getResponse(url);
-        var lines = response.split('\n');
-
-        var dataLines = [];
-        var commentLines = [];
-        for (var i = 0; i < lines.length; i++) {
-            var line = lines[i];
-            if (beginsWith(line, '#')) {
-                commentLines.push(line);
-            } else {
-                dataLines.push(line);
-            }
-        }
-
-        var parsedResponse = d3.tsv.parse(dataLines.join('\n'));
-
-        for (var i = 0; i < parsedResponse.length; i++) {
-            var mutationData = parsedResponse[i];
-            var geneId = mutationData['GENE_ID'];
-            var common = mutationData['COMMON'];
-            delete mutationData['GENE_ID'];
-            delete mutationData['COMMON'];
-
-            OD_eventAlbum.addEvent({
-                'id' : common + '_mutation',
-                'name' : null,
-                'displayName' : null,
-                'description' : null,
-                'datatype' : 'mutation',
-                'allowedValues' : 'numeric'
-            }, mutationData);
-
-        }
-
-        return parsedResponse;
     };
 
     /**
