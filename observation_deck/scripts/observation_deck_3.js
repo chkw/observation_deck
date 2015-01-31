@@ -14,6 +14,8 @@
  * 6) OD_eventData.js
  */
 
+u = utils;
+
 /**
  *  Build an observation deck!
  */
@@ -27,6 +29,8 @@ buildObservationDeck = function(containerDivElem, config) {
 
     // set up context menu should follow matrix drawing
     setupContextMenus(config);
+
+    return config;
 };
 
 /**
@@ -93,6 +97,21 @@ getConfiguration = function(config) {
                 for (var i = 0; i < objects.length; i++) {
                     var object = objects[i];
                     dataLoader.loadSignatureObj(object, od_eventAlbum);
+                }
+            }
+        }
+    }
+
+    // signature gene weights data
+    if ('signature_index' in config) {
+        var sigIdxConfig = config['signature_index'];
+        if ('expression' in sigIdxConfig) {
+            var expressionSigIdxConfig = sigIdxConfig['expression'];
+            if ('object' in expressionSigIdxConfig) {
+                var objects = expressionSigIdxConfig['object'];
+                for (var i = 0; i < objects.length; i++) {
+                    var object = objects[i];
+                    dataLoader.loadSignatureWeightsObj(object, od_eventAlbum);
                 }
             }
         }
