@@ -54,14 +54,21 @@
             // var signatureFile = 'observation_deck/data/meteorMedbook/smallcell-50.tab';
             // var AR_signatureFile = 'observation_deck/data/meteorMedbook/ar_sig.tab';
 
-            buildObservationDeck(divElem, {
+            obs_deck_config = buildObservationDeck(divElem, {
                 'mongoData' : {
                     'clinical' : aaa,
                     'expression' : bbb
                 },
-                'signature' : {
+
+                // 'signature' : {
+                // 'expression' : {
+                // 'object' : [smallCellSigEventObj, arSigEventObj]
+                // }
+                // },
+
+                'signature_index' : {
                     'expression' : {
-                        'object' : [smallCellSigEventObj, arSigEventObj]
+                        'object' : ar_sig_indexes
                     }
                 },
                 'deleteEvents' : ['Docetaxel']
