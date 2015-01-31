@@ -355,7 +355,7 @@ var medbookDataLoader = {};
      * @param {Object} obj
      * @param {Object} OD_eventAlbum
      */
-    mdl.loadSignatureObj = function(obj, OD_eventAlbum) {
+    mdl.loadSignatureObj_old = function(obj, OD_eventAlbum) {
         var sigScoresMongoDocs = obj['data'];
 
         var sigScoresData = {};
@@ -370,19 +370,78 @@ var medbookDataLoader = {};
         eventObj = OD_eventAlbum.getEvent(obj['metadata']['id']);
     };
 
+    /**
+     * Load sample signature scores.
+     * @param {Object} obj  mongo collection... an array of {'id':sampleId, 'name':eventId, 'val':sampleScore}
+     * @param {Object} OD_eventAlbum
+     */
+    mdl.loadSignatureObj = function(obj, OD_eventAlbum) {
+        var sigScoresMongoDocs = obj;
+
+        // group data by eventID
+        var groupedData = {};
+        for (var i = 0; i < sigScoresMongoDocs.length; i++) {
+            var mongoDoc = sigScoresMongoDocs[i];
+            var id = mongoDoc['id'];
+            var name = mongoDoc['name'];
+            var val = mongoDoc['val'];
+
+            if (! utils.hasOwnProperty(groupedData, name)) {
+                groupedData[name] = {};
+            }
+            groupedData[name][id] = val;
+        }
+
+        // set eventData
+        var eventIds = utils.getKeys(groupedData);
+        for (var i = 0; i < eventIds.length; i++) {
+            var eventId = eventIds[i];
+            var eventData = groupedData[eventId];
+
+            var eventObj = OD_eventAlbum.getEvent(eventId);
+
+            // add event if DNE
+            if (eventObj == null) {
+                OD_eventAlbum.addEvent({
+                    'id' : eventId,
+                    'name' : null,
+                    'displayName' : null,
+                    'description' : null,
+                    'datatype' : 'expression signature',
+                    'allowedValues' : 'numeric'
+                    // 'weightedGeneVector' : null
+                }, {});
+                eventObj = OD_eventAlbum.getEvent(eventId);
+            }
+
+            eventObj.data.setData(eventData);
+        }
+
+    };
+
     // TODO qqq
     mdl.loadSignatureWeightsObj = function(obj, OD_eventAlbum) {
-        var sigWtsMongoDocs = null;
-
-        var eventId = null;
+        // fields: name and version and signature... signature is an obj keyed by gene {'weight':weight,'pval':pval}
+        var eventId = obj['name'] + '_v' + obj['version'];
 
         var eventObj = OD_eventAlbum.getEvent(eventId);
 
-        // TODO weightedGeneVector may need to be converted to Array of {'gene':gene,'weight':weight}
-        var weightedGeneVector = null;
+        // weightedGeneVector to be converted to Array of {'gene':gene,'weight':weight}
+        var weightedGeneVector = [];
+        var signatures = obj['signature'];
+        var genes = utils.getKeys(signatures);
+        for (var i = 0; i < genes.length; i++) {
+            var gene = genes[i];
+            var data = signatures[gene];
+            weightedGeneVector.push({
+                'gene' : gene,
+                'weight' : data['weight']
+            });
+        }
 
         if (eventObj == null) {
             // create eventObj
+            console.log('adding weightedGeneVector to new eventObj');
             OD_eventAlbum.addEvent({
                 'id' : eventId,
                 'name' : null,
@@ -395,8 +454,11 @@ var medbookDataLoader = {};
             eventObj = OD_eventAlbum.getEvent(eventId);
         } else {
             // add 'weightedGeneVector' to existing eventObj
+            console.log('adding weightedGeneVector to existing eventObj');
             eventObj.metadata.weightedGeneVector = weightedGeneVector;
         }
+        var size = eventObj.metadata.weightedGeneVector.length;
+        console.log('weightedGeneVector for', eventId, 'has', size, 'genes');
         return eventObj;
     };
 
