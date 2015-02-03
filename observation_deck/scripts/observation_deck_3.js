@@ -231,6 +231,7 @@ setupColLabelContextMenu = function(config) {
     $.contextMenu({
         // selector : ".axis",
         selector : ".colLabel",
+        trigger : 'left',
         build : function($trigger, contextmenuEvent) {
             // https://medialize.github.io/jQuery-contextMenu/demo/dynamic-create.html
             // this callback is executed every time the menu is to be shown
@@ -260,7 +261,11 @@ setupColLabelContextMenu = function(config) {
                     "title" : {
                         name : sampleId,
                         icon : null,
-                        disabled : true
+                        disabled : false,
+                        callback : function(key, opt) {
+                            var url = '/wb/patient/' + sampleId;
+                            window.open(url, "_self");
+                        }
                     },
                     'reset' : createResetContextMenuItem(config)
                 }
@@ -276,6 +281,7 @@ setupRowLabelContextMenu = function(config) {
     $.contextMenu({
         // selector : ".axis",
         selector : ".rowLabel",
+        trigger : 'left',
         callback : function(key, options) {
             // default callback
             var elem = this[0];
@@ -283,11 +289,32 @@ setupRowLabelContextMenu = function(config) {
         },
         build : function($trigger, contextmenuEvent) {
             var eventId = ($trigger)[0].innerHTML.split('<')[0];
+            var eventObj = config['eventAlbum'].getEvent(eventId);
+            var datatype = eventObj.metadata['datatype'];
             var items = {
                 'title' : {
                     name : eventId,
                     icon : null,
-                    disabled : true
+                    disabled : function() {
+                        var result = true;
+                        if (utils.isObjInArray(['expression data', 'clinical data'], datatype)) {
+                            result = false;
+                        }
+                        return result;
+                    },
+                    callback : function(key, opt) {
+                        if (datatype === 'expression data') {
+                            // mRNA url: /wb/gene/<gene name>
+                            var gene = eventId.replace('_mRNA', '');
+                            var url = '/wb/gene/' + gene;
+                            window.open(url, "_self");
+                        } else if (datatype === 'clinical data') {
+                            // clinical url: /wb/clinical/<name>
+                            var feature = eventId;
+                            var url = '/wb/clinical/' + feature;
+                            window.open(url, "_self");
+                        }
+                    }
                 },
                 "sep1" : "---------",
                 'sort_fold' : {
@@ -386,7 +413,6 @@ setupRowLabelContextMenu = function(config) {
                             callback : function(key, opt) {
                                 var eventId = this[0].getAttribute('eventId');
                                 var eventObj = config['eventAlbum'].getEvent(eventId);
-                                // TODO qqq
                                 var querySettings = config['querySettings'];
                                 querySettings['required events'] = [eventId];
 
@@ -446,6 +472,7 @@ setupExpressionCellContextMenu = function(config) {
     $.contextMenu({
         // selector : ".axis",
         selector : ".mrna_exp",
+        trigger : 'left',
         callback : function(key, options) {
             // default callback
             var elem = this[0];
@@ -534,6 +561,7 @@ setupCategoricCellContextMenu = function(config) {
     $.contextMenu({
         // selector : ".axis",
         selector : ".categoric",
+        trigger : 'left',
         callback : function(key, options) {
             // default callback
             var elem = this[0];
@@ -608,14 +636,16 @@ drawMatrix = function(containingDiv, config) {
             // mRNA url: /wb/gene/<gene name>
             var gene = d.replace('_mRNA', '');
             var url = '/wb/gene/' + gene;
-            window.open(url, "_self");
+            console.log('drawMatrix rowClickback', url);
+            // window.open(url, "_self");
         } else if (datatype === 'clinical data') {
             // clinical url: /wb/clinical/<name>
             var feature = d;
             var url = '/wb/clinical/' + feature;
-            window.open(url, "_self");
+            console.log('drawMatrix rowClickback', url);
+            // window.open(url, "_self");
         } else {
-            alert('open page for event: ' + d + ' of datatype: ' + datatype);
+            // alert('open page for event: ' + d + ' of datatype: ' + datatype);
         }
     };
 
@@ -624,7 +654,8 @@ drawMatrix = function(containingDiv, config) {
         // console.log("columnClickback: " + d);
         // TODO meteor url: /wb/patient/<sample-name>
         var url = '/wb/patient/' + d;
-        window.open(url, "_self");
+        console.log('drawMatrix columnClickback', url);
+        // window.open(url, "_self");
     };
 
     config["cellClickback"] = function(d, i) {
