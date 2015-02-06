@@ -778,9 +778,16 @@ drawMatrix = function(containingDiv, config) {
     if ('required events' in querySettings) {
         var requiredEventId = querySettings['required events'][0];
         console.log("requiredEventId", requiredEventId);
-        var requiredEventObj = eventAlbum.getEvent(requiredEventId);
-        var nullSamples = requiredEventObj.data.getNullSamples();
-        samplesToHide = samplesToHide.concat(nullSamples);
+
+        try {
+            var requiredEventObj = eventAlbum.getEvent(requiredEventId);
+            var nullSamples = requiredEventObj.data.getNullSamples();
+            samplesToHide = samplesToHide.concat(nullSamples);
+        } catch(error) {
+            console.log('ERROR while getting samples to hide in eventID:', requiredEventId, 'error.message ->', error.message);
+        } finally {
+            console.log('samplesToHide', samplesToHide);
+        }
     }
     samplesToHide = utils.eliminateDuplicates(samplesToHide);
 
