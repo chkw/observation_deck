@@ -495,7 +495,13 @@ var eventData = {};
 
                     // compare this step's values
                     comparisonResult = comparator(valA, valB);
-                    if (!reverse) {
+
+                    // numeric events sort large to small by default
+                    if (comparator == utils.compareAsNumeric) {
+                        comparisonResult = comparisonResult * -1;
+                    }
+
+                    if (reverse) {
                         comparisonResult = comparisonResult * -1;
                     }
 
