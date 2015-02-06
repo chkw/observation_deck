@@ -495,6 +495,73 @@ var eventData = {};
 
                     // compare this step's values
                     comparisonResult = comparator(valA, valB);
+                    if (!reverse) {
+                        comparisonResult = comparisonResult * -1;
+                    }
+
+                    // return final comparison or try next eventId
+                    if (comparisonResult == 0) {
+                        continue;
+                    } else {
+                        break;
+                    }
+
+                }
+                return comparisonResult;
+                // end sort function
+            });
+
+            return sampleIds;
+        };
+
+        /**
+         * If sortingSteps is null, then just return the sampleIds without sorting.
+         */
+        this.multisortSamples_old = function(sortingSteps) {
+            var sampleIds = this.getAllSampleIds();
+            if (sortingSteps == null) {
+                return sampleIds;
+            }
+            var steps = sortingSteps.getSteps().slice();
+            steps.reverse();
+
+            var album = this;
+
+            sampleIds.sort(function(a, b) {
+                // begin sort function
+                var comparisonResult = 0;
+                // iterate over sorting steps in order
+                for (var i = 0; i < steps.length; i++) {
+                    // get this step's values
+                    var eventId = steps[i]['name'];
+                    var reverse = steps[i]['reverse'];
+                    var eventObj = album.getEvent(eventId);
+                    if ((eventObj == undefined) || (eventObj == null)) {
+                        console.log('no event found for sorting: ' + eventId);
+                        continue;
+                    }
+                    var allowedValues = eventObj.metadata['allowedValues'];
+
+                    var vals = eventObj.data.getData([a, b]);
+                    var valA = vals[0]['val'];
+                    var valB = vals[1]['val'];
+
+                    // select correct comparator
+                    var comparator = null;
+                    if (allowedValues == 'numeric') {
+                        comparator = utils.compareAsNumeric;
+                    } else if (allowedValues == 'categoric') {
+                        comparator = utils.compareAsString;
+                    } else if (allowedValues == 'expression') {
+                        comparator = utils.compareAsNumeric;
+                    } else if (allowedValues == 'date') {
+                        comparator = utils.compareAsDate;
+                    } else {
+                        comparator = utils.compareAsString;
+                    }
+
+                    // compare this step's values
+                    comparisonResult = comparator(valA, valB);
                     if (reverse) {
                         comparisonResult = comparisonResult * -1;
                     }
