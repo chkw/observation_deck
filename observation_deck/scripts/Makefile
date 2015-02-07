@@ -11,6 +11,7 @@ SCRIPTS = $(BOWER_DIR)/jQuery-contextMenu/src/jquery.contextMenu.js $(BOWER_DIR)
 TARGETS = observation_deck_plugin.js
 
 CLOSURE_COMPILER_JAR = ~/git/closure-compiler/build/compiler.jar
+#COMPILATION_LEVEL = WHITESPACE_ONLY
 COMPILATION_LEVEL = SIMPLE_OPTIMIZATIONS
 #COMPILATION_LEVEL = ADVANCED_OPTIMIZATIONS
 
@@ -28,15 +29,11 @@ sync_meteor: observation_deck_plugin.js
 	rsync -avP $< $(METEOR_PACKAGE_DIR)/.
 	\
 
-sync_dev: observation_deck_plugin.js
-	rsync -avP $< su2c-dev.ucsc.edu:~/medbook_stuff/observation-deck/. ;
-	\
-
 observation_deck_plugin.js: $(SCRIPTS)
 	java -jar $(CLOSURE_COMPILER_JAR) --compilation_level $(COMPILATION_LEVEL) --js_output_file=$@ $(SCRIPTS) ;
 	\
 
-observation_deck_jqplugin.js_old: $(SCRIPTS)
+observation_deck_plugin_dev.js: $(SCRIPTS)
 	rm -f 1.tmp ;
 	\
 	for script in $(SCRIPTS) ; do \
