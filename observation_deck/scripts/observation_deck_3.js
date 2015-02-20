@@ -446,16 +446,16 @@ setupRowLabelContextMenu = function(config) {
                     }
                 },
                 "sep1" : "---------",
-                "expand" : {
-                    name : "expand",
-                    icon : null,
-                    disabled : true
-                },
-                "collapse" : {
-                    name : "collapse",
-                    icon : null,
-                    disabled : true
-                },
+                // "expand" : {
+                // name : "expand",
+                // icon : null,
+                // disabled : true
+                // },
+                // "collapse" : {
+                // name : "collapse",
+                // icon : null,
+                // disabled : true
+                // },
                 "reset" : createResetContextMenuItem(config)
             };
             return {
@@ -489,10 +489,10 @@ setupExpressionCellContextMenu = function(config) {
                 },
                 "sep1" : "---------",
                 'rescaling_fold' : {
-                    'name' : 'rescale scores...',
+                    'name' : 'normalize coloring...',
                     'items' : {
                         "samplewise median rescaling" : {
-                            name : "by sample median",
+                            name : "over each column",
                             icon : null,
                             disabled : false,
                             callback : function(key, opt) {
@@ -509,7 +509,7 @@ setupExpressionCellContextMenu = function(config) {
                             }
                         },
                         "eventwise median rescaling" : {
-                            name : "by event median",
+                            name : "over each row",
                             icon : null,
                             disabled : false,
                             callback : function(key, opt) {
@@ -524,23 +524,23 @@ setupExpressionCellContextMenu = function(config) {
                                 var containerDivElem = document.getElementById(config['containerDivId']);
                                 buildObservationDeck(containerDivElem, config);
                             }
-                        },
-                        "eventwise z-score rescaling" : {
-                            name : "by event z-score",
-                            icon : null,
-                            disabled : false,
-                            callback : function(key, opt) {
-                                // settings for rescaling
-                                var querySettings = config['querySettings'];
-                                querySettings['expression rescaling'] = {
-                                    'method' : 'zScoreExpressionRescaling'
-                                };
-
-                                utils.setCookie('od_config', JSON.stringify(querySettings));
-
-                                var containerDivElem = document.getElementById(config['containerDivId']);
-                                buildObservationDeck(containerDivElem, config);
-                            }
+                            // },
+                            // "eventwise z-score rescaling" : {
+                            // name : "by event z-score",
+                            // icon : null,
+                            // disabled : false,
+                            // callback : function(key, opt) {
+                            // // settings for rescaling
+                            // var querySettings = config['querySettings'];
+                            // querySettings['expression rescaling'] = {
+                            // 'method' : 'zScoreExpressionRescaling'
+                            // };
+                            //
+                            // utils.setCookie('od_config', JSON.stringify(querySettings));
+                            //
+                            // var containerDivElem = document.getElementById(config['containerDivId']);
+                            // buildObservationDeck(containerDivElem, config);
+                            // }
                         }
                     }
                 },
