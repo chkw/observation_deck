@@ -462,4 +462,57 @@ var medbookDataLoader = {};
         return eventObj;
     };
 
+    /**
+     * This loader loads signature weights data as sample data.  Events are genes, samples are signatures, data are weights (hopfully, normalized).
+     * @param {Object} obj   {
+     'signatureNameA' : {'geneName1':weight1a, 'geneName2':weight2a, 'geneName3':weight3a},
+     'signatureNameB' : {'geneName1':weight1b, 'geneName2':weight2b, 'geneName3':weight3b},
+     'signatureNameC' : {'geneName1':weight1c, 'geneName2':weight2c, 'geneName3':weight3c},
+     }
+     * @param {Object} OD_eventAlbum
+     */
+    mld.loadBmegSignatureWeightsAsSamples = function(obj, OD_eventAlbum) {
+
+        // build up objects that can be loaded into event album
+        var geneWiseObj = {};
+        var signatureNames = utils.getKeys(obj);
+        for (var i = 0; i < signatureNames.lenght; i++) {
+            var signatureName = signatureNames[i];
+            var signatureObj = obj[signatureName];
+            var geneList = utils.getKeys(signatureObj);
+            for (var j = 0; j < geneList.length; j++) {
+                var gene = geneList[j];
+                var weight = signatureObj[gene];
+                if (! utils.hasOwnProperty(geneWiseObj, gene)) {
+                    geneWiseObj[gene] = {};
+                }
+                geneWiseObj[gene][signatureName] = weight;
+            }
+        }
+
+        // load data into event album
+        var geneList = utils.getKeys(geneWiseObj);
+        for (var i = 0; i < geneList.length; i++) {
+            var eventId = geneList[i];
+
+            var eventObj = OD_eventAlbum.getEvent(eventId);
+
+            if (eventObj == null) {
+                // create eventObj
+                OD_eventAlbum.addEvent({
+                    'id' : eventId,
+                    'name' : null,
+                    'displayName' : null,
+                    'description' : null,
+                    'datatype' : 'signature weight',
+                    'allowedValues' : 'numeric'
+                }, geneWiseObj[eventId]);
+                eventObj = OD_eventAlbum.getEvent(eventId);
+            } else {
+                // add 'weightedGeneVector' to existing eventObj
+                console.log('loadBmegSignatureWeightsAsSamples:', 'existing event for: ' + eventId);
+            }
+        }
+    };
+
 })(medbookDataLoader);

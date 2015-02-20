@@ -1056,6 +1056,9 @@ var eventData = {};
             return vals;
         };
 
+        /**
+         * dataObj is a dictionary of event values keyed on sampleId
+         */
         this.setData = function(dataObj, isNumeric) {
             // this.dataCollection = [];
             for (var sampleId in dataObj) {
