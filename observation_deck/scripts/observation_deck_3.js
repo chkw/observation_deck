@@ -117,6 +117,12 @@ getConfiguration = function(config) {
         }
     }
 
+    // 'bmegSigServiceData' : bmegSigServiceData
+    if ('bmegSigServiceData' in config) {
+        console.log('bmegSigServiceData in config');
+        dataLoader.loadBmegSignatureWeightsAsSamples(config['bmegSigServiceData'], od_eventAlbum);
+    }
+
     // specify the samples that should be displayed
     if ('displayedSamples' in config) {
         var displayedSamples = config['displayedSamples'];

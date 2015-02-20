@@ -471,12 +471,11 @@ var medbookDataLoader = {};
      }
      * @param {Object} OD_eventAlbum
      */
-    mld.loadBmegSignatureWeightsAsSamples = function(obj, OD_eventAlbum) {
-
+    mdl.loadBmegSignatureWeightsAsSamples = function(obj, OD_eventAlbum) {
         // build up objects that can be loaded into event album
         var geneWiseObj = {};
         var signatureNames = utils.getKeys(obj);
-        for (var i = 0; i < signatureNames.lenght; i++) {
+        for (var i = 0; i < signatureNames.length; i++) {
             var signatureName = signatureNames[i];
             var signatureObj = obj[signatureName];
             var geneList = utils.getKeys(signatureObj);
