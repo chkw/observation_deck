@@ -464,28 +464,37 @@ var medbookDataLoader = {};
 
     /**
      * This loader loads signature weights data as sample data.  Events are genes, samples are signatures, data are weights (hopfully, normalized).
-     * @param {Object} obj   {
-     'signatureNameA' : {'geneName1':weight1a, 'geneName2':weight2a, 'geneName3':weight3a},
-     'signatureNameB' : {'geneName1':weight1b, 'geneName2':weight2b, 'geneName3':weight3b},
-     'signatureNameC' : {'geneName1':weight1c, 'geneName2':weight2c, 'geneName3':weight3c},
-     }
+     * @param {Object} obj
      * @param {Object} OD_eventAlbum
      */
     mdl.loadBmegSignatureWeightsAsSamples = function(obj, OD_eventAlbum) {
         // build up objects that can be loaded into event album
+
+        // get query genes
+        var queryObj = obj['query'];
+        var queryGeneList = utils.getKeys(queryObj['weights']);
+
+        // get signature gene weight data
+        var signaturesDict = obj['signatures'];
         var geneWiseObj = {};
-        var signatureNames = utils.getKeys(obj);
-        for (var i = 0; i < signatureNames.length; i++) {
-            var signatureName = signatureNames[i];
-            var signatureObj = obj[signatureName];
-            var geneList = utils.getKeys(signatureObj);
+        var sigNames = utils.getKeys(signaturesDict);
+        for (var i = 0; i < sigNames.length; i++) {
+            var signatureName = sigNames[i];
+            var signatureObj = signaturesDict[signatureName];
+            var score = signatureObj['score'];
+            var weights = signatureObj['weights'];
+            var geneList = utils.getKeys(weights);
             for (var j = 0; j < geneList.length; j++) {
                 var gene = geneList[j];
-                var weight = signatureObj[gene];
-                if (! utils.hasOwnProperty(geneWiseObj, gene)) {
-                    geneWiseObj[gene] = {};
+
+                // check if gene is query set
+                if (utils.isObjInArray(queryGeneList, gene)) {
+                    var weight = weights[gene];
+                    if (! utils.hasOwnProperty(geneWiseObj, gene)) {
+                        geneWiseObj[gene] = {};
+                    }
+                    geneWiseObj[gene][signatureName] = weight;
                 }
-                geneWiseObj[gene][signatureName] = weight;
             }
         }
 
