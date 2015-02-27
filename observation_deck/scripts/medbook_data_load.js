@@ -478,25 +478,34 @@ var medbookDataLoader = {};
         var signaturesDict = obj['signatures'];
         var geneWiseObj = {};
         var sigNames = utils.getKeys(signaturesDict);
+        var queryScores = {};
         for (var i = 0; i < sigNames.length; i++) {
             var signatureName = sigNames[i];
             var signatureObj = signaturesDict[signatureName];
             var score = signatureObj['score'];
+            queryScores[signatureName] = score;
+
             var weights = signatureObj['weights'];
             var geneList = utils.getKeys(weights);
-            for (var j = 0; j < geneList.length; j++) {
+            for (var j = 0; ((j < geneList.length) & (j < 50)); j++) {
                 var gene = geneList[j];
-
-                // check if gene is query set
-                if (utils.isObjInArray(queryGeneList, gene)) {
-                    var weight = weights[gene];
-                    if (! utils.hasOwnProperty(geneWiseObj, gene)) {
-                        geneWiseObj[gene] = {};
-                    }
-                    geneWiseObj[gene][signatureName] = weight;
+                var weight = weights[gene];
+                if (! utils.hasOwnProperty(geneWiseObj, gene)) {
+                    geneWiseObj[gene] = {};
                 }
+                geneWiseObj[gene][signatureName] = weight;
             }
         }
+
+        // query score event
+        OD_eventAlbum.addEvent({
+            'id' : 'query_score',
+            'name' : null,
+            'displayName' : null,
+            'description' : null,
+            'datatype' : 'signature weight',
+            'allowedValues' : 'numeric'
+        }, queryScores);
 
         // load data into event album
         var geneList = utils.getKeys(geneWiseObj);
@@ -508,7 +517,7 @@ var medbookDataLoader = {};
             if (eventObj == null) {
                 // create eventObj
                 OD_eventAlbum.addEvent({
-                    'id' : eventId,
+                    'id' : eventId + '_weight',
                     'name' : null,
                     'displayName' : null,
                     'description' : null,
