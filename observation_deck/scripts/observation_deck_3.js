@@ -690,8 +690,10 @@ drawMatrix = function(containingDiv, config) {
     eventAlbum.fillInMissingSamples(null);
 
     var groupedEvents = eventAlbum.getEventIdsByType();
+    var rowLabelColorMapper = d3.scale.category10();
     var eventList = [];
     for (var datatype in groupedEvents) {
+        rowLabelColorMapper(datatype);
         var datatypeEventList = groupedEvents[datatype];
         // console.log('datatype', datatype, 'has', datatypeEventList.length, 'events', '<-- drawMatrix');
         eventList = eventList.concat(datatypeEventList);
@@ -955,7 +957,11 @@ drawMatrix = function(containingDiv, config) {
             var datatype = eventObj.metadata.datatype;
             return datatype;
         }
-    }).style("text-anchor", "end");
+    }).style("text-anchor", "end").style("fill", function(d) {
+        var eventObj = eventAlbum.getEvent(d);
+        var datatype = eventObj.metadata.datatype;
+        return rowLabelColorMapper(datatype);
+    });
     rowLabels.on("click", config["rowClickback"]);
     rowLabels.on("contextmenu", config["rowRightClickback"]);
     rowLabels.append("title").text(function(d) {

@@ -478,6 +478,7 @@ var medbookDataLoader = {};
         var signaturesDict = obj['signatures'];
         var geneWiseObj = {};
         var sigNames = utils.getKeys(signaturesDict);
+        console.log('num signatures: ' + sigNames.length);
         var queryScores = {};
         for (var i = 0; i < sigNames.length; i++) {
             var signatureName = sigNames[i];
@@ -487,8 +488,13 @@ var medbookDataLoader = {};
 
             var weights = signatureObj['weights'];
             var geneList = utils.getKeys(weights);
-            for (var j = 0; ((j < geneList.length) & (j < 50)); j++) {
+            for (var j = 0; (j < geneList.length); j++) {
                 var gene = geneList[j];
+
+                // only keep query genes
+                if (! utils.isObjInArray(queryGeneList, gene)) {
+                    continue;
+                }
                 var weight = weights[gene];
                 if (! utils.hasOwnProperty(geneWiseObj, gene)) {
                     geneWiseObj[gene] = {};
@@ -496,6 +502,8 @@ var medbookDataLoader = {};
                 geneWiseObj[gene][signatureName] = weight;
             }
         }
+
+        console.log('num genes:' + utils.getKeys(geneWiseObj).length);
 
         // query score event
         OD_eventAlbum.addEvent({
