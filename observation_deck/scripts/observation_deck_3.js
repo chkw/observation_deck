@@ -202,7 +202,7 @@ setupContextMenus = function(config) {
  * delete cookie and reset config
  */
 resetConfig = function(config) {
-    var persistentKeys = ['dataUrl', 'eventAlbum', 'mongoData', 'containerDivId', 'signature'];
+    var persistentKeys = ['dataUrl', 'eventAlbum', 'mongoData', 'containerDivId', 'signature', "rowTitleCallback", "columnTitleCallback"];
     utils.deleteCookie('od_config');
     var keys = utils.getKeys(config);
     for (var i = 0; i < keys.length; i++) {
@@ -234,6 +234,17 @@ createResetContextMenuItem = function(config) {
 };
 
 setupColLabelContextMenu = function(config) {
+
+    /**
+     * callback for medbook-workbench
+     */
+    // var titleCallback = function(sampleId) {
+    // var url = '/wb/patient/' + sampleId;
+    // window.open(url, "_self");
+    // };
+
+    var titleCallback = config['columnTitleCallback'];
+
     $.contextMenu({
         // selector : ".axis",
         selector : ".colLabel",
@@ -267,10 +278,13 @@ setupColLabelContextMenu = function(config) {
                     "title" : {
                         name : sampleId,
                         icon : null,
-                        disabled : false,
+                        disabled : (titleCallback == null),
                         callback : function(key, opt) {
-                            var url = '/wb/patient/' + sampleId;
-                            window.open(url, "_self");
+                            if (titleCallback == null) {
+                                console.log('default titleCallback for column', sampleId);
+                            } else {
+                                titleCallback(sampleId, config);
+                            }
                         }
                     },
                     'reset' : createResetContextMenuItem(config)
@@ -284,6 +298,29 @@ setupColLabelContextMenu = function(config) {
  *context menu uses http://medialize.github.io/jQuery-contextMenu
  */
 setupRowLabelContextMenu = function(config) {
+
+    /**
+     * This is a callback for medbook-workbench.
+     */
+
+    // var titleCallback = function(eventId) {
+    // var eventObj = config['eventAlbum'].getEvent(eventId);
+    // var datatype = eventObj.metadata['datatype'];
+    // if (datatype === 'expression data') {
+    // // mRNA url: /wb/gene/<gene name>
+    // var gene = eventId.replace('_mRNA', '');
+    // var url = '/wb/gene/' + gene;
+    // window.open(url, "_self");
+    // } else if (datatype === 'clinical data') {
+    // // clinical url: /wb/clinical/<name>
+    // var feature = eventId;
+    // var url = '/wb/clinical/' + feature;
+    // window.open(url, "_self");
+    // }
+    // };
+
+    var titleCallback = config['rowTitleCallback'];
+
     $.contextMenu({
         // selector : ".axis",
         selector : ".rowLabel",
@@ -303,22 +340,17 @@ setupRowLabelContextMenu = function(config) {
                     icon : null,
                     disabled : function() {
                         var result = true;
-                        if (utils.isObjInArray(['expression data', 'clinical data'], datatype)) {
+                        if ((titleCallback != null) && (utils.isObjInArray(['expression data', 'clinical data'], datatype))) {
                             result = false;
                         }
+
                         return result;
                     },
                     callback : function(key, opt) {
-                        if (datatype === 'expression data') {
-                            // mRNA url: /wb/gene/<gene name>
-                            var gene = eventId.replace('_mRNA', '');
-                            var url = '/wb/gene/' + gene;
-                            window.open(url, "_self");
-                        } else if (datatype === 'clinical data') {
-                            // clinical url: /wb/clinical/<name>
-                            var feature = eventId;
-                            var url = '/wb/clinical/' + feature;
-                            window.open(url, "_self");
+                        if (titleCallback == null) {
+                            console.log('default titleCallback for row', eventId);
+                        } else {
+                            titleCallback(eventId, config);
                         }
                     }
                 },
@@ -330,7 +362,6 @@ setupRowLabelContextMenu = function(config) {
                             name : 'expression events by this pivot',
                             icon : null,
                             disabled : function() {
-                                var datatype = this[0].getAttribute('datatype');
                                 if (datatype === 'expression data') {
                                     return false;
                                 } else {
@@ -338,7 +369,6 @@ setupRowLabelContextMenu = function(config) {
                                 }
                             },
                             callback : function(key, opt) {
-                                var eventId = this[0].getAttribute('eventId');
                                 var querySettings = config['querySettings'];
 
                                 querySettings['pivot_sort'] = {
@@ -357,7 +387,6 @@ setupRowLabelContextMenu = function(config) {
                             icon : null,
                             disabled : false,
                             callback : function(key, opt) {
-                                var eventId = this[0].getAttribute('eventId');
                                 var sortType = 'colSort';
 
                                 var sortSteps = null;
@@ -380,7 +409,6 @@ setupRowLabelContextMenu = function(config) {
                             name : "expression events by signature weight",
                             icon : null,
                             disabled : function(key, opt) {
-                                var datatype = this[0].getAttribute('datatype');
                                 if (datatype === 'expression signature') {
                                     return false;
                                 } else {
@@ -388,7 +416,6 @@ setupRowLabelContextMenu = function(config) {
                                 }
                             },
                             callback : function(key, opt) {
-                                var eventId = this[0].getAttribute('eventId');
                                 var sortType = 'rowSort';
 
                                 var sortSteps = null;
@@ -417,8 +444,6 @@ setupRowLabelContextMenu = function(config) {
                             icon : null,
                             disabled : false,
                             callback : function(key, opt) {
-                                var eventId = this[0].getAttribute('eventId');
-                                var eventObj = config['eventAlbum'].getEvent(eventId);
                                 var querySettings = config['querySettings'];
                                 querySettings['required events'] = [eventId];
 
@@ -434,7 +459,6 @@ setupRowLabelContextMenu = function(config) {
                             disabled : false,
                             callback : function(key, opt) {
                                 // set cookie for hiding datatype
-                                var datatype = this[0].getAttribute('datatype');
                                 var querySettings = config['querySettings'];
 
                                 if (!('hiddenDatatypes' in querySettings)) {
@@ -452,16 +476,6 @@ setupRowLabelContextMenu = function(config) {
                     }
                 },
                 "sep1" : "---------",
-                // "expand" : {
-                // name : "expand",
-                // icon : null,
-                // disabled : true
-                // },
-                // "collapse" : {
-                // name : "collapse",
-                // icon : null,
-                // disabled : true
-                // },
                 "reset" : createResetContextMenuItem(config)
             };
             return {
