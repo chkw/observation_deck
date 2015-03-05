@@ -937,8 +937,6 @@ drawMatrix = function(containingDiv, config) {
     var fullHeight = (margin.top + margin.bottom) + (gridSize * rowNames.length);
     var height = fullHeight - margin.top - margin.bottom;
 
-    var legendElementWidth = gridSize * 2;
-
     // SVG canvas
     var svg = d3.select(thisElement).append("svg").attr({
         "width" : fullWidth,
@@ -947,6 +945,23 @@ drawMatrix = function(containingDiv, config) {
         "perserveAspectRatio" : "xMinYMin meet"
     }).append("g").attr({
         "transform" : "translate(" + margin.left + "," + margin.top + ")"
+    });
+
+    var primerSvgRectElem = utils.createSvgRectElement(0, 0, 0, 0, fullWidth, fullHeight, {
+        "fill" : "white",
+        "class" : "primer"
+    });
+
+    // draw the matrix on a white background b/c color gradient varies alpha values
+    svg.append('rect').attr({
+        "x" : 0,
+        "y" : 0,
+        "rx" : 0,
+        "ry" : 0,
+        "width" : width,
+        "height" : height,
+        "fill" : "white",
+        "class" : "primer"
     });
 
     // row labels
@@ -1049,12 +1064,14 @@ drawMatrix = function(containingDiv, config) {
         if ((type == null) || (d['val'] == null)) {
             // final rectangle for null values
             attributes["fill"] = "lightgrey";
+            group.appendChild(utils.createSvgRectElement(x, y, rx, ry, width, height, attributes));
         } else {
+            // draw over the primer rectangle instead of drawing a background for each cell
             // background for icons
-            attributes["fill"] = "white";
+            // attributes["fill"] = "white";
             // attributes["fill"] = rowLabelColorMapper(eventAlbum.getEvent(d['eventId']).metadata.datatype)
         }
-        group.appendChild(utils.createSvgRectElement(x, y, rx, ry, width, height, attributes));
+        // group.appendChild(utils.createSvgRectElement(x, y, rx, ry, width, height, attributes));
 
         // draw icons .. possibly multiple ones
         if ((type == null) || (d['val'] == null)) {
