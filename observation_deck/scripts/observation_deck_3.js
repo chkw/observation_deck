@@ -649,53 +649,54 @@ setupCategoricCellContextMenu = function(config) {
  */
 drawMatrix = function(containingDiv, config) {
     // TODO begin drawMatrix
-    config["rowClickback"] = function(d, i) {
-        var datatype = config['eventAlbum'].getEvent(d).metadata.datatype;
-        // console.log("rowClickback: " + d);
-        if (datatype === 'expression data') {
-            // mRNA url: /wb/gene/<gene name>
-            var gene = d.replace('_mRNA', '');
-            var url = '/wb/gene/' + gene;
-            console.log('drawMatrix rowClickback', url);
-            // window.open(url, "_self");
-        } else if (datatype === 'clinical data') {
-            // clinical url: /wb/clinical/<name>
-            var feature = d;
-            var url = '/wb/clinical/' + feature;
-            console.log('drawMatrix rowClickback', url);
-            // window.open(url, "_self");
-        } else {
-            // alert('open page for event: ' + d + ' of datatype: ' + datatype);
-        }
-    };
 
-    config["columnClickback"] = function(d, i) {
-        // alert('open page for sample: ' + d);
-        // console.log("columnClickback: " + d);
-        // TODO meteor url: /wb/patient/<sample-name>
-        var url = '/wb/patient/' + d;
-        console.log('drawMatrix columnClickback', url);
-        // window.open(url, "_self");
-    };
-
-    config["cellClickback"] = function(d, i) {
-        console.log("cellClickback: r" + d['eventId'] + " c" + d['id'] + " val:" + d['val']);
-    };
-
-    config["rowRightClickback"] = function(d, i) {
-        console.log("rowRightClickback: " + d);
-        d3.event.preventDefault();
-    };
-
-    config["columnRightClickback"] = function(d, i) {
-        console.log("columnRightClickback: " + d);
-        d3.event.preventDefault();
-    };
-
-    config["cellRightClickback"] = function(d, i) {
-        console.log("cellRightClickback: r" + d['eventId'] + " c" + d['id'] + " val:" + d['val']);
-        d3.event.preventDefault();
-    };
+    // config["rowClickback"] = function(d, i) {
+    // var datatype = config['eventAlbum'].getEvent(d).metadata.datatype;
+    // // console.log("rowClickback: " + d);
+    // if (datatype === 'expression data') {
+    // // mRNA url: /wb/gene/<gene name>
+    // var gene = d.replace('_mRNA', '');
+    // var url = '/wb/gene/' + gene;
+    // console.log('drawMatrix rowClickback', url);
+    // // window.open(url, "_self");
+    // } else if (datatype === 'clinical data') {
+    // // clinical url: /wb/clinical/<name>
+    // var feature = d;
+    // var url = '/wb/clinical/' + feature;
+    // console.log('drawMatrix rowClickback', url);
+    // // window.open(url, "_self");
+    // } else {
+    // // alert('open page for event: ' + d + ' of datatype: ' + datatype);
+    // }
+    // };
+    //
+    // config["columnClickback"] = function(d, i) {
+    // // alert('open page for sample: ' + d);
+    // // console.log("columnClickback: " + d);
+    // // TODO meteor url: /wb/patient/<sample-name>
+    // var url = '/wb/patient/' + d;
+    // console.log('drawMatrix columnClickback', url);
+    // // window.open(url, "_self");
+    // };
+    //
+    // config["cellClickback"] = function(d, i) {
+    // console.log("cellClickback: r" + d['eventId'] + " c" + d['id'] + " val:" + d['val']);
+    // };
+    //
+    // config["rowRightClickback"] = function(d, i) {
+    // console.log("rowRightClickback: " + d);
+    // d3.event.preventDefault();
+    // };
+    //
+    // config["columnRightClickback"] = function(d, i) {
+    // console.log("columnRightClickback: " + d);
+    // d3.event.preventDefault();
+    // };
+    //
+    // config["cellRightClickback"] = function(d, i) {
+    // console.log("cellRightClickback: r" + d['eventId'] + " c" + d['id'] + " val:" + d['val']);
+    // d3.event.preventDefault();
+    // };
 
     var thisElement = utils.removeChildElems(containingDiv);
 
@@ -976,8 +977,8 @@ drawMatrix = function(containingDiv, config) {
         var datatype = eventObj.metadata.datatype;
         return rowLabelColorMapper(datatype);
     });
-    rowLabels.on("click", config["rowClickback"]);
-    rowLabels.on("contextmenu", config["rowRightClickback"]);
+    // rowLabels.on("click", config["rowClickback"]);
+    // rowLabels.on("contextmenu", config["rowRightClickback"]);
     rowLabels.append("title").text(function(d) {
         var eventObj = eventAlbum.getEvent(d);
         var datatype = eventObj.metadata.datatype;
@@ -1006,8 +1007,8 @@ drawMatrix = function(containingDiv, config) {
             return "colLabel mono axis unselectable";
         }
     }).style("text-anchor", "start");
-    colLabels.on("click", config["columnClickback"]);
-    colLabels.on("contextmenu", config["columnRightClickback"]);
+    // colLabels.on("click", config["columnClickback"]);
+    // colLabels.on("contextmenu", config["columnRightClickback"]);
     colLabels.append("title").text(function(d) {
         var s = 'sample: ' + d;
         return s;
@@ -1051,6 +1052,7 @@ drawMatrix = function(containingDiv, config) {
         } else {
             // background for icons
             attributes["fill"] = "white";
+            // attributes["fill"] = rowLabelColorMapper(eventAlbum.getEvent(d['eventId']).metadata.datatype)
         }
         group.appendChild(utils.createSvgRectElement(x, y, rx, ry, width, height, attributes));
 
@@ -1090,7 +1092,7 @@ drawMatrix = function(containingDiv, config) {
     });
 
     // TODO heatmap click event
-    heatMap.on("click", config["cellClickback"]).on("contextmenu", config["cellRightClickback"]);
+    // heatMap.on("click", config["cellClickback"]).on("contextmenu", config["cellRightClickback"]);
 
     // heatmap titles
     heatMap.append("title").text(function(d) {
