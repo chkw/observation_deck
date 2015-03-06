@@ -958,8 +958,10 @@ drawMatrix = function(containingDiv, config) {
         "y" : 0,
         "rx" : 0,
         "ry" : 0,
-        "width" : width,
-        "height" : height,
+        // "width" : width,
+        // "height" : height,
+        "width" : gridSize * colNames.length,
+        "height" : gridSize * rowNames.length,
         "fill" : "white",
         "class" : "primer"
     });
