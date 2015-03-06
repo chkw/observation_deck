@@ -4,7 +4,7 @@
  * OD_eventData.js defines an event object that is to be used with Observation Deck.
  */
 
-var eventData = {};
+var eventData = eventData || {};
 (function(ed) {
 
     var eventHierarchyUrl = 'observation_deck/data/eventHierarchy.xml';

@@ -14,7 +14,7 @@
 // var mutationDataFileUrl = 'observation_deck/data/cbioMedbook/mutation.txt';
 // var expressionDataFileUrl = 'observation_deck/data/cbioMedbook/expressionData.tab';
 
-var medbookDataLoader = {};
+var medbookDataLoader = medbookDataLoader || {};
 
 (function(mdl) {
     mdl.transposeClinicalData = function(input, recordKey) {
