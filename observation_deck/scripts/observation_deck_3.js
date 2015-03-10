@@ -757,17 +757,26 @@ drawMatrix = function(containingDiv, config) {
             colorMappers[eventId] = d3.scale.category10();
         } else if (allowedValues == 'numeric') {
             // 0-centered color mapper
-            var vals = eventAlbum.getEvent(eventId).data.getValues();
-            var numbers = [];
-            for (var j = 0; j < vals.length; j++) {
-                var val = vals[j];
-                if (utils.isNumerical(val)) {
-                    numbers.push(val);
+            var eventObj = eventAlbum.getEvent(eventId);
+            var minAllowedVal = eventObj.metadata.minAllowedVal;
+            var maxAllowedVal = eventObj.metadata.maxAllowedVal;
+            if (( typeof minAllowedVal != "undefined") && ( typeof maxAllowedVal != "undefined")) {
+                // value range given in metadata
+                colorMappers[eventId] = utils.centeredRgbaColorMapper(false, 0, minAllowedVal, maxAllowedVal);
+            } else {
+                // value range computed from event data
+                var vals = eventAlbum.getEvent(eventId).data.getValues();
+                var numbers = [];
+                for (var j = 0; j < vals.length; j++) {
+                    var val = vals[j];
+                    if (utils.isNumerical(val)) {
+                        numbers.push(val);
+                    }
                 }
+                var minVal = Math.min.apply(null, numbers);
+                var maxVal = Math.max.apply(null, numbers);
+                colorMappers[eventId] = utils.centeredRgbaColorMapper(false, 0, minVal, maxVal);
             }
-            var minVal = Math.min.apply(null, numbers);
-            var maxVal = Math.max.apply(null, numbers);
-            colorMappers[eventId] = utils.centeredRgbaColorMapper(false, 0, minVal, maxVal);
         } else if (allowedValues == 'expression') {
             // shared expression color mapper
             colorMappers[eventId] = expressionColorMapper;

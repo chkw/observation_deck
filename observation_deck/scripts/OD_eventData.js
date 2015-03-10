@@ -373,7 +373,7 @@ var eventData = eventData || {};
                 }
             }
 
-            if ((rowSortSteps != null) && ('expression data' in groupedEvents)) {
+            if (rowSortSteps != null) {
                 var steps = rowSortSteps.getSteps().reverse();
                 for (var b = 0; b < steps.length; b++) {
                     var step = steps[b];
@@ -389,30 +389,36 @@ var eventData = eventData || {};
                         if (reverse) {
                             orderedGeneList.reverse();
                         }
+                        console.log('orderedGeneList', orderedGeneList);
 
-                        var expressionEventIds = groupedEvents['expression data'].slice(0);
+                        var eventGroupEventIds;
+                        if (utils.hasOwnProperty(groupedEvents, "expression data")) {
+                            eventGroupEventIds = groupedEvents['expression data'].slice(0);
+                        } else {
+                            continue;
+                        }
 
                         var processedExpressionEventList = [];
                         for (var c = 0; c < orderedGeneList.length; c++) {
                             var orderedGene = orderedGeneList[c];
                             var orderedGene_eventId = orderedGene + "_mRNA";
-                            var index = expressionEventIds.indexOf(orderedGene_eventId);
+                            var index = eventGroupEventIds.indexOf(orderedGene_eventId);
                             // if (index >= 0) {
                             if ((index >= 0) && (!utils.isObjInArray(bubbledUpEvents, orderedGene_eventId))) {
                                 // only add expression events that have records in the event album
                                 processedExpressionEventList.push(orderedGene_eventId);
-                                delete expressionEventIds[index];
+                                delete eventGroupEventIds[index];
                             }
 
                             if (utils.isObjInArray(bubbledUpEvents, orderedGene_eventId)) {
                                 // skip bubbled up expression events
-                                delete expressionEventIds[index];
+                                delete eventGroupEventIds[index];
                             }
                         }
 
                         // add events that did not appear in signature
-                        for (var d in expressionEventIds) {
-                            processedExpressionEventList.push(expressionEventIds[d]);
+                        for (var d in eventGroupEventIds) {
+                            processedExpressionEventList.push(eventGroupEventIds[d]);
                         }
 
                         // assemble all datatypes together
@@ -434,7 +440,7 @@ var eventData = eventData || {};
                         }
 
                         rowNames = eventList;
-                        console.log('rowNames.length', rowNames.length);
+                        console.log('rowNames.length', rowNames.length, rowNames);
 
                         // only do this for the first step
                         break;
@@ -958,6 +964,8 @@ var eventData = eventData || {};
         this.description = obj['description'];
         this.datatype = obj['datatype'];
         this.allowedValues = obj['allowedValues'];
+        this.minAllowedVal = obj['minAllowedVal'];
+        this.maxAllowedVal = obj['maxAllowedVal'];
         this.parents = {};
         this.children = {};
         this.weightedGeneVector = [];

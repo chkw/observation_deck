@@ -474,14 +474,28 @@ var medbookDataLoader = medbookDataLoader || {};
         var queryObj = obj['query'];
         var queryGeneList = utils.getKeys(queryObj['weights']);
 
+        // get feature obj
+        var featuresObj = obj['features'];
+        var featureObjList = [];
+        for (var feature in featuresObj) {
+            var weightiness = featuresObj[feature];
+            featureObjList.push({
+                "gene" : feature,
+                "weight" : weightiness
+            });
+        }
+
+        // featureObjList.push({
+        // "gene" : "PLK1",
+        // "weight" : 0
+        // });
+
         // get signature gene weight data
         var signaturesDict = obj['signatures'];
         var geneWiseObj = {};
-        var sigNames = utils.getKeys(signaturesDict);
-        console.log('num signatures: ' + sigNames.length);
         var queryScores = {};
-        for (var i = 0; i < sigNames.length; i++) {
-            var signatureName = sigNames[i];
+
+        for (var signatureName in signaturesDict) {
             var signatureObj = signaturesDict[signatureName];
             var score = signatureObj['score'];
             queryScores[signatureName] = score;
@@ -511,8 +525,9 @@ var medbookDataLoader = medbookDataLoader || {};
             'name' : null,
             'displayName' : null,
             'description' : null,
-            'datatype' : 'signature weight',
-            'allowedValues' : 'numeric'
+            'datatype' : 'signature query score',
+            'allowedValues' : 'numeric',
+            'weightedGeneVector' : featureObjList
         }, queryScores);
 
         // load data into event album
@@ -530,7 +545,9 @@ var medbookDataLoader = medbookDataLoader || {};
                     'displayName' : null,
                     'description' : null,
                     'datatype' : 'signature weight',
-                    'allowedValues' : 'numeric'
+                    'allowedValues' : 'numeric',
+                    'maxAllowedVal' : 1,
+                    'minAllowedVal' : -1
                 }, geneWiseObj[eventId]);
                 eventObj = OD_eventAlbum.getEvent(eventId);
             } else {
