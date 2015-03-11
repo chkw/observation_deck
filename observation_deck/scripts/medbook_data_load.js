@@ -477,13 +477,16 @@ var medbookDataLoader = medbookDataLoader || {};
         // get feature obj
         var featuresObj = obj['features'];
         var featureObjList = [];
+        var featureGenes = [];
         for (var feature in featuresObj) {
             var weightiness = featuresObj[feature];
             featureObjList.push({
                 "gene" : feature,
                 "weight" : weightiness
             });
+            featureGenes.push(feature);
         }
+        featureGenes = utils.eliminateDuplicates(featureGenes);
 
         // featureObjList.push({
         // "gene" : "PLK1",
@@ -501,15 +504,23 @@ var medbookDataLoader = medbookDataLoader || {};
             queryScores[signatureName] = score;
 
             var weights = signatureObj['weights'];
-            var geneList = utils.getKeys(weights);
-            for (var j = 0; (j < geneList.length); j++) {
+            // var geneList = utils.getKeys(weights);
+
+            var geneList = queryGeneList.slice(0);
+            geneList = geneList.concat(utils.getKeys(weights));
+            geneList = utils.eliminateDuplicates(geneList);
+
+            for (var j = 0, geneListLength = geneList.length; j < geneListLength; j++) {
                 var gene = geneList[j];
 
-                // only keep query genes
-                if (! utils.isObjInArray(queryGeneList, gene)) {
+                // only keep certain genes
+                if ((! utils.isObjInArray(queryGeneList, gene)) && (! utils.isObjInArray(featureGenes, gene))) {
                     continue;
                 }
                 var weight = weights[gene];
+                if ( typeof weight === "undefined") {
+                    continue;
+                }
                 if (! utils.hasOwnProperty(geneWiseObj, gene)) {
                     geneWiseObj[gene] = {};
                 }
@@ -533,14 +544,14 @@ var medbookDataLoader = medbookDataLoader || {};
         // load data into event album
         var geneList = utils.getKeys(geneWiseObj);
         for (var i = 0; i < geneList.length; i++) {
-            var eventId = geneList[i];
-
+            var gene = geneList[i];
+            var eventId = gene + "_weight";
             var eventObj = OD_eventAlbum.getEvent(eventId);
 
             if (eventObj == null) {
                 // create eventObj
                 OD_eventAlbum.addEvent({
-                    'id' : eventId + '_weight',
+                    'id' : eventId,
                     'name' : null,
                     'displayName' : null,
                     'description' : null,
@@ -548,10 +559,9 @@ var medbookDataLoader = medbookDataLoader || {};
                     'allowedValues' : 'numeric',
                     'maxAllowedVal' : 1,
                     'minAllowedVal' : -1
-                }, geneWiseObj[eventId]);
+                }, geneWiseObj[gene]);
                 eventObj = OD_eventAlbum.getEvent(eventId);
             } else {
-                // add 'weightedGeneVector' to existing eventObj
                 console.log('loadBmegSignatureWeightsAsSamples:', 'existing event for: ' + eventId);
             }
         }
