@@ -16,7 +16,7 @@
 
 var medbookDataLoader = medbookDataLoader || {};
 
-(function(mdl) {
+(function(mdl) {"use strict";
     mdl.transposeClinicalData = function(input, recordKey) {
         var transposed = {};
         for (var i = 0; i < input.length; i++) {
@@ -449,7 +449,8 @@ var medbookDataLoader = medbookDataLoader || {};
                 'description' : null,
                 'datatype' : 'expression signature',
                 'allowedValues' : 'numeric',
-                'weightedGeneVector' : weightedGeneVector
+                'weightedGeneVector' : weightedGeneVector,
+                "scoredDatatype" : "expression data"
             }, []);
             eventObj = OD_eventAlbum.getEvent(eventId);
         } else {
@@ -487,11 +488,6 @@ var medbookDataLoader = medbookDataLoader || {};
             featureGenes.push(feature);
         }
         featureGenes = utils.eliminateDuplicates(featureGenes);
-
-        // featureObjList.push({
-        // "gene" : "PLK1",
-        // "weight" : 0
-        // });
 
         // get signature gene weight data
         var signaturesDict = obj['signatures'];
@@ -538,7 +534,8 @@ var medbookDataLoader = medbookDataLoader || {};
             'description' : null,
             'datatype' : 'signature query score',
             'allowedValues' : 'numeric',
-            'weightedGeneVector' : featureObjList
+            'weightedGeneVector' : featureObjList,
+            "scoredDatatype" : "signature weight"
         }, queryScores);
 
         // load data into event album

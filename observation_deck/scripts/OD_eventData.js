@@ -5,9 +5,14 @@
  */
 
 var eventData = eventData || {};
-(function(ed) {
+(function(ed) {"use strict";
 
-    var eventHierarchyUrl = 'observation_deck/data/eventHierarchy.xml';
+    ed.eventHierarchyUrl = 'observation_deck/data/eventHierarchy.xml';
+
+    ed.datatypeSuffixMapping = {
+        "expression data" : "_mRNA",
+        "signature weight" : "_weight"
+    };
 
     /**
      * Get the elements with the specified eventType.  Returns a list of elements.
@@ -339,6 +344,123 @@ var eventData = eventData || {};
         /**
          * multi-sorting of events
          */
+        // this.multisortEvents_old = function(rowSortSteps, colSortSteps) {
+        // console.log('multisortEvents');
+        // console.log('rowSortSteps', rowSortSteps);
+        // console.log('colSortSteps', colSortSteps);
+        // // default ordering
+        // var groupedEvents = this.getEventIdsByType();
+        // var eventList = [];
+        // for (var datatype in groupedEvents) {
+        // var datatypeEventList = groupedEvents[datatype];
+        // eventList = eventList.concat(datatypeEventList);
+        // }
+        //
+        // // bubble up colSort events
+        // var bubbledUpEvents = [];
+        // if (colSortSteps != null) {
+        // // bring sorting rows up to top
+        // var steps = colSortSteps.getSteps();
+        // for (var b = 0; b < steps.length; b++) {
+        // var step = steps[b];
+        // var eventId = step['name'];
+        // bubbledUpEvents.push(eventId);
+        // }
+        // bubbledUpEvents.reverse();
+        // }
+        // var rowNames = bubbledUpEvents.slice(0);
+        //
+        // // fill in rest of the list
+        // for (var r = 0; r < eventList.length; r++) {
+        // var eventId = eventList[r];
+        // if (! utils.isObjInArray(rowNames, eventId)) {
+        // rowNames.push(eventId);
+        // }
+        // }
+        //
+        // if (rowSortSteps != null) {
+        // var steps = rowSortSteps.getSteps().reverse();
+        // for (var b = 0; b < steps.length; b++) {
+        // var step = steps[b];
+        // var eventId = step['name'];
+        // var reverse = step['reverse'];
+        // var eventObj = this.getEvent(eventId);
+        // var datatype = eventObj.metadata.datatype;
+        // if (datatype === 'expression signature') {
+        // // TODO sort expression events by signature weight
+        // console.log('expression signature: ' + eventId);
+        //
+        // var orderedGeneList = eventObj.metadata.sortSignatureVector();
+        // if (reverse) {
+        // orderedGeneList.reverse();
+        // }
+        // console.log('orderedGeneList', orderedGeneList);
+        //
+        // var eventGroupEventIds;
+        // if (utils.hasOwnProperty(groupedEvents, "expression data")) {
+        // eventGroupEventIds = groupedEvents['expression data'].slice(0);
+        // } else {
+        // continue;
+        // }
+        //
+        // var processedExpressionEventList = [];
+        // for (var c = 0; c < orderedGeneList.length; c++) {
+        // var orderedGene = orderedGeneList[c];
+        // var orderedGene_eventId = orderedGene + "_mRNA";
+        // var index = eventGroupEventIds.indexOf(orderedGene_eventId);
+        // // if (index >= 0) {
+        // if ((index >= 0) && (!utils.isObjInArray(bubbledUpEvents, orderedGene_eventId))) {
+        // // only add expression events that have records in the event album
+        // processedExpressionEventList.push(orderedGene_eventId);
+        // delete eventGroupEventIds[index];
+        // }
+        //
+        // if (utils.isObjInArray(bubbledUpEvents, orderedGene_eventId)) {
+        // // skip bubbled up expression events
+        // delete eventGroupEventIds[index];
+        // }
+        // }
+        //
+        // // add events that did not appear in signature
+        // for (var d in eventGroupEventIds) {
+        // processedExpressionEventList.push(eventGroupEventIds[d]);
+        // }
+        //
+        // // assemble all datatypes together
+        // var eventList = bubbledUpEvents.slice(0);
+        // for (var datatype in groupedEvents) {
+        // if (datatype === 'expression data') {
+        // eventList = eventList.concat(processedExpressionEventList);
+        // } else {
+        // var datatypeEventList = groupedEvents[datatype];
+        // for (var i in datatypeEventList) {
+        // var eventId = datatypeEventList[i];
+        // if (utils.isObjInArray(eventList, eventId)) {
+        // // skip
+        // } else {
+        // eventList.push(eventId);
+        // }
+        // }
+        // }
+        // }
+        //
+        // rowNames = eventList;
+        // console.log('rowNames.length', rowNames.length, rowNames);
+        //
+        // // only do this for the first step
+        // break;
+        // } else {
+        // continue;
+        // }
+        // }
+        // }
+        //
+        // return rowNames;
+        // };
+
+        /**
+         * multi-sorting of events
+         */
         this.multisortEvents = function(rowSortSteps, colSortSteps) {
             console.log('multisortEvents');
             console.log('rowSortSteps', rowSortSteps);
@@ -381,72 +503,72 @@ var eventData = eventData || {};
                     var reverse = step['reverse'];
                     var eventObj = this.getEvent(eventId);
                     var datatype = eventObj.metadata.datatype;
-                    if (datatype === 'expression signature') {
-                        // TODO sort expression events by signature weight
-                        console.log('expression signature: ' + eventId);
+                    var scoredDatatype = eventObj.metadata.scoredDatatype;
 
-                        var orderedGeneList = eventObj.metadata.sortSignatureVector();
-                        if (reverse) {
-                            orderedGeneList.reverse();
-                        }
-                        console.log('orderedGeneList', orderedGeneList);
+                    var datatypeSuffix = ed.datatypeSuffixMapping[scoredDatatype];
 
-                        var eventGroupEventIds;
-                        if (utils.hasOwnProperty(groupedEvents, "expression data")) {
-                            eventGroupEventIds = groupedEvents['expression data'].slice(0);
-                        } else {
-                            continue;
-                        }
+                    if (scoredDatatype == null) {
+                        continue;
+                    }
 
-                        var processedExpressionEventList = [];
-                        for (var c = 0; c < orderedGeneList.length; c++) {
-                            var orderedGene = orderedGeneList[c];
-                            var orderedGene_eventId = orderedGene + "_mRNA";
-                            var index = eventGroupEventIds.indexOf(orderedGene_eventId);
-                            // if (index >= 0) {
-                            if ((index >= 0) && (!utils.isObjInArray(bubbledUpEvents, orderedGene_eventId))) {
-                                // only add expression events that have records in the event album
-                                processedExpressionEventList.push(orderedGene_eventId);
-                                delete eventGroupEventIds[index];
-                            }
+                    var orderedGeneList = eventObj.metadata.sortSignatureVector();
+                    if (reverse) {
+                        orderedGeneList.reverse();
+                    }
 
-                            if (utils.isObjInArray(bubbledUpEvents, orderedGene_eventId)) {
-                                // skip bubbled up expression events
-                                delete eventGroupEventIds[index];
-                            }
-                        }
-
-                        // add events that did not appear in signature
-                        for (var d in eventGroupEventIds) {
-                            processedExpressionEventList.push(eventGroupEventIds[d]);
-                        }
-
-                        // assemble all datatypes together
-                        var eventList = bubbledUpEvents.slice(0);
-                        for (var datatype in groupedEvents) {
-                            if (datatype === 'expression data') {
-                                eventList = eventList.concat(processedExpressionEventList);
-                            } else {
-                                var datatypeEventList = groupedEvents[datatype];
-                                for (var i in datatypeEventList) {
-                                    var eventId = datatypeEventList[i];
-                                    if (utils.isObjInArray(eventList, eventId)) {
-                                        // skip
-                                    } else {
-                                        eventList.push(eventId);
-                                    }
-                                }
-                            }
-                        }
-
-                        rowNames = eventList;
-                        console.log('rowNames.length', rowNames.length, rowNames);
-
-                        // only do this for the first step
-                        break;
+                    var eventGroupEventIds;
+                    if (utils.hasOwnProperty(groupedEvents, scoredDatatype)) {
+                        eventGroupEventIds = groupedEvents[scoredDatatype].slice(0);
                     } else {
                         continue;
                     }
+
+                    var processedExpressionEventList = [];
+                    for (var c = 0; c < orderedGeneList.length; c++) {
+                        var orderedGene = orderedGeneList[c];
+                        var orderedGene_eventId = orderedGene + datatypeSuffix;
+                        var index = eventGroupEventIds.indexOf(orderedGene_eventId);
+                        // if (index >= 0) {
+                        if ((index >= 0) && (!utils.isObjInArray(bubbledUpEvents, orderedGene_eventId))) {
+                            // only add expression events that have records in the event album
+                            processedExpressionEventList.push(orderedGene_eventId);
+                            delete eventGroupEventIds[index];
+                        }
+
+                        if (utils.isObjInArray(bubbledUpEvents, orderedGene_eventId)) {
+                            // skip bubbled up expression events
+                            delete eventGroupEventIds[index];
+                        }
+                    }
+
+                    // add events that did not appear in signature
+                    for (var d in eventGroupEventIds) {
+                        processedExpressionEventList.push(eventGroupEventIds[d]);
+                    }
+
+                    // assemble all datatypes together
+                    var eventList = bubbledUpEvents.slice(0);
+                    for (var datatype in groupedEvents) {
+                        if (datatype === scoredDatatype) {
+                            eventList = eventList.concat(processedExpressionEventList);
+                        } else {
+                            var datatypeEventList = groupedEvents[datatype];
+                            for (var i in datatypeEventList) {
+                                var eventId = datatypeEventList[i];
+                                if (utils.isObjInArray(eventList, eventId)) {
+                                    // skip
+                                } else {
+                                    eventList.push(eventId);
+                                }
+                            }
+                        }
+                    }
+
+                    rowNames = eventList;
+                    console.log('rowNames.length', rowNames.length, rowNames);
+
+                    // only do this for the first step
+                    break;
                 }
             }
 
@@ -507,73 +629,6 @@ var eventData = eventData || {};
                         comparisonResult = comparisonResult * -1;
                     }
 
-                    if (reverse) {
-                        comparisonResult = comparisonResult * -1;
-                    }
-
-                    // return final comparison or try next eventId
-                    if (comparisonResult == 0) {
-                        continue;
-                    } else {
-                        break;
-                    }
-
-                }
-                return comparisonResult;
-                // end sort function
-            });
-
-            return sampleIds;
-        };
-
-        /**
-         * If sortingSteps is null, then just return the sampleIds without sorting.
-         */
-        this.multisortSamples_old = function(sortingSteps) {
-            var sampleIds = this.getAllSampleIds();
-            if (sortingSteps == null) {
-                return sampleIds;
-            }
-            var steps = sortingSteps.getSteps().slice();
-            steps.reverse();
-
-            var album = this;
-
-            sampleIds.sort(function(a, b) {
-                // begin sort function
-                var comparisonResult = 0;
-                // iterate over sorting steps in order
-                for (var i = 0; i < steps.length; i++) {
-                    // get this step's values
-                    var eventId = steps[i]['name'];
-                    var reverse = steps[i]['reverse'];
-                    var eventObj = album.getEvent(eventId);
-                    if ((eventObj == undefined) || (eventObj == null)) {
-                        console.log('no event found for sorting: ' + eventId);
-                        continue;
-                    }
-                    var allowedValues = eventObj.metadata['allowedValues'];
-
-                    var vals = eventObj.data.getData([a, b]);
-                    var valA = vals[0]['val'];
-                    var valB = vals[1]['val'];
-
-                    // select correct comparator
-                    var comparator = null;
-                    if (allowedValues == 'numeric') {
-                        comparator = utils.compareAsNumeric;
-                    } else if (allowedValues == 'categoric') {
-                        comparator = utils.compareAsString;
-                    } else if (allowedValues == 'expression') {
-                        comparator = utils.compareAsNumeric;
-                    } else if (allowedValues == 'date') {
-                        comparator = utils.compareAsDate;
-                    } else {
-                        comparator = utils.compareAsString;
-                    }
-
-                    // compare this step's values
-                    comparisonResult = comparator(valA, valB);
                     if (reverse) {
                         comparisonResult = comparisonResult * -1;
                     }
@@ -971,6 +1026,9 @@ var eventData = eventData || {};
         this.weightedGeneVector = [];
         if (utils.hasOwnProperty(obj, 'weightedGeneVector')) {
             this.weightedGeneVector = obj['weightedGeneVector'];
+            this.scoredDatatype = obj['scoredDatatype'];
+
+            // scoredDatatype is the datatype that the weightedGeneVector refers to
         }
 
         this.addParent = function(parentId) {

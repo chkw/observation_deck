@@ -303,6 +303,7 @@ setupRowLabelContextMenu = function(config) {
      * This is a callback for medbook-workbench.
      */
 
+    // example of titleCallback function
     // var titleCallback = function(eventId) {
     // var eventObj = config['eventAlbum'].getEvent(eventId);
     // var datatype = eventObj.metadata['datatype'];
@@ -334,6 +335,8 @@ setupRowLabelContextMenu = function(config) {
             var eventId = ($trigger)[0].innerHTML.split('<')[0];
             var eventObj = config['eventAlbum'].getEvent(eventId);
             var datatype = eventObj.metadata['datatype'];
+            var scoredDatatype = eventObj.metadata.scoredDatatype;
+
             var items = {
                 'title' : {
                     name : eventId,
@@ -406,13 +409,19 @@ setupRowLabelContextMenu = function(config) {
                             }
                         },
                         "sig_sort" : {
-                            name : "expression events by signature weight",
+                            name : function(key, opt) {
+                                if (scoredDatatype == null) {
+                                    return "---";
+                                } else {
+                                    return scoredDatatype + " events by " + eventId + " weight";
+                                }
+                            },
                             icon : null,
                             disabled : function(key, opt) {
-                                if (datatype === 'expression signature') {
-                                    return false;
-                                } else {
+                                if (scoredDatatype == null) {
                                     return true;
+                                } else {
+                                    return false;
                                 }
                             },
                             callback : function(key, opt) {
