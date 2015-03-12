@@ -362,7 +362,9 @@ setupRowLabelContextMenu = function(config) {
                     'name' : 'sort...',
                     'items' : {
                         "pivot_sort" : {
-                            name : 'expression events by this pivot',
+                            name : function() {
+                                return datatype + ' events by this pivot';
+                            },
                             icon : null,
                             disabled : function() {
                                 if (datatype === 'expression data') {
