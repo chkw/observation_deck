@@ -1250,7 +1250,10 @@ var eventData = eventData || {};
 
         /** *get mean,sd,median,meddev,meandev.  Uses jStat library
          */
-        this.getStats = function(sampleIdList) {
+        this.getStats = function(sampleIdList, precision) {
+            if ( typeof precision === 'undefined') {
+                precision = 3;
+            }
             var results = {
                 'min' : 0,
                 'max' : 0,
@@ -1287,13 +1290,13 @@ var eventData = eventData || {};
                     }
                 }
             }
-            results['mean'] = jStat.mean(vector);
-            results['sd'] = jStat.stdev(vector);
-            results['median'] = jStat.median(vector);
-            results['meddev'] = jStat.meddev(vector);
-            results['meandev'] = jStat.meandev(vector);
-            results['min'] = jStat.min(vector);
-            results['max'] = jStat.max(vector);
+            results['mean'] = jStat.mean(vector).toPrecision(precision);
+            results['sd'] = jStat.stdev(vector).toPrecision(precision);
+            results['median'] = jStat.median(vector).toPrecision(precision);
+            results['meddev'] = jStat.meddev(vector).toPrecision(precision);
+            results['meandev'] = jStat.meandev(vector).toPrecision(precision);
+            results['min'] = jStat.min(vector).toPrecision(precision);
+            results['max'] = jStat.max(vector).toPrecision(precision);
 
             return results;
         };
