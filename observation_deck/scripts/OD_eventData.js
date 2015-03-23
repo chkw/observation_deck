@@ -9,10 +9,10 @@ var eventData = eventData || {};
 
     ed.eventHierarchyUrl = 'observation_deck/data/eventHierarchy.xml';
 
-    ed.datatypeSuffixMapping = {
-        "expression data" : "_mRNA",
-        "signature weight" : "_weight"
-    };
+    // ed.datatypeSuffixMapping = {
+    // "expression data" : "_mRNA",
+    // "signature weight" : "_weight"
+    // };
 
     /**
      * Get the elements with the specified eventType.  Returns a list of elements.
@@ -89,9 +89,15 @@ var eventData = eventData || {};
 
         this.album = {};
 
+        this.datatypeSuffixMapping = {};
+
         this.addEvent = function(metadataObj, data) {
             var newEvent = new ed.OD_event(metadataObj);
             this.album[metadataObj['id']] = newEvent;
+
+            if (("datatype" in metadataObj) && ("geneSuffix" in metadataObj)) {
+                this.datatypeSuffixMapping[metadataObj["datatype"]] = metadataObj["geneSuffix"];
+            }
 
             // add data
             var isNumeric = ((metadataObj['allowedValues'] == 'numeric') || metadataObj['allowedValues'] == 'expression');
@@ -505,7 +511,7 @@ var eventData = eventData || {};
                     var datatype = eventObj.metadata.datatype;
                     var scoredDatatype = eventObj.metadata.scoredDatatype;
 
-                    var datatypeSuffix = ed.datatypeSuffixMapping[scoredDatatype];
+                    var datatypeSuffix = this.datatypeSuffixMapping[scoredDatatype];
 
                     if (scoredDatatype == null) {
                         continue;
