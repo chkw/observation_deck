@@ -54,7 +54,11 @@
             // var signatureFile = 'observation_deck/data/meteorMedbook/smallcell-50.tab';
             // var AR_signatureFile = 'observation_deck/data/meteorMedbook/ar_sig.tab';
 
+            eventAlbum = new eventData.OD_eventAlbum();
+            medbookDataLoader.getViperData('observation_deck/data/viper.tab', eventAlbum);
+
             obs_deck_config = buildObservationDeck(divElem, {
+                'eventAlbum' : eventAlbum,
                 'mongoData' : {
                     'clinical' : aaa,
                     'expression' : bbb

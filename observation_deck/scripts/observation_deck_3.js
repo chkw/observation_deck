@@ -336,6 +336,7 @@ setupRowLabelContextMenu = function(config) {
             var eventObj = config['eventAlbum'].getEvent(eventId);
             var datatype = eventObj.metadata['datatype'];
             var scoredDatatype = eventObj.metadata.scoredDatatype;
+            var allowedValues = eventObj.metadata.allowedValues;
 
             var items = {
                 'title' : {
@@ -367,7 +368,7 @@ setupRowLabelContextMenu = function(config) {
                             },
                             icon : null,
                             disabled : function() {
-                                if (datatype === 'expression data') {
+                                if (allowedValues === 'numeric') {
                                     return false;
                                 } else {
                                     return true;
@@ -911,8 +912,6 @@ drawMatrix = function(containingDiv, config) {
             };
         }
         rowNames = utils.eliminateDuplicates(pivotSortedEvents.concat(rowNames));
-
-        //console.log('pivotScoresObj', utils.prettyJson(pivotScoresObj));
     }
 
     // hide rows of datatype, preserving relative ordering
@@ -1019,9 +1018,10 @@ drawMatrix = function(containingDiv, config) {
     rowLabels.append("title").text(function(d) {
         var eventObj = eventAlbum.getEvent(d);
         var datatype = eventObj.metadata.datatype;
+        var allowedValues = eventObj.metadata.allowedValues;
         var s = 'event: ' + d + '\ndatatype: ' + datatype;
 
-        if ((datatype === 'expression data') && (rescalingData != null) && (utils.hasOwnProperty(rescalingData, 'stats'))) {
+        if ((allowedValues === 'numeric') && (rescalingData != null) && (utils.hasOwnProperty(rescalingData, 'stats'))) {
             s = s + '\nraw data stats: ' + utils.prettyJson(rescalingData['stats'][d]);
         }
 

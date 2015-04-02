@@ -292,17 +292,17 @@ var eventData = eventData || {};
             }
 
             // get pivot event
-            pEventObj = this.getEvent(pivotEvent);
+            var pEventObj = this.getEvent(pivotEvent);
             if (pEventObj == null) {
                 console.log('eventObj not found for', pivotEvent);
                 return null;
             }
 
-            pSampleIds = pEventObj.data.getAllSampleIds();
-            pNullSampleIds = pEventObj.data.getNullSamples();
+            var pSampleIds = pEventObj.data.getAllSampleIds();
+            var pNullSampleIds = pEventObj.data.getNullSamples();
 
             // keep only IDs that appear less than 2 times
-            pNonNullSampleIds = utils.keepReplicates(pSampleIds.concat(pNullSampleIds), 2, true);
+            var pNonNullSampleIds = utils.keepReplicates(pSampleIds.concat(pNullSampleIds), 2, true);
 
             // compute scores over events
             var eventGroup = this.getEventIdsByType()[pEventObj.metadata.datatype];
@@ -329,9 +329,19 @@ var eventData = eventData || {};
 
                 var vector1 = [];
                 var vector2 = [];
+
+                var propName1 = null;
+                if (propName1 == null) {
+                    propName1 = utils.hasOwnProperty(eventData1[0], 'val_orig') ? 'val_orig' : 'val';
+                }
+                var propName2 = null;
                 for (var j = 0; j < commonNonNullSamples.length; j++) {
-                    vector1.push(eventData1[j]['val_orig']);
-                    vector2.push(eventData2[j]['val_orig']);
+                    if (propName2 == null) {
+                        propName2 = utils.hasOwnProperty(eventData2[j], 'val_orig') ? 'val_orig' : 'val';
+                    }
+
+                    vector1.push(eventData1[j][propName1]);
+                    vector2.push(eventData2[j][propName2]);
                 }
 
                 var score = scoringAlgorithm(vector1, vector2);
