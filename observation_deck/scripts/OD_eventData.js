@@ -327,6 +327,13 @@ var eventData = eventData || {};
                 var eventData1 = pEventObj.data.getData(commonNonNullSamples);
                 var eventData2 = eventObj.data.getData(commonNonNullSamples);
 
+                if (eventData2.length > 0) {
+
+                } else {
+                    console.log('eventData2 is empty');
+                    continue;
+                }
+
                 var vector1 = [];
                 var vector2 = [];
 
@@ -530,9 +537,7 @@ var eventData = eventData || {};
 
                     var orderedGeneList = eventObj.metadata.sortSignatureVector();
                     if (reverse) {
-                        console.log("reverse the sort");
                         orderedGeneList.reverse();
-                        console.log("orderedGeneList", orderedGeneList);
                     }
 
                     var eventGroupEventIds;
@@ -550,6 +555,7 @@ var eventData = eventData || {};
                         var orderedGene_eventId = orderedGene + datatypeSuffix;
                         var index = eventGroupEventIds.indexOf(orderedGene_eventId);
                         if (index >= 0) {
+                            // events that are in signature weight vector AND datatype group
                             scoredEventSigWeightOverlap.push(orderedGene_eventId);
                         }
                         if ((index >= 0) && (!utils.isObjInArray(bubbledUpEvents, orderedGene_eventId))) {
@@ -1049,7 +1055,9 @@ var eventData = eventData || {};
         this.children = {};
         this.weightedGeneVector = [];
         if (utils.hasOwnProperty(obj, 'weightedGeneVector')) {
-            this.weightedGeneVector = obj['weightedGeneVector'];
+            if (obj['weightedGeneVector'] != null) {
+                this.weightedGeneVector = obj['weightedGeneVector'];
+            }
             this.scoredDatatype = obj['scoredDatatype'];
 
             // scoredDatatype is the datatype that the weightedGeneVector refers to

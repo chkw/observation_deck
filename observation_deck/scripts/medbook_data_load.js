@@ -410,8 +410,9 @@ var medbookDataLoader = medbookDataLoader || {};
                     'displayName' : null,
                     'description' : null,
                     'datatype' : 'expression signature',
-                    'allowedValues' : 'numeric'
-                    // 'weightedGeneVector' : null
+                    'allowedValues' : 'numeric',
+                    'weightedGeneVector' : null,
+                    "scoredDatatype" : "expression data"
                 }, {});
                 eventObj = OD_eventAlbum.getEvent(eventId);
             }

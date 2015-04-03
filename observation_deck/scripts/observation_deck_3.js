@@ -1026,7 +1026,7 @@ drawMatrix = function(containingDiv, config) {
         var allowedValues = eventObj.metadata.allowedValues;
         var s = 'event: ' + d + '\ndatatype: ' + datatype;
 
-        if ((allowedValues === 'numeric') && (rescalingData != null) && (utils.hasOwnProperty(rescalingData, 'stats'))) {
+        if ((allowedValues === 'numeric') && (rescalingData != null) && (utils.hasOwnProperty(rescalingData, 'stats')) && ( typeof rescalingData['stats'][d] !== 'undefined')) {
             s = s + '\nraw data stats: ' + utils.prettyJson(rescalingData['stats'][d]);
         }
 
