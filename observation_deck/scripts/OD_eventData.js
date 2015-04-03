@@ -524,38 +524,46 @@ var eventData = eventData || {};
                     var datatypeSuffix = this.datatypeSuffixMapping[scoredDatatype];
 
                     if (scoredDatatype == null) {
+                        console.log("no scored datatype to sort");
                         continue;
                     }
 
                     var orderedGeneList = eventObj.metadata.sortSignatureVector();
                     if (reverse) {
+                        console.log("reverse the sort");
                         orderedGeneList.reverse();
+                        console.log("orderedGeneList", orderedGeneList);
                     }
 
                     var eventGroupEventIds;
                     if (utils.hasOwnProperty(groupedEvents, scoredDatatype)) {
                         eventGroupEventIds = groupedEvents[scoredDatatype].slice(0);
                     } else {
+                        console.log(scoredDatatype + " group has no events");
                         continue;
                     }
 
                     var processedExpressionEventList = [];
+                    var scoredEventSigWeightOverlap = [];
                     for (var c = 0; c < orderedGeneList.length; c++) {
                         var orderedGene = orderedGeneList[c];
                         var orderedGene_eventId = orderedGene + datatypeSuffix;
                         var index = eventGroupEventIds.indexOf(orderedGene_eventId);
-                        // if (index >= 0) {
+                        if (index >= 0) {
+                            scoredEventSigWeightOverlap.push(orderedGene_eventId);
+                        }
                         if ((index >= 0) && (!utils.isObjInArray(bubbledUpEvents, orderedGene_eventId))) {
-                            // only add expression events that have records in the event album
+                            // only add scored events that have records in the event album
                             processedExpressionEventList.push(orderedGene_eventId);
                             delete eventGroupEventIds[index];
                         }
 
                         if (utils.isObjInArray(bubbledUpEvents, orderedGene_eventId)) {
-                            // skip bubbled up expression events
+                            // skip bubbled up scored events
                             delete eventGroupEventIds[index];
                         }
                     }
+                    console.log("scoredEventSigWeightOverlap", (scoredEventSigWeightOverlap.length), scoredEventSigWeightOverlap);
 
                     // add events that did not appear in signature
                     for (var d in eventGroupEventIds) {

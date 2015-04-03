@@ -294,6 +294,7 @@ setupColLabelContextMenu = function(config) {
     });
 };
 
+// TODO setupRowLabelContextMenu
 /**
  *context menu uses http://medialize.github.io/jQuery-contextMenu
  */
@@ -951,6 +952,10 @@ drawMatrix = function(containingDiv, config) {
     var width = fullWidth - margin.left - margin.right;
     var denom = (colNames.length > rowNames.length) ? colNames.length : rowNames.length;
     var gridSize = Math.floor(width / denom);
+
+    var minGridSize = 9;
+    gridSize = (gridSize > minGridSize) ? gridSize : minGridSize;
+    console.log('gridSize', gridSize);
 
     // document.documentElement.clientHeight
     var fullHeight = (margin.top + margin.bottom) + (gridSize * rowNames.length);

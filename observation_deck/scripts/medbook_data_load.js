@@ -288,7 +288,8 @@ var medbookDataLoader = medbookDataLoader || {};
             }
 
             gene = gene.trim();
-            var eventId = gene + '_mRNA';
+            var suffix = '_mRNA';
+            var eventId = gene + suffix;
 
             // iter over samples
             var samples = utils.getKeys(doc);
@@ -303,6 +304,7 @@ var medbookDataLoader = medbookDataLoader || {};
                 // add event if DNE
                 if (eventObj == null) {
                     OD_eventAlbum.addEvent({
+                        'geneSuffix' : suffix,
                         'id' : eventId,
                         'name' : null,
                         'displayName' : null,
