@@ -1234,11 +1234,13 @@ var eventData = eventData || {};
             return result;
         };
 
-        this.addStep = function(name) {
+        this.addStep = function(name, noReverse) {
             var index = this.getIndex(name);
             if (index >= 0) {
                 var c = this.steps.splice(index, 1)[0];
-                c["reverse"] = !c["reverse"];
+                if (!noReverse) {
+                    c["reverse"] = !c["reverse"];
+                }
                 this.steps.push(c);
             } else {
                 this.steps.push({

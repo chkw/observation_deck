@@ -816,6 +816,19 @@ drawMatrix = function(containingDiv, config) {
         }
     }
 
+    // sort by pivot row
+    if (utils.hasOwnProperty(querySettings, 'pivot_sort')) {
+        var pivotSortSettings = querySettings['pivot_sort'];
+        var pivotEvent = pivotSortSettings['pivot_event'];
+        if (colSortSteps == null) {
+            colSortSteps = new eventData.sortingSteps();
+        }
+        if (eventAlbum.getEvent(pivotEvent)) {
+            // event exists
+            colSortSteps.addStep(pivotEvent, true);
+        }
+    }
+
     colNames = eventAlbum.multisortSamples(colSortSteps);
 
     // TODO enforce required events in config['querySettings']['required events']
@@ -890,11 +903,12 @@ drawMatrix = function(containingDiv, config) {
     var pivotScores = null;
     if (utils.hasOwnProperty(querySettings, 'pivot_sort')) {
         var pivotSortSettings = querySettings['pivot_sort'];
-        // pivotScores = eventAlbum.pivotSort(pivotSortSettings['pivot_event'], utils.mutualInformation);
-        pivotScores = eventAlbum.pivotSort(pivotSortSettings['pivot_event']);
+        var pivotEvent = pivotSortSettings['pivot_event'];
+        // pivotScores = eventAlbum.pivotSort(pivotEvent, utils.mutualInformation);
+        pivotScores = eventAlbum.pivotSort(pivotEvent);
 
-        // pivotScores = eventAlbum.pivotSort_2(pivotSortSettings['pivot_event'], utils.mutualInformation);
-        // pivotScores = eventAlbum.pivotSort_2(pivotSortSettings['pivot_event']);
+        // pivotScores = eventAlbum.pivotSort_2(pivotEvent, utils.mutualInformation);
+        // pivotScores = eventAlbum.pivotSort_2(pivotEvent);
 
         if ( typeof rescalingData === 'undefined') {
             rescalingData = {};
