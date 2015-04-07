@@ -360,6 +360,32 @@ setupRowLabelContextMenu = function(config) {
                     }
                 },
                 "sep1" : "---------",
+                // TODO test ui controls
+                'test_fold' : {
+                    'name' : 'testing',
+                    'items' : {
+                        'set_pivot' : {
+                            'name' : function() {
+                                return 'set pivot to: ' + eventId;
+                            },
+                            'icon' : null,
+                            'disabled' : null,
+                            'callback' : function(key, opt) {
+                                console.log('set pivot as: ' + eventId);
+                            }
+                        },
+                        'pivot_sort_datatype' : {
+                            'name' : function() {
+                                return 'pivot sort ' + datatype + ' events';
+                            },
+                            'icon' : null,
+                            'disabled' : null,
+                            'callback' : function(key, opt) {
+                                console.log('pivot sort ' + datatype + ' events');
+                            }
+                        },
+                    }
+                },
                 'sort_fold' : {
                     'name' : 'sort...',
                     'items' : {
