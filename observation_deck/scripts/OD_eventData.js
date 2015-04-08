@@ -98,7 +98,8 @@ var eventData = eventData || {};
             var isNumeric = ((metadataObj['allowedValues'] == 'numeric') || metadataObj['allowedValues'] == 'expression');
             newEvent.data.setData(data, isNumeric);
 
-            return this;
+            // return this;
+            return newEvent;
         };
 
         this.deleteEvent = function(eventId) {
@@ -928,31 +929,22 @@ var eventData = eventData || {};
         this.allowedValues = obj['allowedValues'];
         this.minAllowedVal = obj['minAllowedVal'];
         this.maxAllowedVal = obj['maxAllowedVal'];
-        this.parents = {};
-        this.children = {};
         this.weightedGeneVector = [];
-        if (utils.hasOwnProperty(obj, 'weightedGeneVector')) {
-            if (obj['weightedGeneVector'] != null) {
-                this.weightedGeneVector = obj['weightedGeneVector'];
-            }
-            this.scoredDatatype = obj['scoredDatatype'];
 
-            // scoredDatatype is the datatype that the weightedGeneVector refers to
-        }
-
-        this.addParent = function(parentId) {
-            this.parents[parentId] = parentId;
-            return this;
+        this.setScoreRange = function(minAllowed, maxAllowed) {
+            this.minAllowedVal = minAllowed;
+            this.maxAllowedVal = maxAllowed;
         };
 
-        this.addChild = function(childId) {
-            this.children[childId] = childId;
+        /**
+         * weightVector is an array of objects with keys: 'gene', 'weight'.
+         * scoredDatatype is the datatype to which the weights apply.
+         */
+        this.setWeightVector = function(weightVector, scoredDatatype) {
+            this.weightedGeneVector = weightVector;
+            this.scoredDatatype = scoredDatatype;
+            console.log('meta for ' + this.displayName, this);
             return this;
-        };
-
-        this.computeCompositeScore = function(sampleIdList) {
-            // TODO compute composite score over specified samples in child tree
-            return null;
         };
 
         /**
