@@ -371,7 +371,16 @@ setupRowLabelContextMenu = function(config) {
                             'icon' : null,
                             'disabled' : null,
                             'callback' : function(key, opt) {
-                                console.log('set pivot as: ' + eventId);
+                                var querySettings = config['querySettings'];
+                                querySettings['pivot_event'] = {
+                                    'id' : eventId,
+                                    'datatype' : datatype
+                                };
+                                utils.setCookie('od_config', JSON.stringify(querySettings));
+
+                                // trigger redrawing
+                                var containerDivElem = document.getElementById(config['containerDivId']);
+                                buildObservationDeck(containerDivElem, config);
                             }
                         },
                         'pivot_sort_datatype' : {
@@ -382,8 +391,20 @@ setupRowLabelContextMenu = function(config) {
                             'disabled' : null,
                             'callback' : function(key, opt) {
                                 console.log('pivot sort ' + datatype + ' events');
+                                var querySettings = config['querySettings'];
+                                datatypes = [];
+                                if ('pivot_sort_list' in querySettings) {
+                                    datatypes = querySettings['pivot_sort_list'];
+                                }
+                                datatypes.push(datatype);
+                                querySettings['pivot_sort_list'] = utils.eliminateDuplicates(datatypes);
+                                utils.setCookie('od_config', JSON.stringify(querySettings));
+
+                                // trigger redrawing
+                                var containerDivElem = document.getElementById(config['containerDivId']);
+                                buildObservationDeck(containerDivElem, config);
                             }
-                        },
+                        }
                     }
                 },
                 'sort_fold' : {
