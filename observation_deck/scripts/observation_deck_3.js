@@ -38,8 +38,9 @@ buildObservationDeck = function(containerDivElem, config) {
  */
 getConfiguration = function(config) {
     // look for od_config in cookies
-    console.log('cookie', utils.getCookie('od_config'));
-    var querySettings = utils.parseJson(utils.getCookie('od_config')) || {};
+    var cookie = utils.getCookie('od_config');
+    console.log('cookie', cookie);
+    var querySettings = utils.parseJson(cookie) || {};
     config['querySettings'] = querySettings;
 
     var od_eventAlbum = null;
@@ -50,7 +51,7 @@ getConfiguration = function(config) {
         var pivotSettings = config['pivot_event'];
         config['querySettings']['pivot_event'] = pivotSettings;
     } else {
-        delete config['querySettings']['pivot_event'];
+        // delete config['querySettings']['pivot_event'];
     }
 
     // detect pre-configured event album obj
@@ -417,16 +418,19 @@ setupRowLabelContextMenu = function(config) {
                                 };
 
                                 // meteor session
-                                Session.set('pivotSettings', pivotSettings);
+                                if ( typeof Session !== 'undefined') {
+                                    Session.set('pivotSettings', pivotSettings);
+                                } else {
+                                    console.log('no Session object. Writing pivotSettings to querySettings.');
 
-                                // var querySettings = config['querySettings'];
-                                // querySettings['pivot_event'] = pivotSettings;
-                                // utils.setCookie('od_config', JSON.stringify(querySettings));
-                                //
-                                // // trigger redrawing
-                                // var containerDivElem = document.getElementById(config['containerDivId']);
-                                // buildObservationDeck(containerDivElem, config);
+                                    var querySettings = config['querySettings'];
+                                    querySettings['pivot_event'] = pivotSettings;
+                                    utils.setCookie('od_config', JSON.stringify(querySettings));
 
+                                    // trigger redrawing
+                                    var containerDivElem = document.getElementById(config['containerDivId']);
+                                    buildObservationDeck(containerDivElem, config);
+                                }
                             }
                         },
                         'pivot_sort_datatype' : {
@@ -1019,7 +1023,9 @@ drawMatrix = function(containingDiv, config) {
                 'pivotScore' : score
             };
         }
-        rowNames = utils.eliminateDuplicates(pivotSortedEvents.concat(rowNames));
+
+        rowNames = pivotSortedEvents.concat(rowNames);
+        rowNames = utils.eliminateDuplicates(rowNames);
     }
 
     // hide rows of datatype, preserving relative ordering
@@ -1034,6 +1040,15 @@ drawMatrix = function(containingDiv, config) {
         shownNames.push(rowName);
     }
     rowNames = shownNames;
+
+    // move pivot event to top of matrix (1st row)
+    var pivotEventId = null;
+    if (querySettings['pivot_event'] != null) {
+        pivotEventId = querySettings['pivot_event']['id'];
+        console.log('moving pivot event to top:', pivotEventId);
+        rowNames.unshift(pivotEventId);
+        rowNames = utils.eliminateDuplicates(rowNames);
+    }
 
     // assign row numbers to row names
     var rowNameMapping = new Object();
@@ -1110,6 +1125,9 @@ drawMatrix = function(containingDiv, config) {
         "transform" : "translate(" + translateX + ", " + translateY + ")",
         "class" : function(d, i) {
             var s = "rowLabel mono axis unselectable";
+            if (d === pivotEventId) {
+                s = s + " pivotEvent";
+            }
             return s;
         },
         'eventId' : function(d, i) {
