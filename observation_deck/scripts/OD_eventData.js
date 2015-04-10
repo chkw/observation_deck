@@ -231,13 +231,13 @@ var eventData = eventData || {};
         /**
          * pivotScores is a dictionary keying eventIds to some score.
          */
-        this.setPivotScores = function(pivotEvent, pivotScores) {
+        this.setPivotScores = function(pivotEvent, pivotScoresDict) {
             if (pivotScores == null) {
                 this.pivot = {};
             } else {
                 this.pivot = {
                     'event' : pivotEvent,
-                    'scores' : pivotScores
+                    'scores' : pivotScoresDict
                 };
             }
             return this;
