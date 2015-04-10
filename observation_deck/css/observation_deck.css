@@ -33,3 +33,16 @@ text.axis {
     cursor: pointer;
     fill: #000;
 }
+
+/**.bold {
+ font-weight: bold;
+ }
+
+ *.italic {
+ font-style: italic;
+ }*/
+
+.pivotEvent {
+    font-weight: bold;
+    font-style: italic;
+}
