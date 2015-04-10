@@ -44,6 +44,15 @@ getConfiguration = function(config) {
 
     var od_eventAlbum = null;
 
+    // pivot_event is passed to OD from medbook-workbench via session property
+    // session property may be null
+    if (('pivot_event' in config) && (config['pivot_event'] != null)) {
+        var pivotSettings = config['pivot_event'];
+        config['querySettings']['pivot_event'] = pivotSettings;
+    } else {
+        delete config['querySettings']['pivot_event'];
+    }
+
     // detect pre-configured event album obj
     if ('eventAlbum' in config) {
         od_eventAlbum = config['eventAlbum'];
@@ -78,6 +87,8 @@ getConfiguration = function(config) {
             dataLoader.mongoExpressionData(mongoData['expression'], od_eventAlbum);
         }
     }
+    // delete the data after it has been used to load events
+    delete config['mongoData'];
 
     // signature data
     if ('signature' in config) {
@@ -101,6 +112,8 @@ getConfiguration = function(config) {
             }
         }
     }
+    // delete the data after it has been used to load events
+    delete config['signature'];
 
     // signature gene weights data
     if ('signature_index' in config) {
@@ -116,12 +129,16 @@ getConfiguration = function(config) {
             }
         }
     }
+    // delete the data after it has been used to load events
+    delete config['signature_index'];
 
     // 'bmegSigServiceData' : bmegSigServiceData
     if ('bmegSigServiceData' in config) {
         console.log('bmegSigServiceData in config');
         dataLoader.loadBmegSignatureWeightsAsSamples(config['bmegSigServiceData'], od_eventAlbum);
     }
+    // delete the data after it has been used to load events
+    delete config['bmegSigServiceData'];
 
     // specify the samples that should be displayed
     if ('displayedSamples' in config) {
@@ -179,6 +196,24 @@ getCookieEvents = function() {
     }
 
     return utils.eliminateDuplicates(geneList);
+};
+
+// TODO getCookiePivot
+getCookiePivot = function() {
+    var result = null;
+    var cookieObj = utils.parseJson(utils.getCookie('od_config'));
+    if (( typeof cookieObj === 'undefined') || (cookieObj == null) || ((utils.getKeys(cookieObj)).length == 0)) {
+        return result;
+    }
+
+    if (utils.hasOwnProperty(cookieObj, 'querySettings')) {
+        var querySettings = config['querySettings'];
+        if (utils.hasOwnProperty(querySettings, 'pivot_event')) {
+            var pivotEventSettings = querySettings['pivot_event'];
+            result = pivotEventSettings;
+        }
+    }
+    return result;
 };
 
 /*
@@ -371,16 +406,27 @@ setupRowLabelContextMenu = function(config) {
                             'icon' : null,
                             'disabled' : null,
                             'callback' : function(key, opt) {
-                                var querySettings = config['querySettings'];
-                                querySettings['pivot_event'] = {
+                                // in workbench, selecting this should do the following:
+                                // 1- set pivot cookie
+                                // 2- meteor should pick up the cookie/session and retrieve the pivot data
+                                // 3- meteor should force obs-deck to rebuild, setting pivot data
+
+                                var pivotSettings = {
                                     'id' : eventId,
                                     'datatype' : datatype
                                 };
-                                utils.setCookie('od_config', JSON.stringify(querySettings));
 
-                                // trigger redrawing
-                                var containerDivElem = document.getElementById(config['containerDivId']);
-                                buildObservationDeck(containerDivElem, config);
+                                // meteor session
+                                Session.set('pivotSettings', pivotSettings);
+
+                                // var querySettings = config['querySettings'];
+                                // querySettings['pivot_event'] = pivotSettings;
+                                // utils.setCookie('od_config', JSON.stringify(querySettings));
+                                //
+                                // // trigger redrawing
+                                // var containerDivElem = document.getElementById(config['containerDivId']);
+                                // buildObservationDeck(containerDivElem, config);
+
                             }
                         },
                         'pivot_sort_datatype' : {
