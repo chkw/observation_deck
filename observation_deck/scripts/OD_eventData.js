@@ -86,6 +86,14 @@ var eventData = eventData || {};
 
         this.datatypeSuffixMapping = {};
 
+        /**
+         * keys:
+         * event is the event that this pivot is scored on, could be something like expression, mutation, contrast, etc.
+         * scores is a dictionary keying eventIds to a score
+         *
+         */
+        this.pivot = {};
+
         this.addEvent = function(metadataObj, data) {
             var newEvent = new ed.OD_event(metadataObj);
             this.album[metadataObj['id']] = newEvent;
@@ -218,6 +226,39 @@ var eventData = eventData || {};
                 var newChildList = childList.concat(currentChildren);
                 return this.getAllChildren(currentChildren, newChildList);
             }
+        };
+
+        /**
+         * pivotScores is a dictionary keying eventIds to some score.
+         */
+        this.setPivotScores = function(pivotEvent, pivotScores) {
+            if (pivotScores == null) {
+                this.pivot = {};
+            } else {
+                this.pivot = {
+                    'event' : pivotEvent,
+                    'scores' : pivotScores
+                };
+            }
+            return this;
+        };
+
+        /**
+         * Get a sorted list of events by pivot score.
+         */
+        this.getPivotSortedEvents = function() {
+            if (( typeof this.pivot.pivotScores === 'undefined') || (this.pivot.pivotScores == null)) {
+                return [];
+            }
+            var sortedEvents = [];
+            for (var key in this.pivot.pivotScores) {
+                sortedEvents.push({
+                    "key" : key,
+                    "val" : this.pivot.pivotScores[key]
+                });
+            }
+            sortedEvents = sortedEvents.sort(utils.sort_by('val'));
+            return sortedEvents;
         };
 
         /**
@@ -943,7 +984,6 @@ var eventData = eventData || {};
         this.setWeightVector = function(weightVector, scoredDatatype) {
             this.weightedGeneVector = weightVector;
             this.scoredDatatype = scoredDatatype;
-            console.log('meta for ' + this.displayName, this);
             return this;
         };
 
