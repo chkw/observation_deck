@@ -407,7 +407,7 @@ var medbookDataLoader = medbookDataLoader || {};
 
         if (eventObj == null) {
             // create eventObj
-            console.log('adding weightedGeneVector to new eventObj');
+            console.log('adding weightedGeneVector to new eventObj for ' + eventId);
             eventObj = mdl.loadEventBySampleData(OD_eventAlbum, eventId, '', 'expression signature', 'numeric', []);
         }
         eventObj.metadata.setWeightVector(weightedGeneVector, 'expression data');
@@ -499,6 +499,15 @@ var medbookDataLoader = medbookDataLoader || {};
                 console.log('loadBmegSignatureWeightsAsSamples:', 'existing event for: ' + eventId);
             }
         }
+    };
+
+    /**
+     *  Pivot scores to be loaded into the album as a special object.
+     * @param {Object} obj
+     * @param {Object} OD_eventAlbum
+     */
+    mdl.loadPivotScores = function(obj, OD_eventAlbum) {
+        OD_eventAlbum.setPivotScores(obj);
     };
 
 })(medbookDataLoader);
