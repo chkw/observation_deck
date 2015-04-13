@@ -248,6 +248,7 @@ var eventData = eventData || {};
          */
         this.getPivotSortedEvents = function() {
             if (( typeof this.pivot.scores === 'undefined') || (this.pivot.scores == null)) {
+                console.log('getPivotSortedEvents found no pivot scores');
                 return [];
             }
             var sortedEvents = [];
@@ -285,6 +286,8 @@ var eventData = eventData || {};
                 var suffix = this.datatypeSuffixMapping[datatype];
                 suffix = (suffix == null) ? "" : suffix;
                 var orderedEvents = [];
+
+                // suffixed ids here
                 var unorderedEvents = groupedEvents[datatype];
 
                 // add scored events in the datatype
