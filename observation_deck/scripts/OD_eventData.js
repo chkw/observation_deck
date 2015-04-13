@@ -232,7 +232,7 @@ var eventData = eventData || {};
          * pivotScores is a dictionary keying eventIds to some score.
          */
         this.setPivotScores = function(pivotEvent, pivotScoresDict) {
-            if (pivotScores == null) {
+            if (pivotScoresDict == null) {
                 this.pivot = {};
             } else {
                 this.pivot = {
@@ -244,21 +244,64 @@ var eventData = eventData || {};
         };
 
         /**
-         * Get a sorted list of events by pivot score.
+         * Get a sorted list of events by pivot score.  Returns a list of objects with keys: "key" and "val".
          */
         this.getPivotSortedEvents = function() {
-            if (( typeof this.pivot.pivotScores === 'undefined') || (this.pivot.pivotScores == null)) {
+            if (( typeof this.pivot.scores === 'undefined') || (this.pivot.scores == null)) {
                 return [];
             }
             var sortedEvents = [];
-            for (var key in this.pivot.pivotScores) {
+            for (var key in this.pivot.scores) {
                 sortedEvents.push({
                     "key" : key,
-                    "val" : this.pivot.pivotScores[key]
+                    "val" : this.pivot.scores[key]
                 });
             }
             sortedEvents = sortedEvents.sort(utils.sort_by('val'));
             return sortedEvents;
+        };
+
+        /**
+         * Get pivot sorted events organized by datatype.
+         */
+        this.getGroupedPivotSorts = function() {
+            console.log('getGroupedPivotSorts');
+            var result = {};
+
+            // Extract the gene symbols. They are without suffix.
+            var pivotSortedEventObjs = this.getPivotSortedEvents();
+            pivotSortedEventObjs.reverse();
+            var pivotSortedEvents = [];
+            for (var j = 0; j < pivotSortedEventObjs.length; j++) {
+                var pivotSortedEventObj = pivotSortedEventObjs[j];
+                pivotSortedEvents.push(pivotSortedEventObj['key']);
+            }
+
+            // iterate through datatypes
+            var groupedEvents = this.getEventIdsByType();
+
+            for (var datatype in groupedEvents) {
+                // pivot sort events within datatype
+                var suffix = this.datatypeSuffixMapping[datatype];
+                suffix = (suffix == null) ? "" : suffix;
+                var orderedEvents = [];
+                var unorderedEvents = groupedEvents[datatype];
+
+                // add scored events in the datatype
+                for (var i = 0; i < pivotSortedEvents.length; i++) {
+                    var eventId = pivotSortedEvents[i] + suffix;
+                    if (utils.isObjInArray(unorderedEvents, eventId)) {
+                        orderedEvents.push(eventId);
+                    }
+                }
+
+                // add the unscored events from the datatype group
+                orderedEvents = orderedEvents.concat(unorderedEvents);
+                orderedEvents = utils.eliminateDuplicates(orderedEvents);
+
+                result[datatype] = orderedEvents;
+            }
+            return result;
         };
 
         /**
