@@ -913,7 +913,7 @@ drawMatrix = function(containingDiv, config) {
         }
     }
 
-    // sort by pivot row
+    // column sort by pivot row -- old way
     if (utils.hasOwnProperty(querySettings, 'pivot_sort')) {
         var pivotSortSettings = querySettings['pivot_sort'];
         var pivotEvent = pivotSortSettings['pivot_event'];
@@ -997,6 +997,14 @@ drawMatrix = function(containingDiv, config) {
     // };
     // console.log('allPivotScores', utils.prettyJson(allPivotScores));
 
+    // TODO groupedPivotSorts ... uses pivot scoring on server side
+    if (utils.hasOwnProperty(querySettings, 'pivot_sort_list')) {
+        console.log('querySettings has a pivot_sort_list of datatypes', querySettings['pivot_sort_list']);
+        var groupedPivotSorts = eventAlbum.getGroupedPivotSorts();
+        console.log("groupedPivotSorts", groupedPivotSorts);
+    }
+
+    // TODO pivot scoring on client
     var pivotScores = null;
     if (utils.hasOwnProperty(querySettings, 'pivot_sort')) {
         var pivotSortSettings = querySettings['pivot_sort'];
