@@ -1000,8 +1000,15 @@ drawMatrix = function(containingDiv, config) {
     // TODO groupedPivotSorts ... uses pivot scoring on server side
     if (utils.hasOwnProperty(querySettings, 'pivot_sort_list')) {
         console.log('querySettings has a pivot_sort_list of datatypes', querySettings['pivot_sort_list']);
+        var pivotSortedRowNames = [];
         var groupedPivotSorts = eventAlbum.getGroupedPivotSorts();
-        console.log("groupedPivotSorts", groupedPivotSorts);
+
+        for (var datatype in groupedPivotSorts) {
+            var eventIds = groupedPivotSorts[datatype];
+            pivotSortedRowNames = pivotSortedRowNames.concat(eventIds);
+        }
+        rowNames = pivotSortedRowNames.concat(rowNames);
+        rowNames = utils.eliminateDuplicates(rowNames);
     }
 
     // TODO pivot scoring on client
