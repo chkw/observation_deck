@@ -228,6 +228,7 @@ setupContextMenus = function(config) {
         var selector = selectors[i];
         $.contextMenu('destroy', selector);
     }
+    setupTypeLabelContextMenu(config);
     setupColLabelContextMenu(config);
     setupRowLabelContextMenu(config);
     setupCategoricCellContextMenu(config);
@@ -293,7 +294,7 @@ setupColLabelContextMenu = function(config) {
             // console.log('dynamic on-demand contextMenu');
             // console.log('$trigger', $trigger);
             // console.log('contextmenuEvent', contextmenuEvent);
-            var sampleId = ($trigger)[0].innerHTML.split('<')[0];
+            var sampleId = ($trigger)[0].getAttribute('sample');
             return {
                 // callback : function(key, options) {
                 // // default callback used when no callback specified for item
@@ -325,6 +326,67 @@ setupColLabelContextMenu = function(config) {
                     },
                     'reset' : createResetContextMenuItem(config)
                 }
+            };
+        }
+    });
+};
+
+// typeLabel
+setupTypeLabelContextMenu = function(config) {
+    var titleCallback = config['datatypeTitleCallback'];
+
+    $.contextMenu({
+        // selector : ".axis",
+        selector : ".typeLabel",
+        trigger : 'left',
+        callback : function(key, options) {
+            // default callback
+            var elem = this[0];
+            console.log('elem', elem);
+        },
+        build : function($trigger, contextmenuEvent) {
+            var datatype = ($trigger[0].getAttribute('datatype'));
+            var items = {
+                'title' : {
+                    name : "datatype name",
+                    icon : null,
+                    disabled : false,
+                    callback : function(key, opt) {
+                        if (titleCallback == null) {
+                            console.log('datatype', datatype);
+                            console.log('default titleCallback for datatype', datatype);
+                        } else {
+                            titleCallback(eventId, config);
+                        }
+                    }
+                },
+                "sep1" : "---------",
+                'pivot_sort_datatype' : {
+                    'name' : function() {
+                        return 'pivot sort ' + datatype + ' events';
+                    },
+                    'icon' : null,
+                    'disabled' : null,
+                    'callback' : function(key, opt) {
+                        console.log('pivot sort ' + datatype + ' events');
+                        var querySettings = config['querySettings'];
+                        datatypes = [];
+                        if ('pivot_sort_list' in querySettings) {
+                            datatypes = querySettings['pivot_sort_list'];
+                        }
+                        datatypes.push(datatype);
+                        querySettings['pivot_sort_list'] = utils.eliminateDuplicates(datatypes);
+                        utils.setCookie('od_config', JSON.stringify(querySettings));
+
+                        // trigger redrawing
+                        var containerDivElem = document.getElementById(config['containerDivId']);
+                        buildObservationDeck(containerDivElem, config);
+                    }
+                },
+                "reset" : createResetContextMenuItem(config)
+            };
+            return {
+                'items' : items
             };
         }
     });
@@ -369,7 +431,8 @@ setupRowLabelContextMenu = function(config) {
             console.log('elem', elem);
         },
         build : function($trigger, contextmenuEvent) {
-            var eventId = ($trigger)[0].innerHTML.split('<')[0];
+            // var eventId = ($trigger)[0].innerHTML.split('<')[0];
+            var eventId = ($trigger)[0].getAttribute('eventId');
             var eventObj = config['eventAlbum'].getEvent(eventId);
             var datatype = eventObj.metadata['datatype'];
             var scoredDatatype = eventObj.metadata.scoredDatatype;
@@ -431,28 +494,6 @@ setupRowLabelContextMenu = function(config) {
                                     var containerDivElem = document.getElementById(config['containerDivId']);
                                     buildObservationDeck(containerDivElem, config);
                                 }
-                            }
-                        },
-                        'pivot_sort_datatype' : {
-                            'name' : function() {
-                                return 'pivot sort ' + datatype + ' events';
-                            },
-                            'icon' : null,
-                            'disabled' : null,
-                            'callback' : function(key, opt) {
-                                console.log('pivot sort ' + datatype + ' events');
-                                var querySettings = config['querySettings'];
-                                datatypes = [];
-                                if ('pivot_sort_list' in querySettings) {
-                                    datatypes = querySettings['pivot_sort_list'];
-                                }
-                                datatypes.push(datatype);
-                                querySettings['pivot_sort_list'] = utils.eliminateDuplicates(datatypes);
-                                utils.setCookie('od_config', JSON.stringify(querySettings));
-
-                                // trigger redrawing
-                                var containerDivElem = document.getElementById(config['containerDivId']);
-                                buildObservationDeck(containerDivElem, config);
                             }
                         }
                     }
@@ -1159,7 +1200,10 @@ drawMatrix = function(containingDiv, config) {
         "class" : function(d, i) {
             var s = "typeLabel mono axis unselectable";
             return s;
-        }
+        },
+        'datatype' : function(d, i) {
+            return d;
+        },
     }).style("text-anchor", "end").style("fill", function(d) {
         var datatype = d;
         return rowLabelColorMapper(datatype);
@@ -1225,6 +1269,9 @@ drawMatrix = function(containingDiv, config) {
         "transform" : "rotate(" + rotationDegrees + ") translate(" + translateX + ", " + translateY + ")",
         "class" : function(d, i) {
             return "colLabel mono axis unselectable";
+        },
+        "sample" : function(d, i) {
+            return d;
         }
     }).style("text-anchor", "start");
     // colLabels.on("click", config["columnClickback"]);
