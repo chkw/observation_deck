@@ -1093,6 +1093,7 @@ drawMatrix = function(containingDiv, config) {
     var minGridSize = 9;
     gridSize = (gridSize > minGridSize) ? gridSize : minGridSize;
     console.log('gridSize', gridSize);
+    console.log('margin', (margin));
 
     // document.documentElement.clientHeight
     var fullHeight = (margin.top + margin.bottom) + (gridSize * rowNames.length);
@@ -1125,6 +1126,43 @@ drawMatrix = function(containingDiv, config) {
         "height" : gridSize * rowNames.length,
         "fill" : "white",
         "class" : "primer"
+    });
+
+    // TODO datatype labels
+    var datatypeLabels = svg.selectAll(".typeLabel").data(function() {
+        var datatypes = utils.getKeys(groupedEvents);
+        return datatypes;
+    }).enter().append("text").text(function(d) {
+        var text = d.toUpperCase();
+        return text;
+    }).attr({
+        "x" : function(d, i) {
+            var rowCount = 0;
+            for (var datatype in groupedEvents) {
+                if (datatype === d) {
+                    break;
+                } else {
+                    rowCount = rowCount + groupedEvents[datatype].length;
+                }
+            }
+            var startPosition = rowCount * gridSize * -1;
+            var datatypes = utils.getKeys(groupedEvents);
+            if (i >= datatypes.length - 1) {
+                startPosition = startPosition + (6.3 * d.length);
+            }
+            return startPosition;
+        },
+        "y" : function(d, i) {
+            return -1 * (margin.left - 10);
+        },
+        "transform" : "rotate(-90)",
+        "class" : function(d, i) {
+            var s = "typeLabel mono axis unselectable";
+            return s;
+        }
+    }).style("text-anchor", "end").style("fill", function(d) {
+        var datatype = d;
+        return rowLabelColorMapper(datatype);
     });
 
     // row labels
