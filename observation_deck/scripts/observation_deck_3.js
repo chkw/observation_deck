@@ -348,7 +348,9 @@ setupTypeLabelContextMenu = function(config) {
             var datatype = ($trigger[0].getAttribute('datatype'));
             var items = {
                 'title' : {
-                    name : "datatype name",
+                    name : function() {
+                        return datatype;
+                    },
                     icon : null,
                     disabled : false,
                     callback : function(key, opt) {
