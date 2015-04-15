@@ -1223,7 +1223,9 @@ drawMatrix = function(containingDiv, config) {
     var translateX = -6;
     var translateY = gridSize / 1.5;
     var rowLabels = svg.selectAll(".rowLabel").data(rowNames).enter().append("text").text(function(d) {
-        return d;
+        var eventObj = eventAlbum.getEvent(d);
+        var displayName = eventObj.metadata.displayName;
+        return displayName;
     }).attr({
         "x" : 0,
         "y" : function(d, i) {
