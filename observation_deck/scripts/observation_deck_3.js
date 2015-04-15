@@ -223,7 +223,7 @@ getCookiePivot = function() {
 setupContextMenus = function(config) {
     // config['querySettings']
     // first destroy old contextMenus
-    var selectors = ['.colLabel', '.rowLabel', '.mrna_exp', '.categoric'];
+    var selectors = ['.typeLabel', '.colLabel', '.rowLabel', '.mrna_exp', '.categoric'];
     for (var i = 0; i < selectors.length; i++) {
         var selector = selectors[i];
         $.contextMenu('destroy', selector);
@@ -250,6 +250,7 @@ resetConfig = function(config) {
             delete config[key];
         }
     }
+    console.log('remaining config', config);
 };
 
 /**
@@ -261,10 +262,13 @@ createResetContextMenuItem = function(config) {
         icon : null,
         disabled : false,
         callback : function(key, opt) {
+            console.log('oldConfig', config);
             resetConfig(config);
 
             var containerDivElem = document.getElementById(config['containerDivId']);
-            buildObservationDeck(containerDivElem, config);
+            var newConfig = buildObservationDeck(containerDivElem, config);
+
+            console.log('newConfig', newConfig);
         }
     };
     return obj;
@@ -386,6 +390,7 @@ setupTypeLabelContextMenu = function(config) {
                     }
                 },
                 "reset" : createResetContextMenuItem(config)
+                // TODO there is a bug with this reset item
             };
             return {
                 'items' : items
@@ -1188,15 +1193,18 @@ drawMatrix = function(containingDiv, config) {
                     rowCount = rowCount + groupedEvents[datatype].length;
                 }
             }
-            var startPosition = rowCount * gridSize * -1;
             var datatypes = utils.getKeys(groupedEvents);
             if (i >= datatypes.length - 1) {
-                startPosition = startPosition + (6.3 * d.length);
+                rowCount = rowCount + groupedEvents[d].length;
+            }
+            var startPosition = rowCount * gridSize * -1;
+            if (i >= datatypes.length - 1) {
+                startPosition = startPosition + (6.6 * d.length);
             }
             return startPosition;
         },
         "y" : function(d, i) {
-            return -1 * (margin.left - 10);
+            return -1 * (margin.left - 15);
         },
         "transform" : "rotate(-90)",
         "class" : function(d, i) {
@@ -1205,7 +1213,7 @@ drawMatrix = function(containingDiv, config) {
         },
         'datatype' : function(d, i) {
             return d;
-        },
+        }
     }).style("text-anchor", "end").style("fill", function(d) {
         var datatype = d;
         return rowLabelColorMapper(datatype);
