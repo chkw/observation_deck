@@ -277,6 +277,55 @@ var medbookDataLoader = medbookDataLoader || {};
         for (var i = 0; i < collection.length; i++) {
             var doc = collection[i];
 
+            // get gene
+            var gene = null;
+            if (utils.hasOwnProperty(doc, 'gene')) {
+                gene = doc['gene'];
+            } else if (utils.hasOwnProperty(doc, 'id')) {
+                gene = doc['id'];
+            } else {
+                // no gene identifier found
+                console.log('no gene identifier found in expression doc: ' + utils.prettyJson(doc));
+                continue;
+            }
+
+            gene = gene.trim();
+            var suffix = '_mRNA';
+            var eventId = gene + suffix;
+
+            // iter over samples
+            var samples = utils.getKeys(doc);
+            var sampleObjs = doc['samples'];
+            // build up sampleData obj
+            var sampleData = {};
+            for (var sampleId in sampleObjs) {
+                var scoreObj = sampleObjs[sampleId];
+                var score = scoreObj["rsem_quan_log2"];
+                sampleData[sampleId] = score;
+            }
+
+            var eventObj = OD_eventAlbum.getEvent(eventId);
+
+            // add event if DNE
+            if (eventObj == null) {
+                eventObj = mdl.loadEventBySampleData(OD_eventAlbum, gene, suffix, 'expression data', 'numeric', sampleData);
+            } else {
+                eventObj.data.setData(sampleData);
+            }
+        }
+        return eventObj;
+    };
+
+    /**
+     *Add expression data from mongo collection.
+     * @param {Object} collection
+     * @param {Object} OD_eventAlbum
+     */
+    mdl.mongoExpressionData_old = function(collection, OD_eventAlbum) {
+        // iter over doc (each doc = sample)
+        for (var i = 0; i < collection.length; i++) {
+            var doc = collection[i];
+
             var gene = null;
             if (utils.hasOwnProperty(doc, 'gene')) {
                 gene = doc['gene'];
