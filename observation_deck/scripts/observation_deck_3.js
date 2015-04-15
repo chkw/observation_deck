@@ -389,6 +389,35 @@ setupTypeLabelContextMenu = function(config) {
                         buildObservationDeck(containerDivElem, config);
                     }
                 },
+                'toggle_datatype_visibility' : {
+                    'name' : function() {
+                        return 'toggle visibility';
+                    },
+                    'icon' : null,
+                    'disabled' : null,
+                    'callback' : function(key, opt) {
+                        console.log('toggle visibility for ' + datatype);
+                        // TODO toggle datatype visibility
+                        // querySettings -> hiddenDatatypes
+                        if ('hiddenDatatypes' in config['querySettings']) {
+                        } else {
+                            config['querySettings']['hiddenDatatypes'] = [];
+                        }
+
+                        var hiddenDatatypes = config['querySettings']['hiddenDatatypes'];
+                        if (utils.isObjInArray(hiddenDatatypes, datatype)) {
+                            utils.removeA(hiddenDatatypes, datatype);
+                        } else {
+                            hiddenDatatypes.push(datatype);
+                        }
+
+                        utils.setCookie('od_config', JSON.stringify(config['querySettings']));
+
+                        // trigger redrawing
+                        var containerDivElem = document.getElementById(config['containerDivId']);
+                        buildObservationDeck(containerDivElem, config);
+                    }
+                },
                 "reset" : createResetContextMenuItem(config)
                 // TODO there is a bug with this reset item
             };
@@ -445,9 +474,11 @@ setupRowLabelContextMenu = function(config) {
             var scoredDatatype = eventObj.metadata.scoredDatatype;
             var allowedValues = eventObj.metadata.allowedValues;
 
+            var displayName = eventObj.metadata.displayName;
+
             var items = {
                 'title' : {
-                    name : eventId,
+                    name : displayName,
                     icon : null,
                     disabled : function() {
                         var result = true;
@@ -472,7 +503,7 @@ setupRowLabelContextMenu = function(config) {
                     'items' : {
                         'set_pivot' : {
                             'name' : function() {
-                                return 'set pivot to: ' + eventId;
+                                return 'set pivot to: ' + displayName;
                             },
                             'icon' : null,
                             'disabled' : null,
