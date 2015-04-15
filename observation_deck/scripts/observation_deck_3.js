@@ -396,9 +396,6 @@ setupTypeLabelContextMenu = function(config) {
                     'icon' : null,
                     'disabled' : null,
                     'callback' : function(key, opt) {
-                        console.log('toggle visibility for ' + datatype);
-                        // TODO toggle datatype visibility
-                        // querySettings -> hiddenDatatypes
                         if ('hiddenDatatypes' in config['querySettings']) {
                         } else {
                             config['querySettings']['hiddenDatatypes'] = [];
@@ -419,7 +416,6 @@ setupTypeLabelContextMenu = function(config) {
                     }
                 },
                 "reset" : createResetContextMenuItem(config)
-                // TODO there is a bug with this reset item
             };
             return {
                 'items' : items
