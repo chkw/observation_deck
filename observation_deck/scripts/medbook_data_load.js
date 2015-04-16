@@ -444,7 +444,6 @@ var medbookDataLoader = medbookDataLoader || {};
         var weightedGeneVector = [];
         var signatures = obj['signature'];
         var genes = utils.getKeys(signatures);
-        var qqq = {};
         for (var i = 0; i < genes.length; i++) {
             var gene = genes[i];
             var data = signatures[gene];
@@ -452,19 +451,14 @@ var medbookDataLoader = medbookDataLoader || {};
                 'gene' : gene,
                 'weight' : data['weight']
             });
-            qqq[gene] = data['weight'];
         }
 
         if (eventObj == null) {
             // create eventObj
-            console.log('adding weightedGeneVector to new eventObj for ' + eventId);
             eventObj = mdl.loadEventBySampleData(OD_eventAlbum, eventId, '', 'expression signature', 'numeric', []);
         }
         eventObj.metadata.setWeightVector(weightedGeneVector, 'expression data');
         var size = eventObj.metadata.weightedGeneVector.length;
-        console.log('weightedGeneVector for', eventId, 'has', size, 'genes');
-
-        OD_eventAlbum.setPivotScores(eventId, qqq);
 
         return eventObj;
     };

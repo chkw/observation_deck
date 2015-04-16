@@ -39,7 +39,7 @@ buildObservationDeck = function(containerDivElem, config) {
 getConfiguration = function(config) {
     // look for od_config in cookies
     var cookie = utils.getCookie('od_config');
-    console.log('cookie', cookie);
+    // console.log('cookie', cookie);
     var querySettings = utils.parseJson(cookie) || {};
     config['querySettings'] = querySettings;
 
@@ -262,13 +262,10 @@ createResetContextMenuItem = function(config) {
         icon : null,
         disabled : false,
         callback : function(key, opt) {
-            console.log('oldConfig', config);
             resetConfig(config);
 
             var containerDivElem = document.getElementById(config['containerDivId']);
             var newConfig = buildObservationDeck(containerDivElem, config);
-
-            console.log('newConfig', newConfig);
         }
     };
     return obj;
@@ -381,6 +378,7 @@ setupTypeLabelContextMenu = function(config) {
                         }
                     },
                     'callback' : function(key, opt) {
+                        // TODO new, more correct way begins here
                         console.log('add ' + datatype + ' to list of pivot sort datatypes');
                         var querySettings = config['querySettings'];
                         var pivotEventId = querySettings['pivot_event']['id'];
@@ -391,6 +389,23 @@ setupTypeLabelContextMenu = function(config) {
                         }
                         datatypes.push(datatype);
                         querySettings['pivot_sort_list'] = utils.eliminateDuplicates(datatypes);
+                        // TODO new, more correct way ends here
+
+                        // TODO old, not as flexible way begins here
+                        // var sortType = 'colSort';
+                        //
+                        // var sortSteps = null;
+                        // var querySettings = config['querySettings'];
+                        // if ( sortType in querySettings) {
+                        // sortSteps = new eventData.sortingSteps(querySettings[sortType]["steps"]);
+                        // } else {
+                        // sortSteps = new eventData.sortingSteps();
+                        // }
+                        // sortSteps.addStep(pivotEventId);
+                        // querySettings[sortType] = sortSteps;
+                        // TODO old, not as flexible way ends here
+
+                        // set new cookie
                         utils.setCookie('od_config', JSON.stringify(querySettings));
 
                         // trigger redrawing
@@ -593,41 +608,41 @@ setupRowLabelContextMenu = function(config) {
                                 var containerDivElem = document.getElementById(config['containerDivId']);
                                 buildObservationDeck(containerDivElem, config);
                             }
-                        },
-                        "sig_sort" : {
-                            name : function(key, opt) {
-                                if (scoredDatatype == null) {
-                                    return "---";
-                                } else {
-                                    return scoredDatatype + " events by " + eventId + " weight";
-                                }
-                            },
-                            icon : null,
-                            disabled : function(key, opt) {
-                                if (scoredDatatype == null) {
-                                    return true;
-                                } else {
-                                    return false;
-                                }
-                            },
-                            callback : function(key, opt) {
-                                var sortType = 'rowSort';
-
-                                var sortSteps = null;
-                                var querySettings = config['querySettings'];
-                                if ( sortType in querySettings) {
-                                    sortSteps = new eventData.sortingSteps(querySettings[sortType]["steps"]);
-                                } else {
-                                    sortSteps = new eventData.sortingSteps();
-                                }
-                                sortSteps.addStep(eventId);
-                                querySettings[sortType] = sortSteps;
-
-                                utils.setCookie('od_config', JSON.stringify(querySettings));
-
-                                var containerDivElem = document.getElementById(config['containerDivId']);
-                                buildObservationDeck(containerDivElem, config);
-                            }
+                            // },
+                            // "sig_sort" : {
+                            // name : function(key, opt) {
+                            // if (scoredDatatype == null) {
+                            // return "---";
+                            // } else {
+                            // return scoredDatatype + " events by " + eventId + " weight";
+                            // }
+                            // },
+                            // icon : null,
+                            // disabled : function(key, opt) {
+                            // if (scoredDatatype == null) {
+                            // return true;
+                            // } else {
+                            // return false;
+                            // }
+                            // },
+                            // callback : function(key, opt) {
+                            // var sortType = 'rowSort';
+                            //
+                            // var sortSteps = null;
+                            // var querySettings = config['querySettings'];
+                            // if ( sortType in querySettings) {
+                            // sortSteps = new eventData.sortingSteps(querySettings[sortType]["steps"]);
+                            // } else {
+                            // sortSteps = new eventData.sortingSteps();
+                            // }
+                            // sortSteps.addStep(eventId);
+                            // querySettings[sortType] = sortSteps;
+                            //
+                            // utils.setCookie('od_config', JSON.stringify(querySettings));
+                            //
+                            // var containerDivElem = document.getElementById(config['containerDivId']);
+                            // buildObservationDeck(containerDivElem, config);
+                            // }
                         }
                     }
                 },
@@ -1086,6 +1101,9 @@ drawMatrix = function(containingDiv, config) {
     if (utils.hasOwnProperty(querySettings, 'pivot_sort_list')) {
         console.log('querySettings has a pivot_sort_list of datatypes', querySettings['pivot_sort_list']);
         var pivotSortedRowNames = [];
+        var pEventId = querySettings['pivot_event']['id'];
+        var pEventObj = eventAlbum.getEvent(pEventId);
+        eventAlbum.setPivotScores(pEventId, pEventObj.metadata.weightedGeneVector);
         var groupedPivotSorts = eventAlbum.getGroupedPivotSorts();
 
         for (var datatype in groupedPivotSorts) {

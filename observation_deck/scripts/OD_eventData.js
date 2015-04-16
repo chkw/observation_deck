@@ -230,8 +230,10 @@ var eventData = eventData || {};
 
         /**
          * pivotScores is a dictionary keying eventIds to some score.
+         *
          */
         this.setPivotScores = function(pivotEvent, pivotScoresDict) {
+            // TODO currently loaded in as an array of {gene,weight} objects
             if (pivotScoresDict == null) {
                 this.pivot = {};
             } else {
@@ -252,13 +254,18 @@ var eventData = eventData || {};
                 return [];
             }
             var sortedEvents = [];
-            for (var key in this.pivot.scores) {
+            // for (var key in this.pivot.scores) {
+            for (var i = 0; i < this.pivot.scores.length; i++) {
+                var scoreObj = this.pivot.scores[i];
+                var key = scoreObj['gene'];
+                var val = scoreObj['weight'];
                 sortedEvents.push({
                     "key" : key,
-                    "val" : this.pivot.scores[key]
+                    "val" : parseFloat(val)
                 });
             }
             sortedEvents = sortedEvents.sort(utils.sort_by('val'));
+            sortedEvents.reverse();
             return sortedEvents;
         };
 
