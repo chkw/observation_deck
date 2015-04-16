@@ -313,7 +313,6 @@ var medbookDataLoader = medbookDataLoader || {};
                 eventObj.data.setData(sampleData);
             }
         }
-        return eventObj;
     };
 
     /**

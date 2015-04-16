@@ -1231,7 +1231,8 @@ drawMatrix = function(containingDiv, config) {
             return startPosition;
         },
         "y" : function(d, i) {
-            return -1 * (margin.left - 15);
+            var offset = (i % 2 == 0) ? 15 : 25;
+            return -1 * (margin.left - offset);
         },
         "transform" : "rotate(-90)",
         "class" : function(d, i) {
