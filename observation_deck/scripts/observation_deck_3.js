@@ -372,10 +372,19 @@ setupTypeLabelContextMenu = function(config) {
                         return 'pivot sort ' + datatype + ' events';
                     },
                     'icon' : null,
-                    'disabled' : null,
-                    'callback' : function(key, opt) {
-                        console.log('pivot sort ' + datatype + ' events');
+                    'disabled' : function(key, opt) {
                         var querySettings = config['querySettings'];
+                        if ('pivot_event' in querySettings) {
+                            return false;
+                        } else {
+                            return true;
+                        }
+                    },
+                    'callback' : function(key, opt) {
+                        console.log('add ' + datatype + ' to list of pivot sort datatypes');
+                        var querySettings = config['querySettings'];
+                        var pivotEventId = querySettings['pivot_event']['id'];
+                        console.log('pivotEventId', pivotEventId);
                         datatypes = [];
                         if ('pivot_sort_list' in querySettings) {
                             datatypes = querySettings['pivot_sort_list'];
@@ -472,6 +481,8 @@ setupRowLabelContextMenu = function(config) {
 
             var displayName = eventObj.metadata.displayName;
 
+            var pivotable = (eventObj.metadata.weightedGeneVector.length);
+
             var items = {
                 'title' : {
                     name : displayName,
@@ -493,74 +504,73 @@ setupRowLabelContextMenu = function(config) {
                     }
                 },
                 "sep1" : "---------",
-                // TODO test ui controls
-                'test_fold' : {
-                    'name' : 'testing',
-                    'items' : {
-                        'set_pivot' : {
-                            'name' : function() {
-                                return 'set pivot to: ' + displayName;
-                            },
-                            'icon' : null,
-                            'disabled' : null,
-                            'callback' : function(key, opt) {
-                                // in workbench, selecting this should do the following:
-                                // 1- set pivot cookie
-                                // 2- meteor should pick up the cookie/session and retrieve the pivot data
-                                // 3- meteor should force obs-deck to rebuild, setting pivot data
+                'set_pivot' : {
+                    'name' : function() {
+                        return 'set as pivot';
+                    },
+                    'icon' : null,
+                    'disabled' : function(key, opt) {
+                        if (pivotable) {
+                            return false;
+                        } else {
+                            return true;
+                        }
+                    },
+                    'callback' : function(key, opt) {
+                        // in workbench, selecting this should do the following:
+                        // 1- set pivot cookie
+                        // 2- meteor should pick up the cookie/session and retrieve the pivot data
+                        // 3- meteor should force obs-deck to rebuild, setting pivot data
 
-                                var pivotSettings = {
-                                    'id' : eventId,
-                                    'datatype' : datatype
-                                };
+                        var pivotSettings = {
+                            'id' : eventId,
+                            'datatype' : datatype
+                        };
 
-                                // meteor session
-                                if ( typeof Session !== 'undefined') {
-                                    Session.set('pivotSettings', pivotSettings);
-                                } else {
-                                    console.log('no Session object. Writing pivotSettings to querySettings.');
+                        // meteor session
+                        if ( typeof Session !== 'undefined') {
+                            Session.set('pivotSettings', pivotSettings);
+                        } else {
+                            console.log('no Session object. Writing pivotSettings to querySettings.');
 
-                                    var querySettings = config['querySettings'];
-                                    querySettings['pivot_event'] = pivotSettings;
-                                    utils.setCookie('od_config', JSON.stringify(querySettings));
+                            var querySettings = config['querySettings'];
+                            querySettings['pivot_event'] = pivotSettings;
+                            utils.setCookie('od_config', JSON.stringify(querySettings));
 
-                                    // trigger redrawing
-                                    var containerDivElem = document.getElementById(config['containerDivId']);
-                                    buildObservationDeck(containerDivElem, config);
-                                }
-                            }
+                            // trigger redrawing
+                            var containerDivElem = document.getElementById(config['containerDivId']);
+                            buildObservationDeck(containerDivElem, config);
                         }
                     }
                 },
                 'sort_fold' : {
                     'name' : 'sort...',
                     'items' : {
-                        "pivot_sort" : {
-                            name : function() {
-                                return datatype + ' events by this pivot';
-                            },
-                            icon : null,
-                            disabled : function() {
-                                if (allowedValues === 'numeric') {
-                                    return false;
-                                } else {
-                                    return true;
-                                }
-                            },
-                            callback : function(key, opt) {
-                                var querySettings = config['querySettings'];
-
-                                querySettings['pivot_sort'] = {
-                                    'pivot_event' : eventId
-                                };
-
-                                utils.setCookie('od_config', JSON.stringify(querySettings));
-
-                                // trigger redrawing
-                                var containerDivElem = document.getElementById(config['containerDivId']);
-                                buildObservationDeck(containerDivElem, config);
-                            }
-                        },
+                        // "pivot_sort" : {
+                        // name : function() {
+                        // return datatype + ' events by this pivot';
+                        // },
+                        // icon : null,
+                        // disabled : function() {
+                        // if (allowedValues === 'numeric') {
+                        // return false;
+                        // } else {
+                        // return true;
+                        // }
+                        // },
+                        // callback : function(key, opt) {
+                        // var querySettings = config['querySettings'];
+                        //
+                        // querySettings['pivot_sort'] = {
+                        // 'pivot_event' : eventId
+                        // };
+                        //
+                        // utils.setCookie('od_config', JSON.stringify(querySettings));
+                        //
+                        // // trigger redrawing
+                        // var containerDivElem = document.getElementById(config['containerDivId']);
+                        // buildObservationDeck(containerDivElem, config);
+                        // }                        // },
                         "sort" : {
                             name : "samples by this event",
                             icon : null,
@@ -637,26 +647,26 @@ setupRowLabelContextMenu = function(config) {
                                 var containerDivElem = document.getElementById(config['containerDivId']);
                                 buildObservationDeck(containerDivElem, config);
                             }
-                        },
-                        "hide_datatype" : {
-                            name : 'this datatype',
-                            icon : null,
-                            disabled : false,
-                            callback : function(key, opt) {
-                                // set cookie for hiding datatype
-                                var querySettings = config['querySettings'];
-
-                                if (!('hiddenDatatypes' in querySettings)) {
-                                    querySettings['hiddenDatatypes'] = [];
-                                }
-                                querySettings['hiddenDatatypes'].push(datatype);
-                                querySettings['hiddenDatatypes'] = utils.eliminateDuplicates(querySettings['hiddenDatatypes']);
-                                utils.setCookie('od_config', JSON.stringify(querySettings));
-
-                                // trigger redrawing
-                                var containerDivElem = document.getElementById(config['containerDivId']);
-                                buildObservationDeck(containerDivElem, config);
-                            }
+                            // },
+                            // "hide_datatype" : {
+                            // name : 'this datatype',
+                            // icon : null,
+                            // disabled : false,
+                            // callback : function(key, opt) {
+                            // // set cookie for hiding datatype
+                            // var querySettings = config['querySettings'];
+                            //
+                            // if (!('hiddenDatatypes' in querySettings)) {
+                            // querySettings['hiddenDatatypes'] = [];
+                            // }
+                            // querySettings['hiddenDatatypes'].push(datatype);
+                            // querySettings['hiddenDatatypes'] = utils.eliminateDuplicates(querySettings['hiddenDatatypes']);
+                            // utils.setCookie('od_config', JSON.stringify(querySettings));
+                            //
+                            // // trigger redrawing
+                            // var containerDivElem = document.getElementById(config['containerDivId']);
+                            // buildObservationDeck(containerDivElem, config);
+                            // }
                         }
                     }
                 },
