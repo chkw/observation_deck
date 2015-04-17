@@ -1208,7 +1208,7 @@ drawMatrix = function(containingDiv, config) {
         "top" : ((longestColumnName > 3) ? (9 * longestColumnName) : 30),
         "right" : 0,
         "bottom" : 0,
-        "left" : ((longestRowName > 1) ? (8 * longestRowName) : 15)
+        "left" : ((longestRowName > 1) ? (8 * (longestRowName + 1)) : 15)
     };
 
     // document.documentElement.clientWidth
@@ -1228,9 +1228,9 @@ drawMatrix = function(containingDiv, config) {
 
     // SVG canvas
     var svg = d3.select(thisElement).append("svg").attr({
-        "width" : fullWidth,
+        "width" : fullWidth + 0,
         "height" : fullHeight,
-        "viewBox" : "0 0 " + fullWidth + " " + fullHeight,
+        "viewBox" : "42 0 " + (fullWidth) + " " + fullHeight,
         "perserveAspectRatio" : "xMinYMin meet"
     }).append("g").attr({
         "transform" : "translate(" + margin.left + "," + margin.top + ")"
@@ -1283,7 +1283,7 @@ drawMatrix = function(containingDiv, config) {
             return startPosition;
         },
         "y" : function(d, i) {
-            var offset = (i % 2 == 0) ? 15 : 25;
+            var offset = (i % 2 == 0) ? 60 : 70;
             return -1 * (margin.left - offset);
         },
         "transform" : "rotate(-90)",
