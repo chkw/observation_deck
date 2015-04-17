@@ -549,15 +549,13 @@ var medbookDataLoader = medbookDataLoader || {};
     };
 
     /**
-     *  Pivot scores to be loaded into the album as a special object. In medbook-workbench, this is the correlator subscription.
+     * pivot scores assign a score to events for the purpose of sorting by (anti)correlation.
+     * Pivot scores to be loaded into the album as a special object.
+     * In medbook-workbench, this is the correlator subscription.
      * @param {Object} obj
      * @param {Object} OD_eventAlbum
      */
-    mdl.loadPivotScores = function(obj, OD_eventAlbum) {
-        // pivot scores assign a score to events for the purpose of sorting by (anti)correlation.
-
-        // TODO get the data from the meteor subscription
-        var collection = [];
+    mdl.loadPivotScores = function(collection, OD_eventAlbum) {
 
         // get a dictionary of {key,val}
         var pivotScoreDataObj = {};
@@ -565,21 +563,25 @@ var medbookDataLoader = medbookDataLoader || {};
         for (var i = 0; i < collection.length; i++) {
             var doc = collection[i];
 
-            // TODO get correlated event info and score
-            // TODO be sure to trim() strings
-            var eventId = null;
-            var version = null;
+            // get correlated event info and score
+            var eventId = doc['name_2'];
+            var version = doc['version_2'];
+            var datatype = doc['datatype_2'];
 
-            if ((version != null) || (version !== '')) {
+            if (datatype === 'signature') {
+                // expression data is not versioned, for now
                 eventId = eventId + '_v' + version;
+            } else if (datatype === 'expression') {
+                // no suffix here, just the gene symbol
+                // eventId = eventId + "_mRNA";
             }
 
-            var score = null;
+            var score = doc['score'];
 
             // set pivotScoreData
             pivotScoreDataObj[eventId] = score;
         }
-        OD_eventAlbum.setPivotScores(obj);
+        OD_eventAlbum.setPivotScores(pivotScoreDataObj);
     };
 
 })(medbookDataLoader);
