@@ -1273,12 +1273,12 @@ drawMatrix = function(containingDiv, config) {
                 }
             }
             var datatypes = utils.getKeys(groupedEvents);
-            if (i >= datatypes.length - 1) {
-                rowCount = rowCount + groupedEvents[d].length;
-            }
+
             var startPosition = rowCount * gridSize * -1;
             if (i >= datatypes.length - 1) {
-                startPosition = startPosition + (6.6 * d.length);
+                // bottom submatrix
+                // startPosition = (startPosition - (groupedEvents[d].length * gridSize)) + (6.8 * d.length);
+                startPosition = (-1 * gridSize * rowNames.length) + (6.8 * d.length);
             }
             return startPosition;
         },
