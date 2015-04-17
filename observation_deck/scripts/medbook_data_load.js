@@ -549,11 +549,36 @@ var medbookDataLoader = medbookDataLoader || {};
     };
 
     /**
-     *  Pivot scores to be loaded into the album as a special object.
+     *  Pivot scores to be loaded into the album as a special object. In medbook-workbench, this is the correlator subscription.
      * @param {Object} obj
      * @param {Object} OD_eventAlbum
      */
     mdl.loadPivotScores = function(obj, OD_eventAlbum) {
+        // pivot scores assign a score to events for the purpose of sorting by (anti)correlation.
+
+        // TODO get the data from the meteor subscription
+        var collection = null;
+
+        // get a dictionary of {key,val}
+        var pivotScoreDataObj = {};
+
+        for (var i = 0; i < collection.length; i++) {
+            var doc = collection[i];
+
+            // TODO get correlated event info and score
+            // TODO be sure to trim() strings
+            var eventId = null;
+            var version = null;
+
+            if ((version != null) || (version !== '')) {
+                eventId = eventId + '_v' + version;
+            }
+
+            var score = null;
+
+            // set pivotScoreData
+            pivotScoreDataObj[eventId] = score;
+        }
         OD_eventAlbum.setPivotScores(obj);
     };
 

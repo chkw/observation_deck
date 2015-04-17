@@ -65,6 +65,14 @@ getConfiguration = function(config) {
     // data to be retrieved via url
     var dataLoader = medbookDataLoader;
 
+    if ('pivotScores' in config) {
+        var pivotScoresData = config['pivotScores'];
+        if ('object' in pivotScoresData) {
+            dataLoader.loadPivotScores(pivotScoresData['object'], od_eventAlbum);
+        }
+    }
+    delete config['pivotScores'];
+
     if ('dataUrl' in config) {
         var dataUrlConfig = config['dataUrl'];
         if ('clinicalUrl' in dataUrlConfig) {
@@ -537,21 +545,33 @@ setupRowLabelContextMenu = function(config) {
                         // 2- meteor should pick up the cookie/session and retrieve the pivot data
                         // 3- meteor should force obs-deck to rebuild, setting pivot data
 
-                        var pivotSettings = {
-                            'id' : eventId,
-                            'datatype' : datatype
-                        };
-
                         // meteor session
-                        // if ( typeof Session !== 'undefined') {
-                        if (false) {
-                            console.log('writing pivotSettings to Session');
-                            Session.set('pivotSettings', pivotSettings);
+                        if ( typeof Session !== 'undefined') {
+                            // if (false) {
+                            var mName = eventId;
+                            var mVersion = '';
+                            if (datatype === 'expression signature') {
+                                var names = mName.split('_v');
+                                mVersion = names.pop();
+                                mName = names.join('_v');
+                            }
+
+                            var pivotSessionSettings = {
+                                'name' : mName,
+                                'datatype' : datatype,
+                                'version' : mVersion
+                            };
+
+                            console.log('writing pivotSettings to Session', pivotSessionSettings);
+                            Session.set('pivotSettings', pivotSessionSettings);
                         } else {
                             console.log('no Session object. Writing pivotSettings to querySettings.');
 
                             var querySettings = config['querySettings'];
-                            querySettings['pivot_event'] = pivotSettings;
+                            querySettings['pivot_event'] = {
+                                'id' : eventId,
+                                'datatype' : datatype
+                            };
                             utils.setCookie('od_config', JSON.stringify(querySettings));
 
                             // trigger redrawing
