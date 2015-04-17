@@ -556,32 +556,55 @@ var medbookDataLoader = medbookDataLoader || {};
      * @param {Object} OD_eventAlbum
      */
     mdl.loadPivotScores = function(collection, OD_eventAlbum) {
-
         // get a dictionary of {key,val}
-        var pivotScoreDataObj = {};
-
+        var pivotScores = [];
+        var counter = [];
         for (var i = 0; i < collection.length; i++) {
             var doc = collection[i];
 
             // get correlated event info and score
-            var eventId = doc['name_2'];
-            var version = doc['version_2'];
-            var datatype = doc['datatype_2'];
+            var eventId1 = doc['name_1'];
+            var version1 = doc['version_1'];
+            var datatype1 = doc['datatype_1'];
 
-            if (datatype === 'signature') {
-                // expression data is not versioned, for now
-                eventId = eventId + '_v' + version;
-            } else if (datatype === 'expression') {
-                // no suffix here, just the gene symbol
-                // eventId = eventId + "_mRNA";
+            if (datatype1 === 'expression') {
+                counter.push(eventId1);
             }
+
+            var getEventId = function(name, datatype, version) {
+                var newName = name;
+                if (datatype === 'signature') {
+                    newName = name + '_v' + version;
+                } else if (datatype === 'expression') {
+                    // no suffix here, just the gene symbol
+                    // newName = name + "_mRNA";
+                }
+                return newName;
+            };
+
+            eventId1 = getEventId(eventId1, datatype1, version1);
+
+            var eventId2 = doc['name_2'];
+            var version2 = doc['version_2'];
+            var datatype2 = doc['datatype_2'];
+
+            if (datatype2 === 'expression') {
+                counter.push(eventId2);
+            }
+
+            eventId2 = getEventId(eventId2, datatype2, version2);
 
             var score = doc['score'];
 
             // set pivotScoreData
-            pivotScoreDataObj[eventId] = score;
+            pivotScores.push({
+                'eventId1' : eventId1,
+                'eventId2' : eventId2,
+                'score' : score
+            });
+
         }
-        OD_eventAlbum.setPivotScores(pivotScoreDataObj);
+        OD_eventAlbum.setPivotScores_array(null, pivotScores);
     };
 
 })(medbookDataLoader);

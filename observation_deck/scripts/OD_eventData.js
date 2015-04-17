@@ -232,7 +232,7 @@ var eventData = eventData || {};
          * pivotScores is a dictionary keying eventIds to some score.
          *
          */
-        this.setPivotScores = function(pivotEvent, pivotScoresDict) {
+        this.setPivotScores_dict = function(pivotEvent, pivotScoresDict) {
             // TODO currently loaded in as an array of {gene,weight} objects
             if (pivotScoresDict == null) {
                 this.pivot = {};
@@ -241,6 +241,24 @@ var eventData = eventData || {};
                     'event' : pivotEvent,
                     'scores' : pivotScoresDict
                 };
+
+            }
+            return this;
+        };
+
+        /**
+         * pivotScores is array of {eventId1,eventId2,score}.
+         *
+         */
+        this.setPivotScores_array = function(pivotEvent, pivotScores) {
+            if (pivotScores == null) {
+                this.pivot = {};
+            } else {
+                pivotScores = pivotScores.sort(utils.sort_by('score'));
+                this.pivot = {
+                    'event' : pivotEvent,
+                    'scores' : pivotScores
+                };
             }
             return this;
         };
@@ -248,7 +266,7 @@ var eventData = eventData || {};
         /**
          * Get a sorted list of events by pivot score.  Returns a list of objects with keys: "key" and "val".
          */
-        this.getPivotSortedEvents = function() {
+        this.getPivotSortedEvents = function(pEventId) {
             if (( typeof this.pivot.scores === 'undefined') || (this.pivot.scores == null)) {
                 console.log('getPivotSortedEvents found no pivot scores');
                 return [];
@@ -257,8 +275,17 @@ var eventData = eventData || {};
             // for (var key in this.pivot.scores) {
             for (var i = 0; i < this.pivot.scores.length; i++) {
                 var scoreObj = this.pivot.scores[i];
-                var key = scoreObj['gene'];
-                var val = scoreObj['weight'];
+                var eventId1 = scoreObj['eventId1'];
+                var eventId2 = scoreObj['eventId2'];
+                var score = scoreObj['score'];
+
+                // filter by pEventId
+                if (eventId1 !== pEventId) {
+                    continue;
+                }
+
+                var key = eventId2;
+                var val = score;
                 sortedEvents.push({
                     "key" : key,
                     "val" : parseFloat(val)
@@ -273,12 +300,12 @@ var eventData = eventData || {};
          * Get pivot sorted events organized by datatype.
          * If keepTails == true, then only keep top and bottom ranking events.
          */
-        this.getGroupedPivotSorts = function(keepTails) {
+        this.getGroupedPivotSorts = function(pEventId, keepTails) {
             console.log('getGroupedPivotSorts');
             var result = {};
 
             // Extract the gene symbols. They are without suffix.
-            var pivotSortedEventObjs = this.getPivotSortedEvents();
+            var pivotSortedEventObjs = this.getPivotSortedEvents(pEventId);
             pivotSortedEventObjs.reverse();
             var pivotSortedEvents = [];
             for (var j = 0; j < pivotSortedEventObjs.length; j++) {

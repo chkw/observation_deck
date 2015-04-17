@@ -533,7 +533,8 @@ setupRowLabelContextMenu = function(config) {
                     },
                     'icon' : null,
                     'disabled' : function(key, opt) {
-                        if (pivotable) {
+                        // if (pivotable) {
+                        if (datatype === 'expression signature') {
                             return false;
                         } else {
                             return true;
@@ -554,6 +555,7 @@ setupRowLabelContextMenu = function(config) {
                                 var names = mName.split('_v');
                                 mVersion = names.pop();
                                 mName = names.join('_v');
+                                datatype = 'signature';
                             }
 
                             var pivotSessionSettings = {
@@ -561,6 +563,22 @@ setupRowLabelContextMenu = function(config) {
                                 'datatype' : datatype,
                                 'version' : mVersion
                             };
+
+                            var querySettings = config['querySettings'];
+                            querySettings['pivot_event'] = {
+                                'id' : eventId,
+                                'datatype' : datatype
+                            };
+
+                            var datatypes = [];
+                            if ('pivot_sort_list' in querySettings) {
+                                datatypes = querySettings['pivot_sort_list'];
+                            }
+                            // TODO hard coded !!!
+                            datatypes.push('expression data');
+                            querySettings['pivot_sort_list'] = utils.eliminateDuplicates(datatypes);
+
+                            utils.setCookie('od_config', JSON.stringify(querySettings));
 
                             console.log('writing pivotSettings to Session', pivotSessionSettings);
                             Session.set('pivotSettings', pivotSessionSettings);
@@ -1126,9 +1144,9 @@ drawMatrix = function(containingDiv, config) {
         var pivotSortedRowNames = [];
         var pEventId = querySettings['pivot_event']['id'];
         var pEventObj = eventAlbum.getEvent(pEventId);
-        eventAlbum.setPivotScores(pEventId, pEventObj.metadata.weightedGeneVector);
+        // eventAlbum.setPivotScores(pEventId, pEventObj.metadata.weightedGeneVector);
         var keepTails = true;
-        var groupedPivotSorts = eventAlbum.getGroupedPivotSorts(keepTails);
+        var groupedPivotSorts = eventAlbum.getGroupedPivotSorts(pEventId, keepTails);
 
         for (var datatype in groupedPivotSorts) {
             var eventIds = groupedPivotSorts[datatype];
@@ -1219,8 +1237,7 @@ drawMatrix = function(containingDiv, config) {
 
     var minGridSize = 9;
     gridSize = (gridSize > minGridSize) ? gridSize : minGridSize;
-    console.log('gridSize', gridSize);
-    console.log('margin', (margin));
+    console.log('gridSize', gridSize, 'margin', (margin));
 
     // document.documentElement.clientHeight
     var fullHeight = (margin.top + margin.bottom) + (gridSize * rowNames.length);
