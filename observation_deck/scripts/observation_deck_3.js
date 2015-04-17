@@ -543,7 +543,9 @@ setupRowLabelContextMenu = function(config) {
                         };
 
                         // meteor session
-                        if ( typeof Session !== 'undefined') {
+                        // if ( typeof Session !== 'undefined') {
+                        if (false) {
+                            console.log('writing pivotSettings to Session');
                             Session.set('pivotSettings', pivotSettings);
                         } else {
                             console.log('no Session object. Writing pivotSettings to querySettings.');
@@ -1100,11 +1102,13 @@ drawMatrix = function(containingDiv, config) {
     // TODO groupedPivotSorts ... uses pivot scoring on server side
     if (utils.hasOwnProperty(querySettings, 'pivot_sort_list')) {
         console.log('querySettings has a pivot_sort_list of datatypes', querySettings['pivot_sort_list']);
+        rowNames = [];
         var pivotSortedRowNames = [];
         var pEventId = querySettings['pivot_event']['id'];
         var pEventObj = eventAlbum.getEvent(pEventId);
         eventAlbum.setPivotScores(pEventId, pEventObj.metadata.weightedGeneVector);
-        var groupedPivotSorts = eventAlbum.getGroupedPivotSorts();
+        var keepTails = true;
+        var groupedPivotSorts = eventAlbum.getGroupedPivotSorts(keepTails);
 
         for (var datatype in groupedPivotSorts) {
             var eventIds = groupedPivotSorts[datatype];

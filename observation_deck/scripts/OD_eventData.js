@@ -271,8 +271,9 @@ var eventData = eventData || {};
 
         /**
          * Get pivot sorted events organized by datatype.
+         * If keepTails == true, then only keep top and bottom ranking events.
          */
-        this.getGroupedPivotSorts = function() {
+        this.getGroupedPivotSorts = function(keepTails) {
             console.log('getGroupedPivotSorts');
             var result = {};
 
@@ -308,6 +309,19 @@ var eventData = eventData || {};
                 // add the unscored events from the datatype group
                 orderedEvents = orderedEvents.concat(unorderedEvents);
                 orderedEvents = utils.eliminateDuplicates(orderedEvents);
+
+                if ((keepTails) && (datatype === 'expression data')) {
+                    console.log('keepTails for', datatype);
+                    if (orderedEvents.length <= 10) {
+                        // skip filter
+                    } else {
+                        // TODO filter for head and tail of list
+                        var head = orderedEvents.splice(0, 5);
+                        var tail = orderedEvents.splice(-5);
+                        orderedEvents = head.concat(tail);
+                        console.log('orderedEvents', orderedEvents);
+                    }
+                }
 
                 result[datatype] = orderedEvents;
             }
