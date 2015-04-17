@@ -572,12 +572,13 @@ var medbookDataLoader = medbookDataLoader || {};
             }
 
             var getEventId = function(name, datatype, version) {
-                var newName = name;
+                var newName;
                 if (datatype === 'signature') {
                     newName = name + '_v' + version;
                 } else if (datatype === 'expression') {
                     // no suffix here, just the gene symbol
                     // newName = name + "_mRNA";
+                    newName = name;
                 }
                 return newName;
             };
