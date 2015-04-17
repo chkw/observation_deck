@@ -1098,6 +1098,21 @@ var eventData = eventData || {};
         };
 
         /**
+         * Get the percent of samples that have null data.
+         */
+        this.getPercentNullData = function() {
+            var counts = this.getValueCounts();
+            var percentNull = 0;
+            if (null in counts) {
+                var allSampleIds = this.getAllSampleIds();
+                var totalCount = allSampleIds.length;
+                var nullCounts = counts[null];
+                percentNull = nullCounts / totalCount;
+            }
+            return percentNull;
+        };
+
+        /**
          * get the sample count for each value.  Useful for something like histogram.  Restrict to sample list, if given.
          */
         this.getValueCounts = function(sampleList) {
@@ -1269,8 +1284,11 @@ var eventData = eventData || {};
                 'median' : 0,
                 'sd' : 0,
                 'meddev' : 0,
-                'meandev' : 0
+                'meandev' : 0,
+                'percentNullData' : 0
             };
+
+            results.percentNullData = this.getPercentNullData();
 
             // a mapping of sampleId to index
             var allSampleIds = this.getAllSampleIds(true);
@@ -1305,6 +1323,7 @@ var eventData = eventData || {};
             results['meandev'] = jStat.meandev(vector).toPrecision(precision);
             results['min'] = jStat.min(vector).toPrecision(precision);
             results['max'] = jStat.max(vector).toPrecision(precision);
+            results['percentNullData'] = results['percentNullData'].toPrecision(precision);
 
             return results;
         };

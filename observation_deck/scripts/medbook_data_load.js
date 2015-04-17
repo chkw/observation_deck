@@ -557,7 +557,7 @@ var medbookDataLoader = medbookDataLoader || {};
         // pivot scores assign a score to events for the purpose of sorting by (anti)correlation.
 
         // TODO get the data from the meteor subscription
-        var collection = null;
+        var collection = [];
 
         // get a dictionary of {key,val}
         var pivotScoreDataObj = {};
