@@ -302,6 +302,7 @@ var eventData = eventData || {};
          */
         this.getGroupedPivotSorts = function(pEventId, keepTails) {
             console.log('getGroupedPivotSorts');
+            var pivotedDatatypes = ['expression data', 'expression signature'];
             var result = {};
 
             // Extract the gene symbols. They are without suffix.
@@ -333,23 +334,24 @@ var eventData = eventData || {};
                     }
                 }
 
-                // add the unscored events from the datatype group
-                orderedEvents = orderedEvents.concat(unorderedEvents);
-                orderedEvents = utils.eliminateDuplicates(orderedEvents);
+                if (! utils.isObjInArray(pivotedDatatypes, datatype)) {
+                    // add the unscored events from the datatype group
+                    orderedEvents = orderedEvents.concat(unorderedEvents);
+                    orderedEvents = utils.eliminateDuplicates(orderedEvents);
+                }
 
-                if ((keepTails) && (datatype === 'expression data')) {
+                if ((keepTails) && (utils.isObjInArray(pivotedDatatypes, datatype))) {
                     console.log('keepTails for', datatype);
-                    if (orderedEvents.length <= 10) {
+                    var size = 10;
+                    if (orderedEvents.length <= size) {
                         // skip filter
                     } else {
                         // TODO filter for head and tail of list
-                        var head = orderedEvents.splice(0, 5);
-                        var tail = orderedEvents.splice(-5);
+                        var head = orderedEvents.splice(0, size * 0.5);
+                        var tail = orderedEvents.splice(size * -0.5);
                         orderedEvents = head.concat(tail);
-                        console.log('orderedEvents', orderedEvents);
                     }
                 }
-
                 result[datatype] = orderedEvents;
             }
             return result;
