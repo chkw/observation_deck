@@ -325,6 +325,11 @@ var eventData = eventData || {};
 
                 // suffixed ids here
                 var unorderedEvents = groupedEvents[datatype];
+                if (pivotSortedEvents.length == 0) {
+                    console.log('pivotSortedEvents.length == 0');
+                    result[datatype] = unorderedEvents;
+                    continue;
+                }
 
                 // add scored events in the datatype
                 for (var i = 0; i < pivotSortedEvents.length; i++) {

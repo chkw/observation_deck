@@ -1159,6 +1159,7 @@ drawMatrix = function(containingDiv, config) {
     // TODO pivot scoring on client
     var pivotScores = null;
     if (utils.hasOwnProperty(querySettings, 'pivot_sort')) {
+        console.log('pivot sorting on client');
         var pivotSortSettings = querySettings['pivot_sort'];
         var pivotEvent = pivotSortSettings['pivot_event'];
         // pivotScores = eventAlbum.pivotSort(pivotEvent, utils.mutualInformation);
