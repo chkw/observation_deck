@@ -372,55 +372,55 @@ setupTypeLabelContextMenu = function(config) {
                     }
                 },
                 "sep1" : "---------",
-                'pivot_sort_datatype' : {
-                    'name' : function() {
-                        return 'pivot sort ' + datatype + ' events';
-                    },
-                    'icon' : null,
-                    'disabled' : function(key, opt) {
-                        var querySettings = config['querySettings'];
-                        if ('pivot_event' in querySettings) {
-                            return false;
-                        } else {
-                            return true;
-                        }
-                    },
-                    'callback' : function(key, opt) {
-                        // TODO new, more correct way begins here
-                        console.log('add ' + datatype + ' to list of pivot sort datatypes');
-                        var querySettings = config['querySettings'];
-                        var pivotEventId = querySettings['pivot_event']['id'];
-                        console.log('pivotEventId', pivotEventId);
-                        datatypes = [];
-                        if ('pivot_sort_list' in querySettings) {
-                            datatypes = querySettings['pivot_sort_list'];
-                        }
-                        datatypes.push(datatype);
-                        querySettings['pivot_sort_list'] = utils.eliminateDuplicates(datatypes);
-                        // TODO new, more correct way ends here
-
-                        // TODO old, not as flexible way begins here
-                        // var sortType = 'colSort';
-                        //
-                        // var sortSteps = null;
-                        // var querySettings = config['querySettings'];
-                        // if ( sortType in querySettings) {
-                        // sortSteps = new eventData.sortingSteps(querySettings[sortType]["steps"]);
-                        // } else {
-                        // sortSteps = new eventData.sortingSteps();
-                        // }
-                        // sortSteps.addStep(pivotEventId);
-                        // querySettings[sortType] = sortSteps;
-                        // TODO old, not as flexible way ends here
-
-                        // set new cookie
-                        utils.setCookie('od_config', JSON.stringify(querySettings));
-
-                        // trigger redrawing
-                        var containerDivElem = document.getElementById(config['containerDivId']);
-                        buildObservationDeck(containerDivElem, config);
-                    }
-                },
+                // 'pivot_sort_datatype' : {
+                // 'name' : function() {
+                // return 'pivot sort ' + datatype + ' events';
+                // },
+                // 'icon' : null,
+                // 'disabled' : function(key, opt) {
+                // var querySettings = config['querySettings'];
+                // if ('pivot_event' in querySettings) {
+                // return false;
+                // } else {
+                // return true;
+                // }
+                // },
+                // 'callback' : function(key, opt) {
+                // // TODO new, more correct way begins here
+                // console.log('add ' + datatype + ' to list of pivot sort datatypes');
+                // var querySettings = config['querySettings'];
+                // var pivotEventId = querySettings['pivot_event']['id'];
+                // console.log('pivotEventId', pivotEventId);
+                // datatypes = [];
+                // if ('pivot_sort_list' in querySettings) {
+                // datatypes = querySettings['pivot_sort_list'];
+                // }
+                // datatypes.push(datatype);
+                // querySettings['pivot_sort_list'] = utils.eliminateDuplicates(datatypes);
+                // // TODO new, more correct way ends here
+                //
+                // // TODO old, not as flexible way begins here
+                // // var sortType = 'colSort';
+                // //
+                // // var sortSteps = null;
+                // // var querySettings = config['querySettings'];
+                // // if ( sortType in querySettings) {
+                // // sortSteps = new eventData.sortingSteps(querySettings[sortType]["steps"]);
+                // // } else {
+                // // sortSteps = new eventData.sortingSteps();
+                // // }
+                // // sortSteps.addStep(pivotEventId);
+                // // querySettings[sortType] = sortSteps;
+                // // TODO old, not as flexible way ends here
+                //
+                // // set new cookie
+                // utils.setCookie('od_config', JSON.stringify(querySettings));
+                //
+                // // trigger redrawing
+                // var containerDivElem = document.getElementById(config['containerDivId']);
+                // buildObservationDeck(containerDivElem, config);
+                // }
+                // },
                 'toggle_datatype_visibility' : {
                     'name' : function() {
                         return 'toggle visibility';
