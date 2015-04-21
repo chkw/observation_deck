@@ -207,24 +207,6 @@ getCookieEvents = function() {
     return utils.eliminateDuplicates(geneList);
 };
 
-// TODO getCookiePivot
-getCookiePivot = function() {
-    var result = null;
-    var cookieObj = utils.parseJson(utils.getCookie('od_config'));
-    if (( typeof cookieObj === 'undefined') || (cookieObj == null) || ((utils.getKeys(cookieObj)).length == 0)) {
-        return result;
-    }
-
-    if (utils.hasOwnProperty(cookieObj, 'querySettings')) {
-        var querySettings = config['querySettings'];
-        if (utils.hasOwnProperty(querySettings, 'pivot_event')) {
-            var pivotEventSettings = querySettings['pivot_event'];
-            result = pivotEventSettings;
-        }
-    }
-    return result;
-};
-
 /*
  *
  */
@@ -690,7 +672,7 @@ setupRowLabelContextMenu = function(config) {
                     'name' : 'hide...',
                     'items' : {
                         "hide_null_samples" : {
-                            name : "null samples in this row",
+                            name : "null samples in this event",
                             icon : null,
                             disabled : false,
                             callback : function(key, opt) {
@@ -702,26 +684,22 @@ setupRowLabelContextMenu = function(config) {
                                 var containerDivElem = document.getElementById(config['containerDivId']);
                                 buildObservationDeck(containerDivElem, config);
                             }
-                            // },
-                            // "hide_datatype" : {
-                            // name : 'this datatype',
-                            // icon : null,
-                            // disabled : false,
-                            // callback : function(key, opt) {
-                            // // set cookie for hiding datatype
-                            // var querySettings = config['querySettings'];
-                            //
-                            // if (!('hiddenDatatypes' in querySettings)) {
-                            // querySettings['hiddenDatatypes'] = [];
-                            // }
-                            // querySettings['hiddenDatatypes'].push(datatype);
-                            // querySettings['hiddenDatatypes'] = utils.eliminateDuplicates(querySettings['hiddenDatatypes']);
-                            // utils.setCookie('od_config', JSON.stringify(querySettings));
-                            //
-                            // // trigger redrawing
-                            // var containerDivElem = document.getElementById(config['containerDivId']);
-                            // buildObservationDeck(containerDivElem, config);
-                            // }
+                        },
+                        "hide_event" : {
+                            name : "this event",
+                            icon : null,
+                            disabled : false,
+                            callback : function(key, opt) {
+                                var querySettings = config['querySettings'];
+                                var hiddenEvents = querySettings['hiddenEvents'] || [];
+                                hiddenEvents.push(eventId);
+                                querySettings['hiddenEvents'] = utils.eliminateDuplicates(hiddenEvents);
+
+                                utils.setCookie('od_config', JSON.stringify(querySettings));
+
+                                var containerDivElem = document.getElementById(config['containerDivId']);
+                                buildObservationDeck(containerDivElem, config);
+                            }
                         }
                     }
                 },
@@ -1191,11 +1169,12 @@ drawMatrix = function(containingDiv, config) {
 
     // hide rows of datatype, preserving relative ordering
     var hiddenDatatypes = querySettings['hiddenDatatypes'] || [];
+    var hiddenEvents = querySettings['hiddenEvents'] || [];
     var shownNames = [];
     for (var i = 0; i < rowNames.length; i++) {
         var rowName = rowNames[i];
         var datatype = eventAlbum.getEvent(rowName).metadata.datatype;
-        if (utils.isObjInArray(hiddenDatatypes, datatype)) {
+        if ((utils.isObjInArray(hiddenDatatypes, datatype)) || (utils.isObjInArray(hiddenEvents, rowName))) {
             continue;
         }
         shownNames.push(rowName);
