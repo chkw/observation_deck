@@ -243,6 +243,21 @@ resetConfig = function(config) {
     console.log('remaining config', config);
 };
 
+/**
+ * If session object exists, set the key/value pair.
+ */
+setSession = function(key, value) {
+    if (Session) {
+        if (key) {
+            Session.set(key, value);
+        }
+        return true;
+    } else {
+        console.log("no session object to modify");
+        return false;
+    }
+};
+
 /*
  * If session object exists, delete the specified keys.
  *
@@ -252,8 +267,10 @@ resetSession = function(keys) {
         for (var i = 0, length = keys.length; i < length; i++) {
             delete Session.keys[keys[i]];
         }
+        return true;
     } else {
         console.log("no session object to reset");
+        return false;
     }
 };
 
@@ -578,7 +595,7 @@ setupRowLabelContextMenu = function(config) {
                             utils.setCookie('od_config', JSON.stringify(querySettings));
 
                             console.log('writing pivotSettings to Session', pivotSessionSettings);
-                            Session.set('pivotSettings', pivotSessionSettings);
+                            setSession('pivotSettings', pivotSessionSettings);
                         } else {
                             console.log('no Session object. Writing pivotSettings to querySettings.');
 
