@@ -1300,7 +1300,7 @@ drawMatrix = function(containingDiv, config) {
             return startPosition;
         },
         "y" : function(d, i) {
-            var offset = (i % 2 == 0) ? 60 : 70;
+            var offset = (i % 2 == 0) ? 50 : 60;
             return -1 * (margin.left - offset);
         },
         "transform" : "rotate(-90)",
