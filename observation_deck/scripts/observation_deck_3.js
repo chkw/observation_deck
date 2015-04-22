@@ -1190,6 +1190,20 @@ drawMatrix = function(containingDiv, config) {
         rowNames = utils.eliminateDuplicates(rowNames);
     }
 
+    // confirm events in rowNames exist in eventAlbum
+    var confirmedEvents = [];
+    for (var i = 0, length = rowNames.length; i < length; i++) {
+        var eventId = rowNames[i];
+        var eventObj = eventAlbum.getEvent(eventId);
+        if (eventObj) {
+            // eventObj exists
+            confirmedEvents.push(eventId);
+        } else {
+            console.log('eventObj not found for', eventId);
+        }
+    }
+    rowNames = confirmedEvents;
+
     // assign row numbers to row names
     var rowNameMapping = new Object();
     for (var i in rowNames) {
