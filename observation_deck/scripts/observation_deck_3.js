@@ -1171,8 +1171,14 @@ drawMatrix = function(containingDiv, config) {
     var hiddenDatatypes = querySettings['hiddenDatatypes'] || [];
     var hiddenEvents = querySettings['hiddenEvents'] || [];
     var shownNames = [];
+
+    var albumEventIds = eventAlbum.getAllEventIds();
     for (var i = 0; i < rowNames.length; i++) {
         var rowName = rowNames[i];
+        if (!utils.isObjInArray(albumEventIds, rowName)) {
+            // event doesn't exist ... skip
+            continue;
+        }
         var datatype = eventAlbum.getEvent(rowName).metadata.datatype;
         if ((utils.isObjInArray(hiddenDatatypes, datatype)) || (utils.isObjInArray(hiddenEvents, rowName))) {
             continue;

@@ -115,6 +115,19 @@ var eventData = eventData || {};
         };
 
         /**
+         * Get all of the eventIds in the album.
+         */
+        this.getAllEventIds = function() {
+            var result = [];
+            var groupedEvents = this.getEventIdsByType();
+            for (var group in groupedEvents) {
+                var events = groupedEvents[group];
+                result = result.concat(events);
+            }
+            return result;
+        };
+
+        /**
          * Get the eventIds grouped by datatype.
          */
         this.getEventIdsByType = function() {
@@ -326,7 +339,7 @@ var eventData = eventData || {};
                 // suffixed ids here
                 var unorderedEvents = groupedEvents[datatype];
                 if (pivotSortedEvents.length == 0) {
-                    console.log('pivotSortedEvents.length == 0');
+                    console.log('pivotSortedEvents.length == 0 for ' + datatype);
                     result[datatype] = unorderedEvents;
                     continue;
                 }
