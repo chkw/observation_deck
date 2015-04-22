@@ -243,6 +243,20 @@ resetConfig = function(config) {
     console.log('remaining config', config);
 };
 
+/*
+ * If session object exists, delete the specified keys.
+ *
+ */
+resetSession = function(keys) {
+    if (Session) {
+        for (var i = 0, length = keys.length; i < length; i++) {
+            delete Session.keys[keys[i]];
+        }
+    } else {
+        console.log("no session object to reset");
+    }
+};
+
 /**
  * Create a context menu item for use with jQuery-contextMenu.
  */
@@ -253,6 +267,7 @@ createResetContextMenuItem = function(config) {
         disabled : false,
         callback : function(key, opt) {
             resetConfig(config);
+            resetSession(['pivotSettings']);
 
             var containerDivElem = document.getElementById(config['containerDivId']);
             var newConfig = buildObservationDeck(containerDivElem, config);
