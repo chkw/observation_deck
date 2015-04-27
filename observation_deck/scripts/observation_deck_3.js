@@ -1254,6 +1254,8 @@ drawMatrix = function(containingDiv, config) {
     var longestColumnName = utils.lengthOfLongestString(colNames);
     var longestRowName = utils.lengthOfLongestString(rowNames);
 
+    console.log('longestRowName', longestRowName);
+
     var margin = {
         "top" : ((longestColumnName > 3) ? (9 * longestColumnName) : 30),
         "right" : 0,
@@ -1279,7 +1281,8 @@ drawMatrix = function(containingDiv, config) {
     var svg = d3.select(thisElement).append("svg").attr({
         "width" : fullWidth + 0,
         "height" : fullHeight,
-        "viewBox" : "42 0 " + (fullWidth) + " " + fullHeight,
+        // "viewBox" : "42 0 " + (fullWidth) + " " + (fullHeight),
+        "viewBox" : "0 0 " + (fullWidth) + " " + (fullHeight),
         "perserveAspectRatio" : "xMinYMin meet"
     }).append("g").attr({
         "transform" : "translate(" + margin.left + "," + margin.top + ")"
@@ -1332,7 +1335,10 @@ drawMatrix = function(containingDiv, config) {
             return startPosition;
         },
         "y" : function(d, i) {
-            var offset = (i % 2 == 0) ? 50 : 60;
+            // var offset = (i % 2 == 0) ? 50 : 60;
+            var fullOffset = 30;
+            var pad = 10;
+            var offset = (i % 2 == 0) ? (fullOffset - pad) : fullOffset;
             return -1 * (margin.left - offset);
         },
         "transform" : "rotate(-90)",
