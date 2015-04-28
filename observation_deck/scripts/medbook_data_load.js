@@ -420,11 +420,21 @@ var medbookDataLoader = medbookDataLoader || {};
             var eventId = eventIds[i];
             var eventData = groupedData[eventId];
 
+            var datatype;
+            var fields = eventId.split('_v');
+            fields.pop();
+            var rootName = fields.join('_v');
+            if (utils.endsWith(rootName, '_kinase_viper')) {
+                datatype = 'kinase target activity';
+            } else {
+                datatype = 'expression signature';
+            }
+
             var eventObj = OD_eventAlbum.getEvent(eventId);
 
             // add event if DNE
             if (eventObj == null) {
-                eventObj = mdl.loadEventBySampleData(OD_eventAlbum, eventId, '', 'expression signature', 'numeric', {});
+                eventObj = mdl.loadEventBySampleData(OD_eventAlbum, eventId, '', datatype, 'numeric', {});
                 eventObj.metadata.setWeightVector([], "expression data");
             }
 
@@ -437,6 +447,13 @@ var medbookDataLoader = medbookDataLoader || {};
     mdl.loadSignatureWeightsObj = function(obj, OD_eventAlbum) {
         // fields: name and version and signature... signature is an obj keyed by gene {'weight':weight,'pval':pval}
         var eventId = obj['name'] + '_v' + obj['version'];
+
+        var datatype;
+        if (utils.endsWith(obj['name'], '_kinase_viper')) {
+            datatype = 'kinase target activity';
+        } else {
+            datatype = "expression signature";
+        }
 
         var eventObj = OD_eventAlbum.getEvent(eventId);
 
@@ -455,7 +472,7 @@ var medbookDataLoader = medbookDataLoader || {};
 
         if (eventObj == null) {
             // create eventObj
-            eventObj = mdl.loadEventBySampleData(OD_eventAlbum, eventId, '', 'expression signature', 'numeric', []);
+            eventObj = mdl.loadEventBySampleData(OD_eventAlbum, eventId, '', datatype, 'numeric', []);
         }
         eventObj.metadata.setWeightVector(weightedGeneVector, 'expression data');
         var size = eventObj.metadata.weightedGeneVector.length;

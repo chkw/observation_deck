@@ -548,7 +548,7 @@ setupRowLabelContextMenu = function(config) {
                     'icon' : null,
                     'disabled' : function(key, opt) {
                         // if (pivotable) {
-                        if (datatype === 'expression signature') {
+                        if (utils.isObjInArray(['expression signature', 'kinase target activity'], datatype)) {
                             return false;
                         } else {
                             return true;
@@ -565,7 +565,7 @@ setupRowLabelContextMenu = function(config) {
                             // if (false) {
                             var mName = eventId;
                             var mVersion = '';
-                            if (datatype === 'expression signature') {
+                            if (utils.isObjInArray(['expression signature', 'kinase target activity'], datatype)) {
                                 var names = mName.split('_v');
                                 mVersion = names.pop();
                                 mName = names.join('_v');
