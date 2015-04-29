@@ -1353,6 +1353,11 @@ drawMatrix = function(containingDiv, config) {
         var datatype = d;
         return rowLabelColorMapper(datatype);
     });
+    datatypeLabels.append("title").text(function(d) {
+        var datatype = d;
+        var s = 'datatype: ' + datatype;
+        return s;
+    });
 
     // row labels
     var translateX = -6;
