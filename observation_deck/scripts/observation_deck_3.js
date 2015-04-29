@@ -247,7 +247,7 @@ resetConfig = function(config) {
  * If session object exists, set the key/value pair.
  */
 setSession = function(key, value) {
-    if (Session) {
+    if ( typeof Session !== "undefined") {
         if (key) {
             Session.set(key, value);
         }
@@ -263,7 +263,7 @@ setSession = function(key, value) {
  *
  */
 resetSession = function(keys) {
-    if (Session) {
+    if ( typeof Session !== "undefined") {
         for (var i = 0, length = keys.length; i < length; i++) {
             delete Session.keys[keys[i]];
         }
