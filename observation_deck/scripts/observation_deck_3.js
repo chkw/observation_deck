@@ -27,6 +27,9 @@ buildObservationDeck = function(containerDivElem, config) {
 
     drawMatrix(containerDivElem, config);
 
+    // set up dialog box
+    setupDialogBox(config);
+
     // set up context menu should follow matrix drawing
     setupContextMenus(config);
 
@@ -205,6 +208,75 @@ getCookieEvents = function() {
     }
 
     return utils.eliminateDuplicates(geneList);
+};
+
+/**
+ * Set up a dialog box with typeahead functionality
+ * config is an obj of {title,placeholder,bloohoundObj}
+ */
+createSuggestBoxDialog = function(suggestBoxConfig) {
+    var title = suggestBoxConfig["title"];
+    var placeholder = suggestBoxConfig["placeholder"];
+
+    var divElem = utils.createDivElement(title);
+    divElem.style['display'] = 'none';
+
+    var inputElem = document.createElement("input");
+    divElem.appendChild(inputElem);
+    utils.setElemAttributes(inputElem, {
+        // "class" : "typeahead",
+        "type" : "text",
+        "placeholder" : placeholder
+    });
+
+    for (var i = 0; i < 9; i++) {
+        divElem.appendChild(document.createElement("br"));
+    }
+
+    $(inputElem).typeahead({
+        "hint" : true,
+        "highlight" : true,
+        "minLength" : 2
+    }, {
+        "name" : "dataset",
+        "source" : suggestBoxConfig["bloodhoundObj"],
+        "limit" : 8
+    });
+
+    return divElem;
+};
+
+/**
+ * Set up a dialog boxes
+ */
+setupDialogBox = function(config) {
+    var bodyElem = document.getElementsByTagName('body')[0];
+    var dialogBox = createSuggestBoxDialog({
+        "title" : "hugoSearch",
+        "placeholder" : "HUGO symbol",
+        "bloodhoundObj" : new Bloodhound({
+            "datumTokenizer" : Bloodhound.tokenizers.whitespace,
+            "queryTokenizer" : Bloodhound.tokenizers.whitespace,
+            // "local" : ["abc", "def", "ghi", "abd", "abr"],
+            "remote" : {
+                // "url" : "https://su2c-dev.ucsc.edu/wb/genes?q=%QUERY",
+                "url" : "/genes?q=%QUERY",
+                "wildcard" : "%QUERY",
+                "transform" : function(response) {
+                    console.log("response", response);
+                    var items = response["items"];
+                    var list = [];
+                    for (var i = 0, length = items.length; i < length; i++) {
+                        var item = items[i];
+                        var id = item["id"];
+                        list.push(id);
+                    }
+                    return list;
+                }
+            }
+        })
+    });
+    bodyElem.appendChild(dialogBox);
 };
 
 /*
@@ -459,6 +531,37 @@ setupTypeLabelContextMenu = function(config) {
                         // trigger redrawing
                         var containerDivElem = document.getElementById(config['containerDivId']);
                         buildObservationDeck(containerDivElem, config);
+                    }
+                },
+                "test_fold" : {
+                    "name" : "dev_features",
+                    "items" : {
+                        "test1" : {
+                            "name" : "dev_feature_1",
+                            "icon" : null,
+                            "disabled" : false,
+                            "callback" : function(key, opt) {
+                                console.log("key", key, "opt", opt);
+                                var dialogElem = document.getElementById('hugoSearch');
+                                dialogElem.style["display"] = "block";
+
+                                $(dialogElem).dialog({
+                                    'title' : 'HUGO search',
+                                    buttons : {
+                                        "close" : function() {
+                                            $(this).dialog("close");
+
+                                            // }, //this just closes it - doesn't clean it up!!
+                                            // "destroy" : function() {
+                                            // $(this).dialog("destroy");
+                                            // //this completely empties the dialog
+                                            // //and returns it to its initial state
+
+                                        }
+                                    }
+                                });
+                            }
+                        }
                     }
                 },
                 "reset" : createResetContextMenuItem(config)
