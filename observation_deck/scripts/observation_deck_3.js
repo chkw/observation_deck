@@ -229,6 +229,17 @@ createSuggestBoxDialog = function(suggestBoxConfig) {
         "placeholder" : placeholder
     });
 
+    var buttonElem = document.createElement("button");
+    divElem.appendChild(buttonElem);
+    utils.setElemAttributes(buttonElem, {
+        "type" : "button"
+    });
+    buttonElem.innerHTML = "select";
+    buttonElem.onclick = function() {
+        console.log("button clicked", inputElem.value);
+        $(divElem).dialog("close");
+    };
+
     for (var i = 0; i < 9; i++) {
         divElem.appendChild(document.createElement("br"));
     }
@@ -240,7 +251,7 @@ createSuggestBoxDialog = function(suggestBoxConfig) {
     }, {
         "name" : "dataset",
         "source" : suggestBoxConfig["bloodhoundObj"],
-        "limit" : 8
+        "limit" : 99
     });
 
     return divElem;
@@ -260,8 +271,8 @@ setupDialogBox = function(config) {
             // "local" : ["abc", "def", "ghi", "abd", "abr"],
             "remote" : {
                 // "url" : "https://su2c-dev.ucsc.edu/wb/genes?q=%QUERY",
-                "url" : "/genes?q=%QUERY",
-                "wildcard" : "%QUERY",
+                "url" : "/genes?q=%VALUE",
+                "wildcard" : "%VALUE",
                 "transform" : function(response) {
                     console.log("response", response);
                     var items = response["items"];
