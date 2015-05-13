@@ -261,6 +261,8 @@ createSuggestBoxDialog = function(suggestBoxConfig) {
  * Set up a dialog boxes
  */
 setupDialogBox = function(config) {
+    var geneQueryUrl = config["geneQueryUrl"];
+    var queryVar = "%VALUE";
     var bodyElem = document.getElementsByTagName('body')[0];
     var dialogBox = createSuggestBoxDialog({
         "title" : "hugoSearch",
@@ -271,8 +273,9 @@ setupDialogBox = function(config) {
             // "local" : ["abc", "def", "ghi", "abd", "abr"],
             "remote" : {
                 // "url" : "https://su2c-dev.ucsc.edu/wb/genes?q=%QUERY",
-                "url" : "/genes?q=%VALUE",
-                "wildcard" : "%VALUE",
+                // "url" : "/genes?q=%VALUE",
+                "url" : geneQueryUrl + queryVar,
+                "wildcard" : queryVar,
                 "transform" : function(response) {
                     console.log("response", response);
                     var items = response["items"];
@@ -336,9 +339,24 @@ setSession = function(key, value) {
         }
         return true;
     } else {
-        console.log("no session object to modify");
+        console.log("no session object for setting");
         return false;
     }
+};
+
+/**
+ * Get session value if exists.  Else, return null.
+ */
+getSession = function(key) {
+    var value = null;
+    if ( typeof Session !== "undefined") {
+        if (key) {
+            value = Session.get(key);
+        }
+    } else {
+        console.log("no session object for getting");
+    }
+    return value;
 };
 
 /*
@@ -355,6 +373,45 @@ resetSession = function(keys) {
         console.log("no session object to reset");
         return false;
     }
+};
+
+/**
+ * Set session var for datatype paging
+ */
+setDatatypePaging = function(datatype, headOrTail, upOrDown) {
+    var sessionVarName = "subscriptionPaging";
+    var sessionVal = getSession(sessionVarName);
+
+    // default setting
+    if (!sessionVal) {
+        sessionVal = {};
+    }
+
+    if (!utils.hasOwnProperty(sessionVal, datatype)) {
+        sessionVal[datatype] = {
+            "head" : 0,
+            "tail" : 0
+        };
+    }
+
+    if (!headOrTail || !upOrDown) {
+        return sessionVal[datatype];
+    }
+
+    // new setting
+    var newVal;
+    if (upOrDown === "down") {
+        newVal = --sessionVal[datatype][headOrTail];
+    } else if (upOrDown === "up") {
+        newVal = ++sessionVal[datatype][headOrTail];
+    }
+
+    // validate
+    if (newVal < 0) {
+        sessionVal[datatype][headOrTail] = 0;
+    }
+
+    setSession(sessionVarName, sessionVal);
 };
 
 /**
@@ -547,8 +604,8 @@ setupTypeLabelContextMenu = function(config) {
                 "test_fold" : {
                     "name" : "dev_features",
                     "items" : {
-                        "test1" : {
-                            "name" : "dev_feature_1",
+                        "hugoSearch" : {
+                            "name" : "HUGO search",
                             "icon" : null,
                             "disabled" : false,
                             "callback" : function(key, opt) {
@@ -558,7 +615,7 @@ setupTypeLabelContextMenu = function(config) {
 
                                 $(dialogElem).dialog({
                                     'title' : 'HUGO search',
-                                    buttons : {
+                                    "buttons" : {
                                         "close" : function() {
                                             $(this).dialog("close");
 
@@ -571,6 +628,64 @@ setupTypeLabelContextMenu = function(config) {
                                         }
                                     }
                                 });
+                            }
+                        },
+                        "pagingFold" : {
+                            "name" : "paging",
+                            "items" : {
+                                "pagingHeadUp" : {
+                                    "name" : "head up",
+                                    "icon" : null,
+                                    "disabled" : false,
+                                    "callback" : function(key, opt) {
+                                        setDatatypePaging(datatype, "head", "up");
+                                    }
+                                },
+                                "pagingHeadDown" : {
+                                    "name" : "head down",
+                                    "icon" : null,
+                                    "disabled" : function(key, opt) {
+                                        var isDisabled = true;
+                                        var pagingObj = setDatatypePaging(datatype);
+                                        if ( typeof pagingObj !== "undefined") {
+                                            var headVal = pagingObj["head"];
+                                            if (headVal > 0) {
+                                                isDisabled = false;
+                                            }
+                                        }
+                                        return isDisabled;
+                                    },
+                                    "callback" : function(key, opt) {
+                                        setDatatypePaging(datatype, "head", "down");
+                                    }
+                                },
+                                "sep1" : "---------",
+                                "pagingTailUp" : {
+                                    "name" : "tail up",
+                                    "icon" : null,
+                                    "disabled" : false,
+                                    "callback" : function(key, opt) {
+                                        setDatatypePaging(datatype, "tail", "up");
+                                    }
+                                },
+                                "pagingTailDown" : {
+                                    "name" : "tail down",
+                                    "icon" : null,
+                                    "disabled" : function(key, opt) {
+                                        var isDisabled = true;
+                                        var pagingObj = setDatatypePaging(datatype);
+                                        if ( typeof pagingObj !== "undefined") {
+                                            var headVal = pagingObj["tail"];
+                                            if (headVal > 0) {
+                                                isDisabled = false;
+                                            }
+                                        }
+                                        return isDisabled;
+                                    },
+                                    "callback" : function(key, opt) {
+                                        setDatatypePaging(datatype, "tail", "down");
+                                    }
+                                }
                             }
                         }
                     }
