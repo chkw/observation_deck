@@ -426,6 +426,8 @@ var medbookDataLoader = medbookDataLoader || {};
             var rootName = fields.join('_v');
             if (utils.endsWith(rootName, '_kinase_viper')) {
                 datatype = 'kinase target activity';
+            } else if (utils.endsWith(rootName, '_tf_viper') || utils.beginsWith(rootName, 'tf_viper_')) {
+                datatype = 'tf target activity';
             } else {
                 datatype = 'expression signature';
             }
@@ -451,6 +453,8 @@ var medbookDataLoader = medbookDataLoader || {};
         var datatype;
         if (utils.endsWith(obj['name'], '_kinase_viper')) {
             datatype = 'kinase target activity';
+        } else if (utils.endsWith(obj['name'], '_tf_viper') || utils.beginsWith(obj['name'], 'tf_viper_')) {
+            datatype = 'tf target activity';
         } else {
             datatype = "expression signature";
         }
