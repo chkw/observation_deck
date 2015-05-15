@@ -575,7 +575,6 @@ var medbookDataLoader = medbookDataLoader || {};
     mdl.loadPivotScores = function(collection, OD_eventAlbum) {
         // get a dictionary of {key,val}
         var pivotScores = [];
-        var counter = [];
         for (var i = 0; i < collection.length; i++) {
             var doc = collection[i];
 
@@ -584,14 +583,14 @@ var medbookDataLoader = medbookDataLoader || {};
             var version1 = doc['version_1'];
             var datatype1 = doc['datatype_1'];
 
-            if (datatype1 === 'expression') {
-                counter.push(eventId1);
-            }
-
             var getEventId = function(name, datatype, version) {
                 var newName;
                 if (datatype === 'signature') {
                     newName = name + '_v' + version;
+                } else if (utils.endsWith(name, "_tf_viper")) {
+                    datatype = 'signature';
+                    newName = name.replace('_tf_viper', '');
+                    newName = "tf_viper_" + newName + "_v" + "4";
                 } else if (datatype === 'expression') {
                     // no suffix here, just the gene symbol
                     // newName = name + "_mRNA";
@@ -605,10 +604,6 @@ var medbookDataLoader = medbookDataLoader || {};
             var eventId2 = doc['name_2'];
             var version2 = doc['version_2'];
             var datatype2 = doc['datatype_2'];
-
-            if (datatype2 === 'expression') {
-                counter.push(eventId2);
-            }
 
             eventId2 = getEventId(eventId2, datatype2, version2);
 
