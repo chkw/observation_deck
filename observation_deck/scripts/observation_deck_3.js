@@ -12,6 +12,7 @@
  * 4) jStat
  * 5) utils.js
  * 6) OD_eventData.js
+ * 7) typeahead <https://github.com/twitter/typeahead.js>
  */
 
 u = utils;
@@ -404,6 +405,8 @@ setDatatypePaging = function(datatype, headOrTail, upOrDown) {
         newVal = --sessionVal[datatype][headOrTail];
     } else if (upOrDown === "up") {
         newVal = ++sessionVal[datatype][headOrTail];
+    } else if (upOrDown === "0") {
+        newVal = sessionVal[datatype][headOrTail] = 0;
     }
 
     // validate
@@ -526,55 +529,60 @@ setupTypeLabelContextMenu = function(config) {
                     }
                 },
                 "sep1" : "---------",
-                // 'pivot_sort_datatype' : {
-                // 'name' : function() {
-                // return 'pivot sort ' + datatype + ' events';
-                // },
-                // 'icon' : null,
-                // 'disabled' : function(key, opt) {
-                // var querySettings = config['querySettings'];
-                // if ('pivot_event' in querySettings) {
-                // return false;
-                // } else {
-                // return true;
-                // }
-                // },
-                // 'callback' : function(key, opt) {
-                // // TODO new, more correct way begins here
-                // console.log('add ' + datatype + ' to list of pivot sort datatypes');
-                // var querySettings = config['querySettings'];
-                // var pivotEventId = querySettings['pivot_event']['id'];
-                // console.log('pivotEventId', pivotEventId);
-                // datatypes = [];
-                // if ('pivot_sort_list' in querySettings) {
-                // datatypes = querySettings['pivot_sort_list'];
-                // }
-                // datatypes.push(datatype);
-                // querySettings['pivot_sort_list'] = utils.eliminateDuplicates(datatypes);
-                // // TODO new, more correct way ends here
-                //
-                // // TODO old, not as flexible way begins here
-                // // var sortType = 'colSort';
-                // //
-                // // var sortSteps = null;
-                // // var querySettings = config['querySettings'];
-                // // if ( sortType in querySettings) {
-                // // sortSteps = new eventData.sortingSteps(querySettings[sortType]["steps"]);
-                // // } else {
-                // // sortSteps = new eventData.sortingSteps();
-                // // }
-                // // sortSteps.addStep(pivotEventId);
-                // // querySettings[sortType] = sortSteps;
-                // // TODO old, not as flexible way ends here
-                //
-                // // set new cookie
-                // utils.setCookie('od_config', JSON.stringify(querySettings));
-                //
-                // // trigger redrawing
-                // var containerDivElem = document.getElementById(config['containerDivId']);
-                // buildObservationDeck(containerDivElem, config);
-                // }
-                // },
+                "pagingFold" : {
+                    "name" : "paging",
+                    "items" : {
+                        "pagingHeadHome" : {
+                            "name" : "correlated -",
+                            "icon" : null,
+                            "disabled" : false,
+                            "callback" : function(key, opt) {
+                                setDatatypePaging(datatype, "head", "0");
+                            }
+                        },
+                        "pagingHeadDown" : {
+                            "name" : "correlated ^",
+                            "icon" : null,
+                            "disabled" : false,
+                            "callback" : function(key, opt) {
+                                setDatatypePaging(datatype, "head", "down");
+                            }
+                        },
+                        "pagingHeadUp" : {
+                            "name" : "correlated v",
+                            "icon" : null,
+                            "disabled" : false,
+                            "callback" : function(key, opt) {
+                                setDatatypePaging(datatype, "head", "up");
+                            }
+                        },
+                        "sep1" : "---------",
+                        "pagingTailUp" : {
+                            "name" : "anti-correlated ^",
+                            "icon" : null,
+                            "disabled" : false,
+                            "callback" : function(key, opt) {
+                                setDatatypePaging(datatype, "tail", "up");
+                            }
+                        },
+                        "pagingTailDown" : {
+                            "name" : "anti-correlated v",
+                            "icon" : null,
+                            "disabled" : false,
+                            "callback" : function(key, opt) {
+                                setDatatypePaging(datatype, "tail", "down");
+                            }
+                        },
+                        "pagingTailEnd" : {
+                            "name" : "anti-correlated -",
+                            "icon" : null,
+                            "disabled" : false,
+                            "callback" : function(key, opt) {
+                                setDatatypePaging(datatype, "tail", "0");
+                            }
+                        }
+                    }
+                },
                 'toggle_datatype_visibility' : {
                     'name' : function() {
                         return 'toggle visibility';
@@ -601,95 +609,38 @@ setupTypeLabelContextMenu = function(config) {
                         buildObservationDeck(containerDivElem, config);
                     }
                 },
-                "test_fold" : {
-                    "name" : "dev_features",
-                    "items" : {
-                        "hugoSearch" : {
-                            "name" : "HUGO search",
-                            "icon" : null,
-                            "disabled" : false,
-                            "callback" : function(key, opt) {
-                                console.log("key", key, "opt", opt);
-                                var dialogElem = document.getElementById('hugoSearch');
-                                dialogElem.style["display"] = "block";
-
-                                $(dialogElem).dialog({
-                                    'title' : 'HUGO search',
-                                    "buttons" : {
-                                        "close" : function() {
-                                            $(this).dialog("close");
-
-                                            // }, //this just closes it - doesn't clean it up!!
-                                            // "destroy" : function() {
-                                            // $(this).dialog("destroy");
-                                            // //this completely empties the dialog
-                                            // //and returns it to its initial state
-
-                                        }
-                                    }
-                                });
-                            }
-                        },
-                        "pagingFold" : {
-                            "name" : "paging",
-                            "items" : {
-                                "pagingHeadUp" : {
-                                    "name" : "head up",
-                                    "icon" : null,
-                                    "disabled" : false,
-                                    "callback" : function(key, opt) {
-                                        setDatatypePaging(datatype, "head", "up");
-                                    }
-                                },
-                                "pagingHeadDown" : {
-                                    "name" : "head down",
-                                    "icon" : null,
-                                    "disabled" : function(key, opt) {
-                                        var isDisabled = true;
-                                        var pagingObj = setDatatypePaging(datatype);
-                                        if ( typeof pagingObj !== "undefined") {
-                                            var headVal = pagingObj["head"];
-                                            if (headVal > 0) {
-                                                isDisabled = false;
-                                            }
-                                        }
-                                        return isDisabled;
-                                    },
-                                    "callback" : function(key, opt) {
-                                        setDatatypePaging(datatype, "head", "down");
-                                    }
-                                },
-                                "sep1" : "---------",
-                                "pagingTailUp" : {
-                                    "name" : "tail up",
-                                    "icon" : null,
-                                    "disabled" : false,
-                                    "callback" : function(key, opt) {
-                                        setDatatypePaging(datatype, "tail", "up");
-                                    }
-                                },
-                                "pagingTailDown" : {
-                                    "name" : "tail down",
-                                    "icon" : null,
-                                    "disabled" : function(key, opt) {
-                                        var isDisabled = true;
-                                        var pagingObj = setDatatypePaging(datatype);
-                                        if ( typeof pagingObj !== "undefined") {
-                                            var headVal = pagingObj["tail"];
-                                            if (headVal > 0) {
-                                                isDisabled = false;
-                                            }
-                                        }
-                                        return isDisabled;
-                                    },
-                                    "callback" : function(key, opt) {
-                                        setDatatypePaging(datatype, "tail", "down");
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
+                // TODO experimental features here
+                // "test_fold" : {
+                // "name" : "dev_features",
+                // "items" : {
+                // "hugoSearch" : {
+                // "name" : "HUGO search",
+                // "icon" : null,
+                // "disabled" : false,
+                // "callback" : function(key, opt) {
+                // console.log("key", key, "opt", opt);
+                // var dialogElem = document.getElementById('hugoSearch');
+                // dialogElem.style["display"] = "block";
+                //
+                // $(dialogElem).dialog({
+                // 'title' : 'HUGO search',
+                // "buttons" : {
+                // "close" : function() {
+                // $(this).dialog("close");
+                //
+                // // }, //this just closes it - doesn't clean it up!!
+                // // "destroy" : function() {
+                // // $(this).dialog("destroy");
+                // // //this completely empties the dialog
+                // // //and returns it to its initial state
+                //
+                // }
+                // }
+                // });
+                // }
+                // }
+                // }
+                // },
                 "reset" : createResetContextMenuItem(config)
             };
             return {
@@ -844,31 +795,6 @@ setupRowLabelContextMenu = function(config) {
                 'sort_fold' : {
                     'name' : 'sort...',
                     'items' : {
-                        // "pivot_sort" : {
-                        // name : function() {
-                        // return datatype + ' events by this pivot';
-                        // },
-                        // icon : null,
-                        // disabled : function() {
-                        // if (allowedValues === 'numeric') {
-                        // return false;
-                        // } else {
-                        // return true;
-                        // }
-                        // },
-                        // callback : function(key, opt) {
-                        // var querySettings = config['querySettings'];
-                        //
-                        // querySettings['pivot_sort'] = {
-                        // 'pivot_event' : eventId
-                        // };
-                        //
-                        // utils.setCookie('od_config', JSON.stringify(querySettings));
-                        //
-                        // // trigger redrawing
-                        // var containerDivElem = document.getElementById(config['containerDivId']);
-                        // buildObservationDeck(containerDivElem, config);
-                        // }                        // },
                         "sort" : {
                             name : "samples by this event",
                             icon : null,
@@ -891,41 +817,6 @@ setupRowLabelContextMenu = function(config) {
                                 var containerDivElem = document.getElementById(config['containerDivId']);
                                 buildObservationDeck(containerDivElem, config);
                             }
-                            // },
-                            // "sig_sort" : {
-                            // name : function(key, opt) {
-                            // if (scoredDatatype == null) {
-                            // return "---";
-                            // } else {
-                            // return scoredDatatype + " events by " + eventId + " weight";
-                            // }
-                            // },
-                            // icon : null,
-                            // disabled : function(key, opt) {
-                            // if (scoredDatatype == null) {
-                            // return true;
-                            // } else {
-                            // return false;
-                            // }
-                            // },
-                            // callback : function(key, opt) {
-                            // var sortType = 'rowSort';
-                            //
-                            // var sortSteps = null;
-                            // var querySettings = config['querySettings'];
-                            // if ( sortType in querySettings) {
-                            // sortSteps = new eventData.sortingSteps(querySettings[sortType]["steps"]);
-                            // } else {
-                            // sortSteps = new eventData.sortingSteps();
-                            // }
-                            // sortSteps.addStep(eventId);
-                            // querySettings[sortType] = sortSteps;
-                            //
-                            // utils.setCookie('od_config', JSON.stringify(querySettings));
-                            //
-                            // var containerDivElem = document.getElementById(config['containerDivId']);
-                            // buildObservationDeck(containerDivElem, config);
-                            // }
                         }
                     }
                 },
@@ -1139,54 +1030,6 @@ setupCategoricCellContextMenu = function(config) {
 drawMatrix = function(containingDiv, config) {
     // TODO begin drawMatrix
 
-    // config["rowClickback"] = function(d, i) {
-    // var datatype = config['eventAlbum'].getEvent(d).metadata.datatype;
-    // // console.log("rowClickback: " + d);
-    // if (datatype === 'expression data') {
-    // // mRNA url: /wb/gene/<gene name>
-    // var gene = d.replace('_mRNA', '');
-    // var url = '/wb/gene/' + gene;
-    // console.log('drawMatrix rowClickback', url);
-    // // window.open(url, "_self");
-    // } else if (datatype === 'clinical data') {
-    // // clinical url: /wb/clinical/<name>
-    // var feature = d;
-    // var url = '/wb/clinical/' + feature;
-    // console.log('drawMatrix rowClickback', url);
-    // // window.open(url, "_self");
-    // } else {
-    // // alert('open page for event: ' + d + ' of datatype: ' + datatype);
-    // }
-    // };
-    //
-    // config["columnClickback"] = function(d, i) {
-    // // alert('open page for sample: ' + d);
-    // // console.log("columnClickback: " + d);
-    // // TODO meteor url: /wb/patient/<sample-name>
-    // var url = '/wb/patient/' + d;
-    // console.log('drawMatrix columnClickback', url);
-    // // window.open(url, "_self");
-    // };
-    //
-    // config["cellClickback"] = function(d, i) {
-    // console.log("cellClickback: r" + d['eventId'] + " c" + d['id'] + " val:" + d['val']);
-    // };
-    //
-    // config["rowRightClickback"] = function(d, i) {
-    // console.log("rowRightClickback: " + d);
-    // d3.event.preventDefault();
-    // };
-    //
-    // config["columnRightClickback"] = function(d, i) {
-    // console.log("columnRightClickback: " + d);
-    // d3.event.preventDefault();
-    // };
-    //
-    // config["cellRightClickback"] = function(d, i) {
-    // console.log("cellRightClickback: r" + d['eventId'] + " c" + d['id'] + " val:" + d['val']);
-    // d3.event.preventDefault();
-    // };
-
     var thisElement = utils.removeChildElems(containingDiv);
 
     // get eventList
@@ -1369,13 +1212,6 @@ drawMatrix = function(containingDiv, config) {
 
     var rowNames = eventAlbum.multisortEvents(rowSortSteps, colSortSteps);
 
-    // TODO pivot sorting of expression data
-    // var allPivotScores = {
-    // 'pearson' : eventAlbum.getAllPivotScores('expression data'),
-    // 'mutual_information' : eventAlbum.getAllPivotScores('expression data', utils.mutualInformation)
-    // };
-    // console.log('allPivotScores', utils.prettyJson(allPivotScores));
-
     // TODO groupedPivotSorts ... uses pivot scoring on server side
     if (utils.hasOwnProperty(querySettings, 'pivot_sort_list')) {
         console.log('querySettings has a pivot_sort_list of datatypes', querySettings['pivot_sort_list']);
@@ -1384,8 +1220,8 @@ drawMatrix = function(containingDiv, config) {
         var pEventId = querySettings['pivot_event']['id'];
         var pEventObj = eventAlbum.getEvent(pEventId);
         // eventAlbum.setPivotScores(pEventId, pEventObj.metadata.weightedGeneVector);
-        var keepTails = true;
-        var groupedPivotSorts = eventAlbum.getGroupedPivotSorts(pEventId, keepTails);
+        var keepTailsOnly = true;
+        var groupedPivotSorts = eventAlbum.getGroupedPivotSorts(pEventId, keepTailsOnly);
 
         for (var datatype in groupedPivotSorts) {
             var eventIds = groupedPivotSorts[datatype];
@@ -1393,39 +1229,8 @@ drawMatrix = function(containingDiv, config) {
         }
         rowNames = pivotSortedRowNames.concat(rowNames);
         rowNames = utils.eliminateDuplicates(rowNames);
-    }
+    } else {
 
-    // TODO pivot scoring on client
-    var pivotScores = null;
-    if (utils.hasOwnProperty(querySettings, 'pivot_sort')) {
-        console.log('pivot sorting on client');
-        var pivotSortSettings = querySettings['pivot_sort'];
-        var pivotEvent = pivotSortSettings['pivot_event'];
-        // pivotScores = eventAlbum.pivotSort(pivotEvent, utils.mutualInformation);
-        pivotScores = eventAlbum.pivotSort(pivotEvent);
-
-        // pivotScores = eventAlbum.pivotSort_2(pivotEvent, utils.mutualInformation);
-        // pivotScores = eventAlbum.pivotSort_2(pivotEvent);
-
-        if ( typeof rescalingData === 'undefined') {
-            rescalingData = {};
-            rescalingData['stats'] = {};
-        }
-
-        var pivotSortedEvents = [];
-        var pivotScoresObj = {};
-        for (var i = 0; i < pivotScores.length; i++) {
-            var eventId = pivotScores[i]['event'];
-            var score = pivotScores[i]['score'];
-            pivotSortedEvents.push(eventId);
-
-            rescalingData['stats'][eventId] = {
-                'pivotScore' : score
-            };
-        }
-
-        rowNames = pivotSortedEvents.concat(rowNames);
-        rowNames = utils.eliminateDuplicates(rowNames);
     }
 
     // hide rows of datatype, preserving relative ordering
