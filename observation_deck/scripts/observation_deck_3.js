@@ -533,7 +533,7 @@ setupTypeLabelContextMenu = function(config) {
                     "name" : "paging",
                     "items" : {
                         "pagingHeadHome" : {
-                            "name" : "correlated -",
+                            "name" : "most correlated",
                             "icon" : null,
                             "disabled" : false,
                             "callback" : function(key, opt) {
@@ -574,7 +574,7 @@ setupTypeLabelContextMenu = function(config) {
                             }
                         },
                         "pagingTailEnd" : {
-                            "name" : "anti-correlated -",
+                            "name" : "most anti-correlated",
                             "icon" : null,
                             "disabled" : false,
                             "callback" : function(key, opt) {
@@ -1224,13 +1224,13 @@ drawMatrix = function(containingDiv, config) {
         var groupedPivotSorts = eventAlbum.getGroupedPivotSorts(pEventId, keepTailsOnly);
 
         for (var datatype in groupedPivotSorts) {
+            // TODO section header rows
             var eventIds = groupedPivotSorts[datatype];
             pivotSortedRowNames = pivotSortedRowNames.concat(eventIds);
         }
         rowNames = pivotSortedRowNames.concat(rowNames);
         rowNames = utils.eliminateDuplicates(rowNames);
     } else {
-
     }
 
     // hide rows of datatype, preserving relative ordering
