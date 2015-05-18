@@ -706,7 +706,7 @@ setupRowLabelContextMenu = function(config) {
                     icon : null,
                     disabled : function() {
                         var result = true;
-                        if ((titleCallback != null) && (utils.isObjInArray(['expression data', 'clinical data'], datatype))) {
+                        if ((titleCallback != null) && (utils.isObjInArray(['expression data', 'clinical data', 'expression signature', 'kinase target activity', "tf target activity"], datatype))) {
                             result = false;
                         }
 
@@ -728,7 +728,7 @@ setupRowLabelContextMenu = function(config) {
                     'icon' : null,
                     'disabled' : function(key, opt) {
                         // if (pivotable) {
-                        if (utils.isObjInArray(['expression signature', 'kinase target activity'], datatype)) {
+                        if (utils.isObjInArray(['expression signature', 'kinase target activity', "tf target activity"], datatype)) {
                             return false;
                         } else {
                             return true;
@@ -745,7 +745,7 @@ setupRowLabelContextMenu = function(config) {
                             // if (false) {
                             var mName = eventId;
                             var mVersion = '';
-                            if (utils.isObjInArray(['expression signature', 'kinase target activity'], datatype)) {
+                            if (utils.isObjInArray(['expression signature', 'kinase target activity', "tf target activity"], datatype)) {
                                 var names = mName.split('_v');
                                 mVersion = names.pop();
                                 mName = names.join('_v');
