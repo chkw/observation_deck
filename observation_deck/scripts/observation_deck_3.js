@@ -310,6 +310,7 @@ setupContextMenus = function(config) {
     setupRowLabelContextMenu(config);
     setupCategoricCellContextMenu(config);
     setupExpressionCellContextMenu(config);
+    setupSignatureCellContextMenu(config);
 };
 
 /**
@@ -869,6 +870,8 @@ setupRowLabelContextMenu = function(config) {
  * context menu uses http://medialize.github.io/jQuery-contextMenu
  */
 setupExpressionCellContextMenu = function(config) {
+    var sampleLinkoutCallback = config['columnTitleCallback'];
+
     $.contextMenu({
         // selector : ".axis",
         selector : ".mrna_exp",
@@ -888,6 +891,14 @@ setupExpressionCellContextMenu = function(config) {
                     disabled : true
                 },
                 "sep1" : "---------",
+                "sample_link_out" : {
+                    "name" : "go to details for " + sampleId,
+                    "icon" : null,
+                    "disabled" : false,
+                    "callback" : function(key, opt) {
+                        sampleLinkoutCallback(sampleId, config);
+                    }
+                },
                 'rescaling_fold' : {
                     'name' : 'normalize coloring...',
                     'items' : {
@@ -958,6 +969,8 @@ setupExpressionCellContextMenu = function(config) {
  * context menu uses http://medialize.github.io/jQuery-contextMenu
  */
 setupCategoricCellContextMenu = function(config) {
+    var sampleLinkoutCallback = config['columnTitleCallback'];
+
     $.contextMenu({
         // selector : ".axis",
         selector : ".categoric",
@@ -977,6 +990,14 @@ setupCategoricCellContextMenu = function(config) {
                     disabled : true
                 },
                 "sep1" : "---------",
+                "sample_link_out" : {
+                    "name" : "go to details for " + sampleId,
+                    "icon" : null,
+                    "disabled" : false,
+                    "callback" : function(key, opt) {
+                        sampleLinkoutCallback(sampleId, config);
+                    }
+                },
                 "yulia expression rescaling" : {
                     name : "rescale mRNA values using this category",
                     icon : null,
@@ -1006,6 +1027,50 @@ setupCategoricCellContextMenu = function(config) {
 
                         var containerDivElem = document.getElementById(config['containerDivId']);
                         buildObservationDeck(containerDivElem, config);
+                    }
+                },
+                "sep1" : "---------",
+                "reset" : createResetContextMenuItem(config)
+
+            };
+            return {
+                'items' : items
+            };
+        }
+    });
+};
+
+/**
+ * context menu uses http://medialize.github.io/jQuery-contextMenu
+ */
+setupSignatureCellContextMenu = function(config) {
+    var sampleLinkoutCallback = config['columnTitleCallback'];
+
+    $.contextMenu({
+        // selector : ".axis",
+        selector : ".signature",
+        trigger : 'left',
+        callback : function(key, options) {
+            // default callback
+            var elem = this[0];
+        },
+        build : function($trigger, contextmenuEvent) {
+            var triggerElem = ($trigger)[0];
+            var eventId = triggerElem.getAttribute('eventId');
+            var sampleId = triggerElem.getAttribute('sampleId');
+            var items = {
+                'title' : {
+                    name : eventId + ' for ' + sampleId,
+                    icon : null,
+                    disabled : true
+                },
+                "sep1" : "---------",
+                "sample_link_out" : {
+                    "name" : "go to details for " + sampleId,
+                    "icon" : null,
+                    "disabled" : false,
+                    "callback" : function(key, opt) {
+                        sampleLinkoutCallback(sampleId, config);
                     }
                 },
                 "sep1" : "---------",
@@ -1537,6 +1602,11 @@ drawMatrix = function(containingDiv, config) {
             attributes['val'] = d['val'];
         } else if (eventAlbum.getEvent(d['eventId']).metadata.datatype === 'expression data') {
             attributes['class'] = 'mrna_exp';
+            attributes['eventId'] = d['eventId'];
+            attributes['sampleId'] = d['id'];
+            attributes['val'] = d['val'];
+        } else if (utils.isObjInArray(["expression signature", "kinase target activity", "tf target activity"], eventAlbum.getEvent(d['eventId']).metadata.datatype)) {
+            attributes['class'] = "signature";
             attributes['eventId'] = d['eventId'];
             attributes['sampleId'] = d['id'];
             attributes['val'] = d['val'];
