@@ -1435,7 +1435,7 @@ drawMatrix = function(containingDiv, config) {
             return startPosition;
         },
         "y" : function(d, i) {
-            var fullOffset = 30;
+            var fullOffset = 22;
             var pad = 12;
             var offset = (i % 2 == 0) ? (fullOffset - pad) : fullOffset;
             return -1 * (margin.left - offset);
