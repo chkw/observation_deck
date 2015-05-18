@@ -1356,10 +1356,11 @@ drawMatrix = function(containingDiv, config) {
     console.log('longestRowName', longestRowName);
 
     var margin = {
-        "top" : ((longestColumnName > 3) ? (9 * longestColumnName) : 30),
+        // "top" : ((longestColumnName > 3) ? (9 * longestColumnName) : 30),
+        "top" : 10,
         "right" : 0,
         "bottom" : 0,
-        "left" : ((longestRowName > 1) ? (8 * (longestRowName + 1)) : 15)
+        "left" : ((longestRowName > 1) ? (9 * (longestRowName + 1)) : 15)
     };
 
     // document.documentElement.clientWidth
@@ -1429,14 +1430,13 @@ drawMatrix = function(containingDiv, config) {
             if (i >= datatypes.length - 1) {
                 // bottom submatrix
                 // startPosition = (startPosition - (groupedEvents[d].length * gridSize)) + (6.8 * d.length);
-                startPosition = (-1 * gridSize * rowNames.length) + (6.8 * d.length);
+                startPosition = (-1 * gridSize * rowNames.length) + (8.2 * d.length);
             }
             return startPosition;
         },
         "y" : function(d, i) {
-            // var offset = (i % 2 == 0) ? 50 : 60;
             var fullOffset = 30;
-            var pad = 10;
+            var pad = 12;
             var offset = (i % 2 == 0) ? (fullOffset - pad) : fullOffset;
             return -1 * (margin.left - offset);
         },
@@ -1519,7 +1519,7 @@ drawMatrix = function(containingDiv, config) {
         "x" : 0,
         "transform" : "rotate(" + rotationDegrees + ") translate(" + translateX + ", " + translateY + ")",
         "class" : function(d, i) {
-            return "colLabel mono axis unselectable";
+            return "colLabel mono axis unselectable hidden";
         },
         "sample" : function(d, i) {
             return d;
