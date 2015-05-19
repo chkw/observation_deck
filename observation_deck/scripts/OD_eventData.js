@@ -285,27 +285,37 @@ var eventData = eventData || {};
                 return [];
             }
             var sortedEvents = [];
-            // for (var key in this.pivot.scores) {
-            for (var i = 0; i < this.pivot.scores.length; i++) {
+            var recordedEvents = {};
+            for (var i = 0, length = this.pivot.scores.length; i < length; i++) {
                 var scoreObj = this.pivot.scores[i];
                 var eventId1 = scoreObj['eventId1'];
                 var eventId2 = scoreObj['eventId2'];
                 var score = scoreObj['score'];
 
-                // filter by pEventId
-                if (eventId1 !== pEventId) {
+                var key;
+                var val = score;
+                if (eventId1 === pEventId) {
+                    key = eventId2;
+                } else if (eventId2 === pEventId) {
+                    key = eventId1;
+                } else {
+                    // filter by pEventId
                     continue;
                 }
 
-                var key = eventId2;
-                var val = score;
+                if (utils.hasOwnProperty(recordedEvents, key)) {
+                    // duplicate event
+                    continue;
+                }
+
                 sortedEvents.push({
                     "key" : key,
                     "val" : parseFloat(val)
                 });
+
+                recordedEvents[key] = 1;
             }
             sortedEvents = sortedEvents.sort(utils.sort_by('val'));
-            sortedEvents.reverse();
             return sortedEvents;
         };
 
@@ -320,7 +330,7 @@ var eventData = eventData || {};
 
             // Extract the gene symbols. They are without suffix.
             var pivotSortedEventObjs = this.getPivotSortedEvents(pEventId);
-            pivotSortedEventObjs.reverse();
+            // console.log("pivotSortedEventObjs", utils.prettyJson(pivotSortedEventObjs));
             var pivotSortedEvents = [];
             for (var j = 0; j < pivotSortedEventObjs.length; j++) {
                 var pivotSortedEventObj = pivotSortedEventObjs[j];
@@ -329,6 +339,8 @@ var eventData = eventData || {};
 
             // iterate through datatypes
             var groupedEvents = this.getEventIdsByType();
+            pivotedDatatypes = utils.getKeys(groupedEvents);
+            pivotedDatatypes = utils.removeA(pivotedDatatypes, "clinical data");
 
             for (var datatype in groupedEvents) {
                 // pivot sort events within datatype
@@ -358,18 +370,18 @@ var eventData = eventData || {};
                     orderedEvents = utils.eliminateDuplicates(orderedEvents);
                 }
 
-                if ((keepTails) && (utils.isObjInArray(pivotedDatatypes, datatype))) {
-                    console.log('keepTails for', datatype);
-                    var size = 10;
-                    if (orderedEvents.length <= size) {
-                        // skip filter
-                    } else {
-                        // TODO filter for head and tail of list
-                        var head = orderedEvents.splice(0, size * 0.5);
-                        var tail = orderedEvents.splice(size * -0.5);
-                        orderedEvents = head.concat(tail);
-                    }
-                }
+                // if ((keepTails) && (utils.isObjInArray(pivotedDatatypes, datatype))) {
+                // console.log('keepTails for', datatype);
+                // var size = 10;
+                // if (orderedEvents.length <= size) {
+                // // skip filter
+                // } else {
+                // // TODO filter for head and tail of list
+                // var head = orderedEvents.splice(0, size * 0.5);
+                // var tail = orderedEvents.splice(size * -0.5);
+                // orderedEvents = head.concat(tail);
+                // }
+                // }
                 result[datatype] = orderedEvents;
             }
             return result;
