@@ -591,10 +591,10 @@ var medbookDataLoader = medbookDataLoader || {};
                 var newName;
                 if (datatype === 'signature') {
                     newName = name + '_v' + version;
-                } else if (utils.endsWith(name, "_tf_viper")) {
-                    datatype = 'signature';
-                    newName = name.replace('_tf_viper', '');
-                    newName = "tf_viper_" + newName + "_v" + "4";
+                    // } else if (utils.endsWith(name, "_tf_viper")) {
+                    // datatype = 'signature';
+                    // newName = name.replace('_tf_viper', '');
+                    // newName = "tf_viper_" + newName + "_v" + "4";
                 } else if (datatype === 'expression') {
                     // no suffix here, just the gene symbol
                     // newName = name + "_mRNA";
