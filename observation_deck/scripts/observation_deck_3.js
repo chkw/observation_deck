@@ -1246,13 +1246,11 @@ drawMatrix = function(containingDiv, config) {
         return rowSortSteps;
     };
 
-    // var rowSortSteps = getRowSortSteps(querySettings);
+    var rowSortSteps = getRowSortSteps(querySettings);
 
-    var getColNames = function(querySettings, eventAlbum) {
+    var getColNames = function(querySettings, eventAlbum, colSortSteps) {
         // get column names
         var colNames = null;
-
-        var colSortSteps = getColSortSteps(querySettings);
 
         colNames = eventAlbum.multisortSamples(colSortSteps);
 
@@ -1295,7 +1293,7 @@ drawMatrix = function(containingDiv, config) {
         return colNames;
     };
 
-    var colNames = getColNames(querySettings, eventAlbum);
+    var colNames = getColNames(querySettings, eventAlbum, colSortSteps);
 
     // map colNames to numbers
     var colNameMapping = new Object();
@@ -1306,52 +1304,80 @@ drawMatrix = function(containingDiv, config) {
 
     // get row names and map to numbers
 
-    var rowSortSteps = getRowSortSteps(querySettings);
+    var getRowNames = function(querySettings, eventAlbum, colSortSteps, rowSortSteps) {
 
-    var rowNames = eventAlbum.multisortEvents(rowSortSteps, colSortSteps);
+        var rowNames = eventAlbum.multisortEvents(rowSortSteps, colSortSteps);
 
-    // TODO groupedPivotSorts ... uses pivot scoring on server side
-    if (utils.hasOwnProperty(querySettings, 'pivot_sort_list')) {
-        console.log('querySettings has a pivot_sort_list of datatypes', querySettings['pivot_sort_list']);
-        rowNames = [];
-        var pivotSortedRowNames = [];
-        var pEventId = querySettings['pivot_event']['id'];
-        var pEventObj = eventAlbum.getEvent(pEventId);
-        // eventAlbum.setPivotScores(pEventId, pEventObj.metadata.weightedGeneVector);
-        var keepTailsOnly = true;
-        var groupedPivotSorts = eventAlbum.getGroupedPivotSorts(pEventId, keepTailsOnly);
+        // TODO groupedPivotSorts ... uses pivot scoring on server side
+        if (utils.hasOwnProperty(querySettings, 'pivot_sort_list')) {
+            console.log('querySettings has a pivot_sort_list of datatypes', querySettings['pivot_sort_list']);
+            rowNames = [];
+            var pivotSortedRowNames = [];
+            var pEventId = querySettings['pivot_event']['id'];
+            var pEventObj = eventAlbum.getEvent(pEventId);
+            // eventAlbum.setPivotScores(pEventId, pEventObj.metadata.weightedGeneVector);
+            var keepTailsOnly = true;
+            var groupedPivotSorts = eventAlbum.getGroupedPivotSorts(pEventId, keepTailsOnly);
 
-        for (var datatype in groupedPivotSorts) {
-            // TODO section header rows
-            var eventIds = groupedPivotSorts[datatype];
-            pivotSortedRowNames = pivotSortedRowNames.concat(eventIds);
+            for (var datatype in groupedPivotSorts) {
+                // TODO section header rows
+                var eventIds = groupedPivotSorts[datatype];
+                pivotSortedRowNames = pivotSortedRowNames.concat(eventIds);
+            }
+            rowNames = pivotSortedRowNames.concat(rowNames);
+            rowNames = utils.eliminateDuplicates(rowNames);
+        } else {
         }
-        rowNames = pivotSortedRowNames.concat(rowNames);
-        rowNames = utils.eliminateDuplicates(rowNames);
-    } else {
-    }
 
-    // hide rows of datatype, preserving relative ordering
-    var hiddenDatatypes = querySettings['hiddenDatatypes'] || [];
-    var hiddenEvents = querySettings['hiddenEvents'] || [];
-    var shownNames = [];
+        // hide rows of datatype, preserving relative ordering
+        var hiddenDatatypes = querySettings['hiddenDatatypes'] || [];
+        var hiddenEvents = querySettings['hiddenEvents'] || [];
+        var shownNames = [];
 
-    var albumEventIds = eventAlbum.getAllEventIds();
-    for (var i = 0; i < rowNames.length; i++) {
-        var rowName = rowNames[i];
-        if (!utils.isObjInArray(albumEventIds, rowName)) {
-            // event doesn't exist ... skip
-            continue;
+        var albumEventIds = eventAlbum.getAllEventIds();
+        for (var i = 0; i < rowNames.length; i++) {
+            var rowName = rowNames[i];
+            if (!utils.isObjInArray(albumEventIds, rowName)) {
+                // event doesn't exist ... skip
+                continue;
+            }
+            var datatype = eventAlbum.getEvent(rowName).metadata.datatype;
+            if ((utils.isObjInArray(hiddenDatatypes, datatype)) || (utils.isObjInArray(hiddenEvents, rowName))) {
+                continue;
+            }
+            shownNames.push(rowName);
         }
-        var datatype = eventAlbum.getEvent(rowName).metadata.datatype;
-        if ((utils.isObjInArray(hiddenDatatypes, datatype)) || (utils.isObjInArray(hiddenEvents, rowName))) {
-            continue;
-        }
-        shownNames.push(rowName);
-    }
-    rowNames = shownNames;
+        rowNames = shownNames;
 
-    // move pivot event to top of matrix (1st row)
+        // move pivot event to top of matrix (1st row)
+        var pivotEventId = null;
+        if (querySettings['pivot_event'] != null) {
+            pivotEventId = querySettings['pivot_event']['id'];
+            console.log('moving pivot event to top:', pivotEventId);
+            rowNames.unshift(pivotEventId);
+            rowNames = utils.eliminateDuplicates(rowNames);
+        }
+
+        // confirm events in rowNames exist in eventAlbum
+        var confirmedEvents = [];
+        for (var i = 0, length = rowNames.length; i < length; i++) {
+            var eventId = rowNames[i];
+            var eventObj = eventAlbum.getEvent(eventId);
+            if (eventObj) {
+                // eventObj exists
+                confirmedEvents.push(eventId);
+            } else {
+                console.log('eventObj not found for', eventId);
+            }
+        }
+        rowNames = confirmedEvents;
+
+        return rowNames;
+    };
+
+    var rowNames = getRowNames(querySettings, eventAlbum, colSortSteps, rowSortSteps);
+
+    // TODO hack
     var pivotEventId = null;
     if (querySettings['pivot_event'] != null) {
         pivotEventId = querySettings['pivot_event']['id'];
@@ -1359,20 +1385,6 @@ drawMatrix = function(containingDiv, config) {
         rowNames.unshift(pivotEventId);
         rowNames = utils.eliminateDuplicates(rowNames);
     }
-
-    // confirm events in rowNames exist in eventAlbum
-    var confirmedEvents = [];
-    for (var i = 0, length = rowNames.length; i < length; i++) {
-        var eventId = rowNames[i];
-        var eventObj = eventAlbum.getEvent(eventId);
-        if (eventObj) {
-            // eventObj exists
-            confirmedEvents.push(eventId);
-        } else {
-            console.log('eventObj not found for', eventId);
-        }
-    }
-    rowNames = confirmedEvents;
 
     // assign row numbers to row names
     var rowNameMapping = new Object();
