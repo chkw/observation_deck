@@ -1113,144 +1113,191 @@ drawMatrix = function(containingDiv, config) {
 
     var querySettings = config['querySettings'];
 
-    // expression rescaling and color mapping
-    var rescalingData = null;
+    var getRescalingData = function(OD_eventAlbum, querySettingsObj) {
+        var groupedEvents = OD_eventAlbum.getEventIdsByType();
+        var rescalingData = null;
 
-    if (utils.hasOwnProperty(groupedEvents, 'expression data') && utils.hasOwnProperty(querySettings, 'expression rescaling')) {
-        var rescalingSettings = querySettings['expression rescaling'];
-        if (rescalingSettings['method'] === 'yulia_rescaling') {
-            rescalingData = eventAlbum.yuliaExpressionRescaling(rescalingSettings['eventId'], rescalingSettings['val']);
-        } else if (rescalingSettings['method'] === 'eventwiseMedianRescaling') {
-            // rescalingData = eventAlbum.zScoreExpressionRescaling();
-            rescalingData = eventAlbum.eventwiseMedianRescaling();
-        } else if (rescalingSettings['method'] === 'zScoreExpressionRescaling') {
-            rescalingData = eventAlbum.zScoreExpressionRescaling();
-        } else if (rescalingSettings['method'] === 'samplewiseMedianRescaling') {
-            rescalingData = eventAlbum.samplewiseMedianRescaling();
-        } else {
-            // no rescaling
-        }
-    } else if (utils.hasOwnProperty(groupedEvents, 'expression data')) {
-        rescalingData = eventAlbum.eventwiseMedianRescaling();
-    } else {
-        console.log('no expression data rescaling');
-    }
-
-    // rescalingData = eventAlbum.betweenMeansExpressionRescaling('Small Cell v Adeno', 'Adeno', 'Small Cell');
-
-    var expressionColorMapper = utils.centeredRgbaColorMapper(false);
-    if (rescalingData != null) {
-        var minExpVal = rescalingData['minVal'];
-        var maxExpVal = rescalingData['maxVal'];
-        expressionColorMapper = utils.centeredRgbaColorMapper(false, 0, minExpVal, maxExpVal);
-    }
-
-    // assign color mappers
-    var colorMappers = {};
-    for (var i = 0; i < eventList.length; i++) {
-        var eventId = eventList[i];
-        var allowedValues = eventAlbum.getEvent(eventId).metadata.allowedValues;
-        if (allowedValues == 'categoric') {
-            colorMappers[eventId] = d3.scale.category10();
-        } else if (allowedValues == 'numeric') {
-            // 0-centered color mapper
-            var eventObj = eventAlbum.getEvent(eventId);
-            var minAllowedVal = eventObj.metadata.minAllowedVal;
-            var maxAllowedVal = eventObj.metadata.maxAllowedVal;
-            if (( typeof minAllowedVal != "undefined") && ( typeof maxAllowedVal != "undefined")) {
-                // value range given in metadata
-                colorMappers[eventId] = utils.centeredRgbaColorMapper(false, 0, minAllowedVal, maxAllowedVal);
+        if (utils.hasOwnProperty(groupedEvents, 'expression data') && utils.hasOwnProperty(querySettingsObj, 'expression rescaling')) {
+            var rescalingSettings = querySettingsObj['expression rescaling'];
+            if (rescalingSettings['method'] === 'yulia_rescaling') {
+                rescalingData = OD_eventAlbum.yuliaExpressionRescaling(rescalingSettings['eventId'], rescalingSettings['val']);
+            } else if (rescalingSettings['method'] === 'eventwiseMedianRescaling') {
+                // rescalingData = eventAlbum.zScoreExpressionRescaling();
+                rescalingData = OD_eventAlbum.eventwiseMedianRescaling();
+            } else if (rescalingSettings['method'] === 'zScoreExpressionRescaling') {
+                rescalingData = OD_eventAlbum.zScoreExpressionRescaling();
+            } else if (rescalingSettings['method'] === 'samplewiseMedianRescaling') {
+                rescalingData = OD_eventAlbum.samplewiseMedianRescaling();
             } else {
-                // value range computed from event data
-                var vals = eventAlbum.getEvent(eventId).data.getValues();
-                var numbers = [];
-                for (var j = 0; j < vals.length; j++) {
-                    var val = vals[j];
-                    if (utils.isNumerical(val)) {
-                        numbers.push(val);
+                // no rescaling
+            }
+        } else if (utils.hasOwnProperty(groupedEvents, 'expression data')) {
+            rescalingData = OD_eventAlbum.eventwiseMedianRescaling();
+        } else {
+            console.log('no expression data rescaling');
+        }
+
+        // rescalingData = eventAlbum.betweenMeansExpressionRescaling('Small Cell v Adeno', 'Adeno', 'Small Cell');
+        return rescalingData;
+    };
+
+    var rescalingData = getRescalingData(eventAlbum, querySettings);
+
+    var setColorMappers = function(rescalingData, eventAlbum) {
+        console.log("SETCOLORMAPPERS");
+        var expressionColorMapper = utils.centeredRgbaColorMapper(false);
+        if (rescalingData != null) {
+            var minExpVal = rescalingData['minVal'];
+            var maxExpVal = rescalingData['maxVal'];
+            expressionColorMapper = utils.centeredRgbaColorMapper(false, 0, minExpVal, maxExpVal);
+        }
+
+        // assign color mappers
+        var colorMappers = {};
+        for (var i = 0; i < eventList.length; i++) {
+            var eventId = eventList[i];
+            var allowedValues = eventAlbum.getEvent(eventId).metadata.allowedValues;
+            if (allowedValues == 'categoric') {
+                colorMappers[eventId] = d3.scale.category10();
+            } else if (allowedValues == 'numeric') {
+                // 0-centered color mapper
+                var eventObj = eventAlbum.getEvent(eventId);
+                var minAllowedVal = eventObj.metadata.minAllowedVal;
+                var maxAllowedVal = eventObj.metadata.maxAllowedVal;
+                if (( typeof minAllowedVal != "undefined") && ( typeof maxAllowedVal != "undefined")) {
+                    // value range given in metadata
+                    colorMappers[eventId] = utils.centeredRgbaColorMapper(false, 0, minAllowedVal, maxAllowedVal);
+                } else {
+                    // value range computed from event data
+                    var vals = eventAlbum.getEvent(eventId).data.getValues();
+                    var numbers = [];
+                    for (var j = 0; j < vals.length; j++) {
+                        var val = vals[j];
+                        if (utils.isNumerical(val)) {
+                            numbers.push(val);
+                        }
                     }
+                    var minVal = Math.min.apply(null, numbers);
+                    var maxVal = Math.max.apply(null, numbers);
+                    colorMappers[eventId] = utils.centeredRgbaColorMapper(false, 0, minVal, maxVal);
                 }
-                var minVal = Math.min.apply(null, numbers);
-                var maxVal = Math.max.apply(null, numbers);
-                colorMappers[eventId] = utils.centeredRgbaColorMapper(false, 0, minVal, maxVal);
-            }
-        } else if (allowedValues == 'expression') {
-            // shared expression color mapper
-            colorMappers[eventId] = expressionColorMapper;
-        } else {
-            colorMappers[eventId] = d3.scale.category10();
-        }
-    }
-
-    // get column names and map to numbers
-    var colNames = null;
-    var colSortSteps = null;
-    if ("colSort" in querySettings) {
-        colSortSteps = new eventData.sortingSteps(querySettings["colSort"]["steps"]);
-        for (var i = colSortSteps.getSteps().length - 1; i >= 0; i--) {
-            var step = colSortSteps.steps[i];
-            var name = step['name'];
-            if (eventAlbum.getEvent(name)) {
-                // event exists
+            } else if (allowedValues == 'expression') {
+                // shared expression color mapper
+                colorMappers[eventId] = expressionColorMapper;
             } else {
-                // ignore events that are not found
-                console.log(name, 'not found, skip sorting by that event');
-                colSortSteps.removeStep(name);
+                colorMappers[eventId] = d3.scale.category10();
             }
         }
-    }
+        return colorMappers;
+    };
 
-    // column sort by pivot row -- old way
-    if (utils.hasOwnProperty(querySettings, 'pivot_sort')) {
-        var pivotSortSettings = querySettings['pivot_sort'];
-        var pivotEvent = pivotSortSettings['pivot_event'];
-        if (colSortSteps == null) {
-            colSortSteps = new eventData.sortingSteps();
+    var colorMappers = setColorMappers(rescalingData, eventAlbum);
+
+    var getColSortSteps = function(querySettings) {
+        var colSortSteps = null;
+        if ("colSort" in querySettings) {
+            colSortSteps = new eventData.sortingSteps(querySettings["colSort"]["steps"]);
+            for (var i = colSortSteps.getSteps().length - 1; i >= 0; i--) {
+                var step = colSortSteps.steps[i];
+                var name = step['name'];
+                if (eventAlbum.getEvent(name)) {
+                    // event exists
+                } else {
+                    // ignore events that are not found
+                    console.log(name, 'not found, skip sorting by that event');
+                    colSortSteps.removeStep(name);
+                }
+            }
         }
-        if (eventAlbum.getEvent(pivotEvent)) {
-            // event exists
-            colSortSteps.addStep(pivotEvent, true);
+
+        // column sort by pivot row -- old way
+        if (utils.hasOwnProperty(querySettings, 'pivot_sort')) {
+            var pivotSortSettings = querySettings['pivot_sort'];
+            var pivotEvent = pivotSortSettings['pivot_event'];
+            if (colSortSteps == null) {
+                colSortSteps = new eventData.sortingSteps();
+            }
+            if (eventAlbum.getEvent(pivotEvent)) {
+                // event exists
+                colSortSteps.addStep(pivotEvent, true);
+            }
         }
-    }
+        return colSortSteps;
+    };
 
-    colNames = eventAlbum.multisortSamples(colSortSteps);
+    var colSortSteps = getColSortSteps(querySettings);
 
-    // TODO enforce required events in config['querySettings']['required events']
-    var samplesToHide = [];
-    if ('required events' in querySettings) {
-        var requiredEventId = querySettings['required events'][0];
-        console.log("requiredEventId", requiredEventId);
-
-        try {
-            var requiredEventObj = eventAlbum.getEvent(requiredEventId);
-            var nullSamples = requiredEventObj.data.getNullSamples();
-            samplesToHide = samplesToHide.concat(nullSamples);
-        } catch(error) {
-            console.log('ERROR while getting samples to hide in eventID:', requiredEventId, 'error.message ->', error.message);
-        } finally {
-            console.log('samplesToHide', samplesToHide);
+    var getRowSortSteps = function(querySettings) {
+        var rowSortSteps = null;
+        if ('rowSort' in querySettings) {
+            rowSortSteps = new eventData.sortingSteps(querySettings["rowSort"]["steps"]);
+            for (var i = rowSortSteps.getSteps().length - 1; i >= 0; i--) {
+                var step = rowSortSteps.steps[i];
+                var name = step['name'];
+                if (eventAlbum.getEvent(name)) {
+                    // event exists
+                } else {
+                    // ignore events that are not found
+                    console.log(name, 'not found, skip sorting by that event');
+                    rowSortSteps.removeStep(name);
+                }
+            }
         }
-    }
-    samplesToHide = utils.eliminateDuplicates(samplesToHide);
+        return rowSortSteps;
+    };
 
-    // colNames after hiding null samples
-    var newColNames = [];
-    for (var ci = 0; ci < colNames.length; ci++) {
-        var colName = colNames[ci];
-        if (utils.isObjInArray(config['displayedSamples'], colName)) {
-            // make sure displayedSamples are shown
-            newColNames.push(colName);
-        } else if (utils.isObjInArray(samplesToHide, colName)) {
-            // samples have been specified for hiding
-            continue;
-        } else if (config['displayedSamples'].length == 0) {
-            // no displayedSamples specified, so show them all by default
-            newColNames.push(colName);
+    // var rowSortSteps = getRowSortSteps(querySettings);
+
+    var getColNames = function(querySettings, eventAlbum) {
+        // get column names
+        var colNames = null;
+
+        var colSortSteps = getColSortSteps(querySettings);
+
+        colNames = eventAlbum.multisortSamples(colSortSteps);
+
+        // TODO enforce required events in config['querySettings']['required events']
+        var samplesToHide = [];
+        if ('required events' in querySettings) {
+            var requiredEventId = querySettings['required events'][0];
+            console.log("requiredEventId", requiredEventId);
+
+            try {
+                var requiredEventObj = eventAlbum.getEvent(requiredEventId);
+                var nullSamples = requiredEventObj.data.getNullSamples();
+                samplesToHide = samplesToHide.concat(nullSamples);
+            } catch(error) {
+                console.log('ERROR while getting samples to hide in eventID:', requiredEventId, 'error.message ->', error.message);
+            } finally {
+                console.log('samplesToHide', samplesToHide);
+            }
         }
-    }
-    colNames = newColNames;
-    // console.log('colNames:' + colNames);
+        samplesToHide = utils.eliminateDuplicates(samplesToHide);
 
+        // colNames after hiding null samples
+        var newColNames = [];
+        for (var ci = 0; ci < colNames.length; ci++) {
+            var colName = colNames[ci];
+            if (utils.isObjInArray(config['displayedSamples'], colName)) {
+                // make sure displayedSamples are shown
+                newColNames.push(colName);
+            } else if (utils.isObjInArray(samplesToHide, colName)) {
+                // samples have been specified for hiding
+                continue;
+            } else if (config['displayedSamples'].length == 0) {
+                // no displayedSamples specified, so show them all by default
+                newColNames.push(colName);
+            }
+        }
+        colNames = newColNames;
+        // console.log('colNames:' + colNames);
+
+        return colNames;
+    };
+
+    var colNames = getColNames(querySettings, eventAlbum);
+
+    // map colNames to numbers
     var colNameMapping = new Object();
     for (var i in colNames) {
         var name = colNames[i];
@@ -1259,21 +1306,7 @@ drawMatrix = function(containingDiv, config) {
 
     // get row names and map to numbers
 
-    var rowSortSteps = null;
-    if ('rowSort' in querySettings) {
-        rowSortSteps = new eventData.sortingSteps(querySettings["rowSort"]["steps"]);
-        for (var i = rowSortSteps.getSteps().length - 1; i >= 0; i--) {
-            var step = rowSortSteps.steps[i];
-            var name = step['name'];
-            if (eventAlbum.getEvent(name)) {
-                // event exists
-            } else {
-                // ignore events that are not found
-                console.log(name, 'not found, skip sorting by that event');
-                rowSortSteps.removeStep(name);
-            }
-        }
-    }
+    var rowSortSteps = getRowSortSteps(querySettings);
 
     var rowNames = eventAlbum.multisortEvents(rowSortSteps, colSortSteps);
 
