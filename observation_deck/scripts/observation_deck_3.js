@@ -1101,6 +1101,8 @@ drawMatrix = function(containingDiv, config) {
     var eventAlbum = config['eventAlbum'];
     eventAlbum.fillInMissingSamples(null);
 
+    eventAlbum.fillInDatatypeLabelEvents("cyan");
+
     var groupedEvents = eventAlbum.getEventIdsByType();
     var rowLabelColorMapper = d3.scale.category10();
     var eventList = [];
@@ -1655,6 +1657,10 @@ drawMatrix = function(containingDiv, config) {
             attributes['eventId'] = d['eventId'];
             attributes['sampleId'] = d['id'];
             attributes['val'] = d['val'];
+        } else if (eventAlbum.getEvent(d['eventId']).metadata.datatype === "datatype label") {
+            attributes['class'] = "datatype";
+            attributes['eventId'] = d['eventId'];
+            attributes["fill"] = d['val'];
         }
         group.appendChild(utils.createSvgRectElement(x, y, rx, ry, width, height, attributes));
 

@@ -1057,7 +1057,7 @@ var eventData = eventData || {};
 
             // get all sample IDs for event
             var allEventIdsByCategory = this.getEventIdsByType();
-            for (var i = 0; i < utils.getKeys(allEventIdsByCategory).length; i++) {
+            for (var i = 0, length = utils.getKeys(allEventIdsByCategory).length; i < length; i++) {
                 var category = utils.getKeys(allEventIdsByCategory)[i];
                 for (var j = 0; j < allEventIdsByCategory[category].length; j++) {
                     var eventId = allEventIdsByCategory[category][j];
@@ -1079,6 +1079,28 @@ var eventData = eventData || {};
                 }
             }
             return this;
+        };
+
+        /**
+         * NOTE!!! ALL missing sample data will be filled in!
+         */
+        this.fillInDatatypeLabelEvents = function(value) {
+            var allEventIdsByCategory = this.getEventIdsByType();
+            var datatypes = utils.getKeys(allEventIdsByCategory);
+            for (var i = 0, length = datatypes.length; i < length; i++) {
+                var datatype = datatypes[i];
+
+                var eventObj = this.addEvent({
+                    'id' : datatype,
+                    'name' : datatype,
+                    'displayName' : datatype,
+                    'description' : null,
+                    'datatype' : "datatype label",
+                    'allowedValues' : null
+                }, {});
+            }
+
+            this.fillInMissingSamples(value);
         };
     };
 
