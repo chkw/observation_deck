@@ -1090,10 +1090,22 @@ var eventData = eventData || {};
             for (var i = 0, length = datatypes.length; i < length; i++) {
                 var datatype = datatypes[i];
 
+                var pos_suffix = "(+)";
+                var neg_suffix = "(-)";
+
                 var eventObj = this.addEvent({
-                    'id' : datatype,
-                    'name' : datatype,
-                    'displayName' : datatype,
+                    'id' : datatype + pos_suffix,
+                    'name' : datatype + pos_suffix,
+                    'displayName' : datatype + pos_suffix,
+                    'description' : null,
+                    'datatype' : "datatype label",
+                    'allowedValues' : null
+                }, {});
+
+                var eventObj_anti = this.addEvent({
+                    'id' : datatype + neg_suffix,
+                    'name' : datatype + neg_suffix,
+                    'displayName' : datatype + neg_suffix,
                     'description' : null,
                     'datatype' : "datatype label",
                     'allowedValues' : null
