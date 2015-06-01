@@ -1087,8 +1087,15 @@ var eventData = eventData || {};
         this.fillInDatatypeLabelEvents = function(value) {
             var allEventIdsByCategory = this.getEventIdsByType();
             var datatypes = utils.getKeys(allEventIdsByCategory);
+
+            var datatypeLabelDatatype = "datatype label";
+
             for (var i = 0, length = datatypes.length; i < length; i++) {
                 var datatype = datatypes[i];
+
+                if (datatype === datatypeLabelDatatype) {
+                    continue;
+                }
 
                 var pos_suffix = "(+)";
                 var neg_suffix = "(-)";
@@ -1098,7 +1105,7 @@ var eventData = eventData || {};
                     'name' : datatype + pos_suffix,
                     'displayName' : datatype + pos_suffix,
                     'description' : null,
-                    'datatype' : "datatype label",
+                    'datatype' : datatypeLabelDatatype,
                     'allowedValues' : null
                 }, {});
 
@@ -1107,7 +1114,7 @@ var eventData = eventData || {};
                     'name' : datatype + neg_suffix,
                     'displayName' : datatype + neg_suffix,
                     'description' : null,
-                    'datatype' : "datatype label",
+                    'datatype' : datatypeLabelDatatype,
                     'allowedValues' : null
                 }, {});
             }
