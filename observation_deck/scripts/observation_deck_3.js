@@ -1101,7 +1101,7 @@ drawMatrix = function(containingDiv, config) {
     var eventAlbum = config['eventAlbum'];
     eventAlbum.fillInMissingSamples(null);
 
-    eventAlbum.fillInDatatypeLabelEvents("cyan");
+    eventAlbum.fillInDatatypeLabelEvents("black");
 
     var groupedEvents = eventAlbum.getEventIdsByType();
     var rowLabelColorMapper = d3.scale.category10();
@@ -1591,7 +1591,7 @@ drawMatrix = function(containingDiv, config) {
             showDataList.push(dataListObj);
         }
     }
-    var heatMap = svg.selectAll(".cell").data(showDataList).enter().append(function(d) {
+    var heatMap = svg.selectAll(".cell").data(showDataList).enter().append(function(d, i) {
         var group = document.createElementNS(utils.svgNamespaceUri, "g");
         group.setAttributeNS(null, "class", "cell");
 
@@ -1658,9 +1658,20 @@ drawMatrix = function(containingDiv, config) {
             attributes['sampleId'] = d['id'];
             attributes['val'] = d['val'];
         } else if (eventAlbum.getEvent(d['eventId']).metadata.datatype === "datatype label") {
+            // TODO datatype label cells
             attributes['class'] = "datatype";
             attributes['eventId'] = d['eventId'];
             attributes["fill"] = d['val'];
+            var colNameIndex = colNameMapping[colName];
+            if (colNameIndex == 0) {
+                attributes["fill"] = "lime";
+            } else if (colNameIndex == 1) {
+                attributes["fill"] = "orange";
+            } else if (colNameIndex == 2) {
+                attributes["fill"] = "brown";
+            } else {
+
+            }
         }
         group.appendChild(utils.createSvgRectElement(x, y, rx, ry, width, height, attributes));
 
