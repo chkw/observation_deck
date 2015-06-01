@@ -1309,6 +1309,7 @@ drawMatrix = function(containingDiv, config) {
     var getRowNames = function(querySettings, eventAlbum, colSortSteps, rowSortSteps) {
 
         var rowNames = eventAlbum.multisortEvents(rowSortSteps, colSortSteps);
+        console.log("rowNames", rowNames);
 
         // TODO groupedPivotSorts ... uses pivot scoring on server side
         if (utils.hasOwnProperty(querySettings, 'pivot_sort_list')) {
@@ -1323,13 +1324,21 @@ drawMatrix = function(containingDiv, config) {
 
             for (var datatype in groupedPivotSorts) {
                 // TODO section header rows
-                var eventIds = groupedPivotSorts[datatype];
+                var eventIds;
+                if (datatype === "datatype label") {
+                    eventIds = (eventAlbum.getEventIdsByType())[datatype];
+                } else {
+                    eventIds = groupedPivotSorts[datatype];
+                }
                 pivotSortedRowNames = pivotSortedRowNames.concat(eventIds);
+                console.log(datatype, eventIds);
             }
             rowNames = pivotSortedRowNames.concat(rowNames);
             rowNames = utils.eliminateDuplicates(rowNames);
         } else {
         }
+
+        console.log("rowNames", rowNames);
 
         // hide rows of datatype, preserving relative ordering
         var hiddenDatatypes = querySettings['hiddenDatatypes'] || [];
@@ -1661,8 +1670,8 @@ drawMatrix = function(containingDiv, config) {
             // TODO datatype label cells
             attributes['class'] = "datatype";
             attributes['eventId'] = d['eventId'];
-            attributes["fill"] = d['val'];
             var colNameIndex = colNameMapping[colName];
+            console.log("colName", colName, "eventId", d["eventId"]);
             if (colNameIndex == 0) {
                 attributes["fill"] = "lime";
             } else if (colNameIndex == 1) {
@@ -1670,7 +1679,7 @@ drawMatrix = function(containingDiv, config) {
             } else if (colNameIndex == 2) {
                 attributes["fill"] = "brown";
             } else {
-
+                attributes["fill"] = d['val'];
             }
         }
         group.appendChild(utils.createSvgRectElement(x, y, rx, ry, width, height, attributes));
