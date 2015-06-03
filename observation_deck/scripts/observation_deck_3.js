@@ -1682,22 +1682,37 @@ drawMatrix = function(containingDiv, config) {
             attributes['val'] = d['val'];
         } else if (eventAlbum.getEvent(d['eventId']).metadata.datatype === "datatype label") {
             // TODO datatype label cells
-            var datatypeName = d["eventId"];
-            if (utils.endsWith(datatypeName, "(+)")) {
-                attributes["anticorrelated"] = false;
+            var eventId = d["eventId"];
+            var datatype;
+            var headOrTail;
+            if (utils.endsWith(eventId, "(+)")) {
+                datatype = eventId.replace("(+)", "");
+                headOrTail = "head";
             } else {
-                attributes["anticorrelated"] = true;
+                datatype = eventId.replace("(-)", "");
+                headOrTail = "tail";
             }
             attributes['class'] = "datatype";
-            attributes['eventId'] = datatypeName;
+            attributes['eventId'] = datatype;
             var colNameIndex = colNameMapping[colName];
-            // console.log("colName", colName, "eventId", datatypeName);
             if (colNameIndex == 0) {
                 attributes["fill"] = "lime";
+                group.onclick = function() {
+                    console.log("clicked on cell 0", datatype, headOrTail, "up");
+                    setDatatypePaging(datatype, headOrTail, "up");
+                };
             } else if (colNameIndex == 1) {
                 attributes["fill"] = "orange";
+                group.onclick = function() {
+                    console.log("clicked on cell 1", datatype, headOrTail, "down");
+                    setDatatypePaging(datatype, headOrTail, "down");
+                };
             } else if (colNameIndex == 2) {
                 attributes["fill"] = "brown";
+                group.onclick = function() {
+                    console.log("clicked on cell 2", datatype, headOrTail, "0");
+                    setDatatypePaging(datatype, headOrTail, "0");
+                };
             } else {
                 attributes["fill"] = d['val'];
             }
