@@ -512,7 +512,15 @@ setupTypeLabelContextMenu = function(config) {
             console.log('elem', elem);
         },
         build : function($trigger, contextmenuEvent) {
-            var datatype = ($trigger[0].getAttribute('datatype'));
+            // var datatype = ($trigger[0].getAttribute('datatype'));
+            var eventId = ($trigger[0].getAttribute('eventId'));
+            var isPlus = utils.endsWith(eventId, "(+)");
+
+            var fields = eventId.split("(");
+            fields.pop();
+            var sanitizedEventId = fields.join("(");
+            var datatype = sanitizedEventId;
+
             var items = {
                 'title' : {
                     name : function() {
@@ -1415,7 +1423,7 @@ drawMatrix = function(containingDiv, config) {
         "top" : 10,
         "right" : 0,
         "bottom" : 0,
-        "left" : ((longestRowName > 1) ? (9 * (longestRowName + 1)) : 15)
+        "left" : ((longestRowName > 1) ? (8 * (longestRowName + 1)) : 15)
     };
 
     // document.documentElement.clientWidth
@@ -1463,55 +1471,55 @@ drawMatrix = function(containingDiv, config) {
     });
 
     // TODO datatype labels
-    var datatypeLabels = svg.selectAll(".typeLabel").data(function() {
-        var datatypes = utils.getKeys(groupedEvents);
-        return datatypes;
-    }).enter().append("text").text(function(d) {
-        var text = d.toUpperCase();
-        return text;
-    }).attr({
-        "x" : function(d, i) {
-            var rowCount = 0;
-            for (var datatype in groupedEvents) {
-                if (datatype === d) {
-                    break;
-                } else {
-                    rowCount = rowCount + groupedEvents[datatype].length;
-                }
-            }
-            var datatypes = utils.getKeys(groupedEvents);
-
-            var startPosition = rowCount * gridSize * -1;
-            if (i >= datatypes.length - 1) {
-                // bottom submatrix
-                // startPosition = (startPosition - (groupedEvents[d].length * gridSize)) + (6.8 * d.length);
-                startPosition = (-1 * gridSize * rowNames.length) + (8.2 * d.length);
-            }
-            return startPosition;
-        },
-        "y" : function(d, i) {
-            var fullOffset = 22;
-            var pad = 12;
-            var offset = (i % 2 == 0) ? (fullOffset - pad) : fullOffset;
-            return -1 * (margin.left - offset);
-        },
-        "transform" : "rotate(-90)",
-        "class" : function(d, i) {
-            var s = "typeLabel mono axis unselectable";
-            return s;
-        },
-        'datatype' : function(d, i) {
-            return d;
-        }
-    }).style("text-anchor", "end").style("fill", function(d) {
-        var datatype = d;
-        return rowLabelColorMapper(datatype);
-    });
-    datatypeLabels.append("title").text(function(d) {
-        var datatype = d;
-        var s = 'datatype: ' + datatype;
-        return s;
-    });
+    // var datatypeLabels = svg.selectAll(".typeLabel").data(function() {
+    // var datatypes = utils.getKeys(groupedEvents);
+    // return datatypes;
+    // }).enter().append("text").text(function(d) {
+    // var text = d.toUpperCase();
+    // return text;
+    // }).attr({
+    // "x" : function(d, i) {
+    // var rowCount = 0;
+    // for (var datatype in groupedEvents) {
+    // if (datatype === d) {
+    // break;
+    // } else {
+    // rowCount = rowCount + groupedEvents[datatype].length;
+    // }
+    // }
+    // var datatypes = utils.getKeys(groupedEvents);
+    //
+    // var startPosition = rowCount * gridSize * -1;
+    // if (i >= datatypes.length - 1) {
+    // // bottom submatrix
+    // // startPosition = (startPosition - (groupedEvents[d].length * gridSize)) + (6.8 * d.length);
+    // startPosition = (-1 * gridSize * rowNames.length) + (8.2 * d.length);
+    // }
+    // return startPosition;
+    // },
+    // "y" : function(d, i) {
+    // var fullOffset = 22;
+    // var pad = 12;
+    // var offset = (i % 2 == 0) ? (fullOffset - pad) : fullOffset;
+    // return -1 * (margin.left - offset);
+    // },
+    // "transform" : "rotate(-90)",
+    // "class" : function(d, i) {
+    // var s = "typeLabel mono axis unselectable";
+    // return s;
+    // },
+    // 'datatype' : function(d, i) {
+    // return d;
+    // }
+    // }).style("text-anchor", "end").style("fill", function(d) {
+    // var datatype = d;
+    // return rowLabelColorMapper(datatype);
+    // });
+    // datatypeLabels.append("title").text(function(d) {
+    // var datatype = d;
+    // var s = 'datatype: ' + datatype;
+    // return s;
+    // });
 
     // row labels
     var translateX = -6;
