@@ -1318,7 +1318,6 @@ drawMatrix = function(containingDiv, config) {
             var pivotSortedRowNames = [];
             var pEventId = querySettings['pivot_event']['id'];
             var pEventObj = eventAlbum.getEvent(pEventId);
-            // eventAlbum.setPivotScores(pEventId, pEventObj.metadata.weightedGeneVector);
             var keepTailsOnly = true;
             var groupedPivotSorts = eventAlbum.getGroupedPivotSorts(pEventId, keepTailsOnly);
 
@@ -1528,9 +1527,16 @@ drawMatrix = function(containingDiv, config) {
         },
         "transform" : "translate(" + translateX + ", " + translateY + ")",
         "class" : function(d, i) {
-            var s = "rowLabel mono axis unselectable";
-            if (d === pivotEventId) {
-                s = s + " pivotEvent";
+            var eventObj = eventAlbum.getEvent(d);
+            var datatype = eventObj.metadata.datatype;
+            var s;
+            if (datatype === "datatype label") {
+                s = "typeLabel mono axis unselectable";
+            } else {
+                s = "rowLabel mono axis unselectable";
+                if (d === pivotEventId) {
+                    s = s + " pivotEvent";
+                }
             }
             return s;
         },
@@ -1549,7 +1555,7 @@ drawMatrix = function(containingDiv, config) {
     });
     // rowLabels.on("click", config["rowClickback"]);
     // rowLabels.on("contextmenu", config["rowRightClickback"]);
-    rowLabels.append("title").text(function(d) {
+    rowLabels.append("title").text(function(d, i) {
         var eventObj = eventAlbum.getEvent(d);
         var datatype = eventObj.metadata.datatype;
         var allowedValues = eventObj.metadata.allowedValues;
@@ -1668,10 +1674,16 @@ drawMatrix = function(containingDiv, config) {
             attributes['val'] = d['val'];
         } else if (eventAlbum.getEvent(d['eventId']).metadata.datatype === "datatype label") {
             // TODO datatype label cells
+            var datatypeName = d["eventId"];
+            if (utils.endsWith(datatypeName, "(+)")) {
+                attributes["anticorrelated"] = false;
+            } else {
+                attributes["anticorrelated"] = true;
+            }
             attributes['class'] = "datatype";
-            attributes['eventId'] = d['eventId'];
+            attributes['eventId'] = datatypeName;
             var colNameIndex = colNameMapping[colName];
-            console.log("colName", colName, "eventId", d["eventId"]);
+            // console.log("colName", colName, "eventId", datatypeName);
             if (colNameIndex == 0) {
                 attributes["fill"] = "lime";
             } else if (colNameIndex == 1) {
