@@ -1559,7 +1559,11 @@ drawMatrix = function(containingDiv, config) {
     }).style("text-anchor", "end").style("fill", function(d) {
         var eventObj = eventAlbum.getEvent(d);
         var datatype = eventObj.metadata.datatype;
-        return rowLabelColorMapper(datatype);
+        if (datatype === "datatype label") {
+            return "black";
+        } else {
+            return rowLabelColorMapper(datatype);
+        }
     });
     // rowLabels.on("click", config["rowClickback"]);
     // rowLabels.on("contextmenu", config["rowRightClickback"]);
