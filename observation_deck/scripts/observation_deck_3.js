@@ -1319,7 +1319,7 @@ drawMatrix = function(containingDiv, config) {
         var rowNames = eventAlbum.multisortEvents(rowSortSteps, colSortSteps);
         console.log("rowNames", rowNames);
 
-        // TODO groupedPivotSorts ... uses pivot scoring on server side
+        // groupedPivotSorts ... uses pivot scoring on server side
         if (utils.hasOwnProperty(querySettings, 'pivot_sort_list')) {
             console.log('querySettings has a pivot_sort_list of datatypes', querySettings['pivot_sort_list']);
             rowNames = [];
@@ -1330,12 +1330,18 @@ drawMatrix = function(containingDiv, config) {
             var groupedPivotSorts = eventAlbum.getGroupedPivotSorts(pEventId, keepTailsOnly);
 
             for (var datatype in groupedPivotSorts) {
-                // TODO section header rows
+                // section header rows
                 var eventIds;
                 if (datatype === "datatype label") {
-                    eventIds = (eventAlbum.getEventIdsByType())[datatype];
+                    // skip the "datatype label" datatype
+                    eventIds = [];
                 } else {
+                    // events
                     eventIds = groupedPivotSorts[datatype];
+                    // datatype label for correlated events
+                    eventIds.unshift(datatype + "(+)");
+                    // datatype label for anti-correlated events
+                    eventIds.push(datatype + "(-)");
                 }
                 pivotSortedRowNames = pivotSortedRowNames.concat(eventIds);
                 console.log(datatype, eventIds);
