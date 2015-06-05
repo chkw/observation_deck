@@ -538,60 +538,60 @@ setupTypeLabelContextMenu = function(config) {
                     }
                 },
                 "sep1" : "---------",
-                "pagingFold" : {
-                    "name" : "paging",
-                    "items" : {
-                        "pagingHeadHome" : {
-                            "name" : "most correlated",
-                            "icon" : null,
-                            "disabled" : false,
-                            "callback" : function(key, opt) {
-                                setDatatypePaging(datatype, "head", "0");
-                            }
-                        },
-                        "pagingHeadDown" : {
-                            "name" : "correlated ^",
-                            "icon" : null,
-                            "disabled" : false,
-                            "callback" : function(key, opt) {
-                                setDatatypePaging(datatype, "head", "down");
-                            }
-                        },
-                        "pagingHeadUp" : {
-                            "name" : "correlated v",
-                            "icon" : null,
-                            "disabled" : false,
-                            "callback" : function(key, opt) {
-                                setDatatypePaging(datatype, "head", "up");
-                            }
-                        },
-                        "sep1" : "---------",
-                        "pagingTailUp" : {
-                            "name" : "anti-correlated ^",
-                            "icon" : null,
-                            "disabled" : false,
-                            "callback" : function(key, opt) {
-                                setDatatypePaging(datatype, "tail", "up");
-                            }
-                        },
-                        "pagingTailDown" : {
-                            "name" : "anti-correlated v",
-                            "icon" : null,
-                            "disabled" : false,
-                            "callback" : function(key, opt) {
-                                setDatatypePaging(datatype, "tail", "down");
-                            }
-                        },
-                        "pagingTailEnd" : {
-                            "name" : "most anti-correlated",
-                            "icon" : null,
-                            "disabled" : false,
-                            "callback" : function(key, opt) {
-                                setDatatypePaging(datatype, "tail", "0");
-                            }
-                        }
-                    }
-                },
+                // "pagingFold" : {
+                // "name" : "paging",
+                // "items" : {
+                // "pagingHeadHome" : {
+                // "name" : "most correlated",
+                // "icon" : null,
+                // "disabled" : false,
+                // "callback" : function(key, opt) {
+                // setDatatypePaging(datatype, "head", "0");
+                // }
+                // },
+                // "pagingHeadDown" : {
+                // "name" : "correlated ^",
+                // "icon" : null,
+                // "disabled" : false,
+                // "callback" : function(key, opt) {
+                // setDatatypePaging(datatype, "head", "down");
+                // }
+                // },
+                // "pagingHeadUp" : {
+                // "name" : "correlated v",
+                // "icon" : null,
+                // "disabled" : false,
+                // "callback" : function(key, opt) {
+                // setDatatypePaging(datatype, "head", "up");
+                // }
+                // },
+                // "sep1" : "---------",
+                // "pagingTailUp" : {
+                // "name" : "anti-correlated ^",
+                // "icon" : null,
+                // "disabled" : false,
+                // "callback" : function(key, opt) {
+                // setDatatypePaging(datatype, "tail", "up");
+                // }
+                // },
+                // "pagingTailDown" : {
+                // "name" : "anti-correlated v",
+                // "icon" : null,
+                // "disabled" : false,
+                // "callback" : function(key, opt) {
+                // setDatatypePaging(datatype, "tail", "down");
+                // }
+                // },
+                // "pagingTailEnd" : {
+                // "name" : "most anti-correlated",
+                // "icon" : null,
+                // "disabled" : false,
+                // "callback" : function(key, opt) {
+                // setDatatypePaging(datatype, "tail", "0");
+                // }
+                // }
+                // }
+                // },
                 'toggle_datatype_visibility' : {
                     'name' : function() {
                         return 'toggle visibility';
@@ -1316,7 +1316,7 @@ drawMatrix = function(containingDiv, config) {
     var getRowNames = function(querySettings, eventAlbum, colSortSteps, rowSortSteps) {
 
         var rowNames = eventAlbum.multisortEvents(rowSortSteps, colSortSteps);
-        console.log("rowNames", rowNames);
+        // console.log("rowNames", rowNames);
 
         // groupedPivotSorts ... uses pivot scoring on server side
         if (utils.hasOwnProperty(querySettings, 'pivot_sort_list')) {
@@ -1343,14 +1343,27 @@ drawMatrix = function(containingDiv, config) {
                     eventIds.push(datatype + "(-)");
                 }
                 pivotSortedRowNames = pivotSortedRowNames.concat(eventIds);
-                console.log(datatype, eventIds);
+                // console.log(datatype, eventIds);
             }
             rowNames = pivotSortedRowNames.concat(rowNames);
             rowNames = utils.eliminateDuplicates(rowNames);
         } else {
+            // TODO need to insert the datatype label events in correct order when no pivot sort used
+            var datatypeLabels = [];
+            for (var i = 0, length = rowNames.length; i < length; i++) {
+                var rowName = rowNames[i];
+                if (utils.endsWith(rowName, "(+)") || utils.endsWith(rowName, "(-)")) {
+                    datatypeLabels.push(rowName);
+                }
+            }
+
+            for (var i = 0, length = datatypeLabels.length; i < length; i++) {
+                var datatypeLabel = datatypeLabels[i];
+                utils.removeA(rowNames, datatypeLabel);
+            }
         }
 
-        console.log("rowNames", rowNames);
+        // console.log("rowNames", rowNames);
 
         // hide rows of datatype, preserving relative ordering
         var hiddenDatatypes = querySettings['hiddenDatatypes'] || [];
@@ -1756,7 +1769,7 @@ drawMatrix = function(containingDiv, config) {
                     arrow = utils.createSVGPolygonElement(attributes);
                 } else {
                     bar = utils.createSvgRectElement(x, y + height - 3, 0, 0, width, 2, attributes);
-                    attributes["points"] = getDownArrowPointsList(x, y + 1, width, height - 1).join(" ");
+                    attributes["points"] = getDownArrowPointsList(x, y + 1, width, height - 2).join(" ");
                     arrow = utils.createSVGPolygonElement(attributes);
                 }
                 icon.appendChild(bar);
@@ -1800,7 +1813,7 @@ drawMatrix = function(containingDiv, config) {
                 } else {
                     moreOrLess = "LESS";
                 }
-                s = datatype + " events " + moreOrLess + " " + anti + "CORRELATED to pivot event";
+                s = "show " + datatype + " events " + moreOrLess + " " + anti + "CORRELATED to pivot event";
             } else if (colNameIndex == 1) {
                 var moreOrLess;
                 if (headOrTail === "head") {
@@ -1808,9 +1821,9 @@ drawMatrix = function(containingDiv, config) {
                 } else {
                     moreOrLess = "MORE";
                 }
-                s = datatype + " events " + moreOrLess + " " + anti + "CORRELATED to pivot event";
+                s = "show " + datatype + " events " + moreOrLess + " " + anti + "CORRELATED to pivot event";
             } else if (colNameIndex == 2) {
-                s = "TOP " + datatype + " events " + anti + "CORRELATED to pivot event";
+                s = "show TOP " + datatype + " events " + anti + "CORRELATED to pivot event";
             } else {
 
             }
