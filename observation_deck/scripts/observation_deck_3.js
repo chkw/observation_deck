@@ -1729,7 +1729,6 @@ drawMatrix = function(containingDiv, config) {
                 attributes["stroke-width"] = "0px";
                 group.onclick = function() {
                     var upOrDown = (headOrTail === "head") ? "down" : "up";
-                    console.log("clicked on cell 0", datatype, headOrTail, upOrDown);
                     setDatatypePaging(datatype, headOrTail, upOrDown);
                 };
                 attributes["points"] = getUpArrowPointsList(x, y, width, height).join(" ");
@@ -1739,7 +1738,6 @@ drawMatrix = function(containingDiv, config) {
                 attributes["stroke-width"] = "0px";
                 group.onclick = function() {
                     var upOrDown = (headOrTail === "head") ? "up" : "down";
-                    console.log("clicked on cell 1", datatype, headOrTail, upOrDown);
                     setDatatypePaging(datatype, headOrTail, upOrDown);
                 };
                 attributes["points"] = getDownArrowPointsList(x, y, width, height).join(" ");
@@ -1748,7 +1746,6 @@ drawMatrix = function(containingDiv, config) {
                 icon = document.createElementNS(utils.svgNamespaceUri, "g");
                 attributes["stroke-width"] = "0px";
                 group.onclick = function() {
-                    console.log("clicked on cell 2", datatype, headOrTail, "0");
                     setDatatypePaging(datatype, headOrTail, "0");
                 };
                 var bar;
@@ -1770,7 +1767,6 @@ drawMatrix = function(containingDiv, config) {
                 icon = utils.createSvgRectElement(x, (1 + y + (height / 2)), 0, 0, width, 2, attributes);
             }
         }
-        // group.appendChild(utils.createSvgRectElement(x, y, rx, ry, width, height, attributes));
         group.appendChild(icon);
 
         return group;
