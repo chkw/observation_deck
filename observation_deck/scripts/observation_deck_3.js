@@ -1154,7 +1154,6 @@ drawMatrix = function(containingDiv, config) {
     var rescalingData = getRescalingData(eventAlbum, querySettings);
 
     var setColorMappers = function(rescalingData, eventAlbum) {
-        console.log("SETCOLORMAPPERS");
         var expressionColorMapper = utils.centeredRgbaColorMapper(false);
         if (rescalingData != null) {
             var minExpVal = rescalingData['minVal'];
@@ -1708,14 +1707,16 @@ drawMatrix = function(containingDiv, config) {
             if (colNameIndex == 0) {
                 attributes["fill"] = "lime";
                 group.onclick = function() {
-                    console.log("clicked on cell 0", datatype, headOrTail, "up");
-                    setDatatypePaging(datatype, headOrTail, "up");
+                    var upOrDown = (headOrTail === "head") ? "down" : "up";
+                    console.log("clicked on cell 0", datatype, headOrTail, upOrDown);
+                    setDatatypePaging(datatype, headOrTail, upOrDown);
                 };
             } else if (colNameIndex == 1) {
                 attributes["fill"] = "orange";
                 group.onclick = function() {
-                    console.log("clicked on cell 1", datatype, headOrTail, "down");
-                    setDatatypePaging(datatype, headOrTail, "down");
+                    var upOrDown = (headOrTail === "head") ? "up" : "down";
+                    console.log("clicked on cell 1", datatype, headOrTail, upOrDown);
+                    setDatatypePaging(datatype, headOrTail, upOrDown);
                 };
             } else if (colNameIndex == 2) {
                 attributes["fill"] = "brown";
@@ -1737,9 +1738,49 @@ drawMatrix = function(containingDiv, config) {
 
     // heatmap titles
     heatMap.append("title").text(function(d) {
-        // var s = "r:" + d['eventId'] + "\n\nc:" + d['id'] + "\n\nval:" + d['val'] + "\n\nval_orig:" + d['val_orig'];
-        var s = "event: " + d['eventId'] + "\nsample: " + d['id'] + "\nvalue: " + d['val'];
-        return s;
+        var eventId = d["eventId"];
+        var datatype = eventAlbum.getEvent(eventId).metadata.datatype;
+        var sampleId = d['id'];
+        var val = d["val"];
+        if (datatype === "datatype label") {
+            var colNameIndex = colNameMapping[sampleId];
+            var headOrTail;
+            if (utils.endsWith(eventId, "(+)")) {
+                datatype = eventId.replace("(+)", "");
+                headOrTail = "head";
+            } else {
+                datatype = eventId.replace("(-)", "");
+                headOrTail = "tail";
+            }
+            var anti = (headOrTail === "head") ? "" : "ANTI-";
+            var s = "";
+            if (colNameIndex == 0) {
+                var moreOrLess;
+                if (headOrTail === "head") {
+                    moreOrLess = "MORE";
+                } else {
+                    moreOrLess = "LESS";
+                }
+                s = datatype + " events " + moreOrLess + " " + anti + "CORRELATED to pivot event";
+            } else if (colNameIndex == 1) {
+                var moreOrLess;
+                if (headOrTail === "head") {
+                    moreOrLess = "LESS";
+                } else {
+                    moreOrLess = "MORE";
+                }
+                s = datatype + " events " + moreOrLess + " " + anti + "CORRELATED to pivot event";
+            } else if (colNameIndex == 2) {
+                s = "TOP " + datatype + " events " + anti + "CORRELATED to pivot event";
+            } else {
+
+            }
+            return s;
+        } else {
+            // var s = "r:" + d['eventId'] + "\n\nc:" + d['id'] + "\n\nval:" + d['val'] + "\n\nval_orig:" + d['val_orig'];
+            var s = "event: " + d['eventId'] + "\nsample: " + d['id'] + "\nvalue: " + d['val'];
+            return s;
+        }
     });
 
     return config;
