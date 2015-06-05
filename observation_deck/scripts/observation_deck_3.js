@@ -1624,6 +1624,22 @@ drawMatrix = function(containingDiv, config) {
         }
     }
     var heatMap = svg.selectAll(".cell").data(showDataList).enter().append(function(d, i) {
+        var getUpArrowPointsList = function(x, y, width, height) {
+            var pointsList = [];
+            pointsList.push(((width / 2) + x) + "," + (0 + y));
+            pointsList.push((width + x) + "," + (height + y));
+            pointsList.push((0 + x) + "," + (height + y));
+            return pointsList;
+        };
+
+        var getDownArrowPointsList = function(x, y, width, height) {
+            var pointsList = [];
+            pointsList.push(((width / 2) + x) + "," + (height + y));
+            pointsList.push((width + x) + "," + (0 + y));
+            pointsList.push((0 + x) + "," + (0 + y));
+            return pointsList;
+        };
+
         var group = document.createElementNS(utils.svgNamespaceUri, "g");
         group.setAttributeNS(null, "class", "cell");
 
@@ -1674,21 +1690,25 @@ drawMatrix = function(containingDiv, config) {
             "stroke-width" : "2px",
             "fill" : colorMapper(val)
         };
+        var icon;
         if (eventAlbum.getEvent(d['eventId']).metadata.allowedValues === 'categoric') {
             attributes['class'] = 'categoric';
             attributes['eventId'] = d['eventId'];
             attributes['sampleId'] = d['id'];
             attributes['val'] = d['val'];
+            icon = utils.createSvgRectElement(x, y, rx, ry, width, height, attributes);
         } else if (eventAlbum.getEvent(d['eventId']).metadata.datatype === 'expression data') {
             attributes['class'] = 'mrna_exp';
             attributes['eventId'] = d['eventId'];
             attributes['sampleId'] = d['id'];
             attributes['val'] = d['val'];
+            icon = utils.createSvgRectElement(x, y, rx, ry, width, height, attributes);
         } else if (utils.isObjInArray(["expression signature", "kinase target activity", "tf target activity"], eventAlbum.getEvent(d['eventId']).metadata.datatype)) {
             attributes['class'] = "signature";
             attributes['eventId'] = d['eventId'];
             attributes['sampleId'] = d['id'];
             attributes['val'] = d['val'];
+            icon = utils.createSvgRectElement(x, y, rx, ry, width, height, attributes);
         } else if (eventAlbum.getEvent(d['eventId']).metadata.datatype === "datatype label") {
             // TODO datatype label cells
             var eventId = d["eventId"];
@@ -1703,32 +1723,55 @@ drawMatrix = function(containingDiv, config) {
             }
             attributes['class'] = "datatype";
             attributes['eventId'] = datatype;
+            attributes["fill"] = "black";
             var colNameIndex = colNameMapping[colName];
             if (colNameIndex == 0) {
-                attributes["fill"] = "lime";
+                attributes["stroke-width"] = "0px";
                 group.onclick = function() {
                     var upOrDown = (headOrTail === "head") ? "down" : "up";
                     console.log("clicked on cell 0", datatype, headOrTail, upOrDown);
                     setDatatypePaging(datatype, headOrTail, upOrDown);
                 };
+                attributes["points"] = getUpArrowPointsList(x, y, width, height).join(" ");
+
+                icon = utils.createSVGPolygonElement(attributes);
             } else if (colNameIndex == 1) {
-                attributes["fill"] = "orange";
+                attributes["stroke-width"] = "0px";
                 group.onclick = function() {
                     var upOrDown = (headOrTail === "head") ? "up" : "down";
                     console.log("clicked on cell 1", datatype, headOrTail, upOrDown);
                     setDatatypePaging(datatype, headOrTail, upOrDown);
                 };
+                attributes["points"] = getDownArrowPointsList(x, y, width, height).join(" ");
+                icon = utils.createSVGPolygonElement(attributes);
             } else if (colNameIndex == 2) {
-                attributes["fill"] = "brown";
+                icon = document.createElementNS(utils.svgNamespaceUri, "g");
+                attributes["stroke-width"] = "0px";
                 group.onclick = function() {
                     console.log("clicked on cell 2", datatype, headOrTail, "0");
                     setDatatypePaging(datatype, headOrTail, "0");
                 };
+                var bar;
+                var arrow;
+                if (headOrTail === "head") {
+                    bar = utils.createSvgRectElement(x, y, 0, 0, width, 2, attributes);
+                    attributes["points"] = getUpArrowPointsList(x, y, width, height).join(" ");
+                    arrow = utils.createSVGPolygonElement(attributes);
+                } else {
+                    bar = utils.createSvgRectElement(x, y + height - 3, 0, 0, width, 2, attributes);
+                    attributes["points"] = getDownArrowPointsList(x, y + 1, width, height - 1).join(" ");
+                    arrow = utils.createSVGPolygonElement(attributes);
+                }
+                icon.appendChild(bar);
+                icon.appendChild(arrow);
             } else {
-                attributes["fill"] = d['val'];
+                attributes["stroke-width"] = "0px";
+                attributes["fill"] = "DarkSlateGray";
+                icon = utils.createSvgRectElement(x, (1 + y + (height / 2)), 0, 0, width, 2, attributes);
             }
         }
-        group.appendChild(utils.createSvgRectElement(x, y, rx, ry, width, height, attributes));
+        // group.appendChild(utils.createSvgRectElement(x, y, rx, ry, width, height, attributes));
+        group.appendChild(icon);
 
         return group;
     });
