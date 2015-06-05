@@ -17,6 +17,8 @@ COMPILATION_LEVEL = SIMPLE_OPTIMIZATIONS
 
 METEOR_PACKAGE_DIR = ~/workspace/MedBook-Workbench/packages/observation-deck
 
+test:
+
 bower_update:
 	bower update ;
 	\

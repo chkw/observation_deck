@@ -428,7 +428,8 @@ createResetContextMenuItem = function(config) {
         disabled : false,
         callback : function(key, opt) {
             resetConfig(config);
-            resetSession(['pivotSettings', "subscriptionPaging"]);
+            resetSession(['pivotSettings', "subscriptionPaging", "geneList"]);
+            setSession("pivotSettings", "");
 
             var containerDivElem = document.getElementById(config['containerDivId']);
             var newConfig = buildObservationDeck(containerDivElem, config);
