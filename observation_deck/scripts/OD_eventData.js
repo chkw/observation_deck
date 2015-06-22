@@ -7,7 +7,7 @@
 var eventData = eventData || {};
 (function(ed) {"use strict";
 
-    ed.eventHierarchyUrl = 'observation_deck/data/eventHierarchy.xml';
+    // ed.eventHierarchyUrl = 'observation_deck/data/eventHierarchy.xml';
 
     /**
      * Get the elements with the specified eventType.  Returns a list of elements.

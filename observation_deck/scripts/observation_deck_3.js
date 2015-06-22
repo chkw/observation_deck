@@ -1451,7 +1451,7 @@ drawMatrix = function(containingDiv, config) {
     var denom = (colNames.length > rowNames.length) ? colNames.length : rowNames.length;
     var gridSize = Math.floor(width / denom);
 
-    var minGridSize = 9;
+    var minGridSize = 13;
     gridSize = (gridSize > minGridSize) ? gridSize : minGridSize;
     console.log('gridSize', gridSize, 'margin', (margin));
 
