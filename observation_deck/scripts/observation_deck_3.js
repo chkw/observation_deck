@@ -419,9 +419,10 @@ setDatatypePaging = function(datatype, headOrTail, upOrDown) {
 };
 
 /**
- *
+ *add a sorting step object for the eventId to "rowSort" or "colSort". Defaults to "colSort".
  */
 addSortStepToCookies = function(eventId, config, sortType) {
+    // may be rowSort or colSort, default to colSort
     var sortType = sortType || "colSort";
 
     var sortSteps;
