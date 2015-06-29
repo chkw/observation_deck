@@ -419,6 +419,25 @@ setDatatypePaging = function(datatype, headOrTail, upOrDown) {
 };
 
 /**
+ *
+ */
+addSortStepToCookies = function(eventId, config, sortType) {
+    var sortType = sortType || "colSort";
+
+    var sortSteps;
+    var querySettings = config['querySettings'];
+    if ( sortType in querySettings) {
+        sortSteps = new eventData.sortingSteps(querySettings[sortType]["steps"]);
+    } else {
+        sortSteps = new eventData.sortingSteps();
+    }
+    sortSteps.addStep(eventId);
+    querySettings[sortType] = sortSteps;
+
+    utils.setCookie('od_config', JSON.stringify(querySettings));
+};
+
+/**
  * Create a context menu item for use with jQuery-contextMenu.
  */
 createResetContextMenuItem = function(config) {
@@ -810,19 +829,7 @@ setupRowLabelContextMenu = function(config) {
                             icon : null,
                             disabled : false,
                             callback : function(key, opt) {
-                                var sortType = 'colSort';
-
-                                var sortSteps = null;
-                                var querySettings = config['querySettings'];
-                                if ( sortType in querySettings) {
-                                    sortSteps = new eventData.sortingSteps(querySettings[sortType]["steps"]);
-                                } else {
-                                    sortSteps = new eventData.sortingSteps();
-                                }
-                                sortSteps.addStep(eventId);
-                                querySettings[sortType] = sortSteps;
-
-                                utils.setCookie('od_config', JSON.stringify(querySettings));
+                                addSortStepToCookies(eventId, config);
 
                                 var containerDivElem = document.getElementById(config['containerDivId']);
                                 buildObservationDeck(containerDivElem, config);
