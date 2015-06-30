@@ -1452,6 +1452,9 @@ var eventData = eventData || {};
             return result;
         };
 
+        /**
+         * noReverse = true to just bring a step to the front
+         */
         this.addStep = function(name, noReverse) {
             var index = this.getIndex(name);
             if (index >= 0) {

@@ -421,9 +421,13 @@ setDatatypePaging = function(datatype, headOrTail, upOrDown) {
 /**
  *add a sorting step object for the eventId to "rowSort" or "colSort". Defaults to "colSort".
  */
-addSortStepToCookies = function(eventId, config, sortType) {
+addSortStepToCookies = function(eventId, config, sortType, noReverse) {
     // may be rowSort or colSort, default to colSort
     var sortType = sortType || "colSort";
+
+    var noReverse = noReverse || false;
+
+    console.log("sortType", sortType, "noReverse", noReverse);
 
     var sortSteps;
     var querySettings = config['querySettings'];
@@ -432,7 +436,7 @@ addSortStepToCookies = function(eventId, config, sortType) {
     } else {
         sortSteps = new eventData.sortingSteps();
     }
-    sortSteps.addStep(eventId);
+    sortSteps.addStep(eventId, noReverse);
     querySettings[sortType] = sortSteps;
 
     utils.setCookie('od_config', JSON.stringify(querySettings));
@@ -830,7 +834,7 @@ setupRowLabelContextMenu = function(config) {
                             icon : null,
                             disabled : false,
                             callback : function(key, opt) {
-                                addSortStepToCookies(eventId, config);
+                                addSortStepToCookies(eventId, config, "colSort", true);
 
                                 var containerDivElem = document.getElementById(config['containerDivId']);
                                 buildObservationDeck(containerDivElem, config);
