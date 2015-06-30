@@ -424,10 +424,7 @@ setDatatypePaging = function(datatype, headOrTail, upOrDown) {
 addSortStepToCookies = function(eventId, config, sortType, noReverse) {
     // may be rowSort or colSort, default to colSort
     var sortType = sortType || "colSort";
-
     var noReverse = noReverse || false;
-
-    console.log("sortType", sortType, "noReverse", noReverse);
 
     var sortSteps;
     var querySettings = config['querySettings'];
@@ -808,6 +805,8 @@ setupRowLabelContextMenu = function(config) {
 
                             utils.setCookie('od_config', JSON.stringify(querySettings));
 
+                            addSortStepToCookies(eventId, config, "colSort", true);
+
                             console.log('writing pivotSettings to Session', pivotSessionSettings);
                             setSession('pivotSettings', pivotSessionSettings);
                         } else {
@@ -819,6 +818,8 @@ setupRowLabelContextMenu = function(config) {
                                 'datatype' : datatype
                             };
                             utils.setCookie('od_config', JSON.stringify(querySettings));
+
+                            addSortStepToCookies(eventId, config, "colSort", true);
 
                             // trigger redrawing
                             var containerDivElem = document.getElementById(config['containerDivId']);
@@ -834,7 +835,7 @@ setupRowLabelContextMenu = function(config) {
                             icon : null,
                             disabled : false,
                             callback : function(key, opt) {
-                                addSortStepToCookies(eventId, config, "colSort", true);
+                                addSortStepToCookies(eventId, config, "colSort", false);
 
                                 var containerDivElem = document.getElementById(config['containerDivId']);
                                 buildObservationDeck(containerDivElem, config);
