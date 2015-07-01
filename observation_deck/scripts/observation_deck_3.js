@@ -217,7 +217,7 @@ getCookieEvents = function() {
  */
 createSuggestBoxDialog = function(suggestBoxConfig) {
     var title = suggestBoxConfig["title"];
-    var placeholder = suggestBoxConfig["placeholder"];
+    var placeholder = suggestBoxConfig["placeholderText"];
 
     var divElem = utils.createDivElement(title);
     divElem.style['display'] = 'none';
@@ -267,7 +267,7 @@ setupDialogBox = function(config) {
     var bodyElem = document.getElementsByTagName('body')[0];
     var dialogBox = createSuggestBoxDialog({
         "title" : "hugoSearch",
-        "placeholder" : "HUGO symbol",
+        "placeholderText" : "HUGO symbol",
         "bloodhoundObj" : new Bloodhound({
             "datumTokenizer" : Bloodhound.tokenizers.whitespace,
             "queryTokenizer" : Bloodhound.tokenizers.whitespace,
