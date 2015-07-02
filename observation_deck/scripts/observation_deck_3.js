@@ -3,6 +3,8 @@
  * OCT 2014
  * observation_deck_3.js
  *
+ * Development of this data visualization began with the example at: <http://bl.ocks.org/tjdecke/5558084> .
+ *
  * This time, avoid using jQuery prototype.
  *
  * requirements:
@@ -641,37 +643,37 @@ setupTypeLabelContextMenu = function(config) {
                     }
                 },
                 // TODO experimental features here
-                // "test_fold" : {
-                // "name" : "dev_features",
-                // "items" : {
-                // "hugoSearch" : {
-                // "name" : "HUGO search",
-                // "icon" : null,
-                // "disabled" : false,
-                // "callback" : function(key, opt) {
-                // console.log("key", key, "opt", opt);
-                // var dialogElem = document.getElementById('hugoSearch');
-                // dialogElem.style["display"] = "block";
-                //
-                // $(dialogElem).dialog({
-                // 'title' : 'HUGO search',
-                // "buttons" : {
-                // "close" : function() {
-                // $(this).dialog("close");
-                //
-                // // }, //this just closes it - doesn't clean it up!!
-                // // "destroy" : function() {
-                // // $(this).dialog("destroy");
-                // // //this completely empties the dialog
-                // // //and returns it to its initial state
-                //
-                // }
-                // }
-                // });
-                // }
-                // }
-                // }
-                // },
+                "test_fold" : {
+                    "name" : "dev_features",
+                    "items" : {
+                        "hugoSearch" : {
+                            "name" : "HUGO search",
+                            "icon" : null,
+                            "disabled" : false,
+                            "callback" : function(key, opt) {
+                                console.log("key", key, "opt", opt);
+                                var dialogElem = document.getElementById('hugoSearch');
+                                dialogElem.style["display"] = "block";
+
+                                $(dialogElem).dialog({
+                                    'title' : 'HUGO search',
+                                    "buttons" : {
+                                        "close" : function() {
+                                            $(this).dialog("close");
+
+                                            // }, //this just closes it - doesn't clean it up!!
+                                            // "destroy" : function() {
+                                            // $(this).dialog("destroy");
+                                            // //this completely empties the dialog
+                                            // //and returns it to its initial state
+
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    }
+                },
                 "reset" : createResetContextMenuItem(config)
             };
             return {
