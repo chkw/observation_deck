@@ -673,8 +673,19 @@ var eventData = eventData || {};
                     var reverse = steps[i]['reverse'];
                     var eventObj = album.getEvent(eventId);
                     if ((eventObj == undefined) || (eventObj == null)) {
-                        console.log('no event found for sorting: ' + eventId);
-                        continue;
+                        for (var key in album.datatypeSuffixMapping) {
+                            var newId = eventId + album.datatypeSuffixMapping[key];
+                            eventObj = album.getEvent(newId);
+                            if ((eventObj != undefined) && (eventObj != null)) {
+                                // console.log("use " + newId + " for " + eventId);
+                                eventId = newId;
+                                break;
+                            }
+                        }
+                        if ((eventObj == undefined) || (eventObj == null)) {
+                            console.log('no event found for sorting: ' + eventId);
+                            continue;
+                        }
                     }
                     var allowedValues = eventObj.metadata['allowedValues'];
 
