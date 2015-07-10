@@ -84,6 +84,9 @@ var eventData = eventData || {};
 
         this.album = {};
 
+        /**
+         * map a datatype to its ID suffix
+         */
         this.datatypeSuffixMapping = {};
 
         /**
@@ -93,6 +96,11 @@ var eventData = eventData || {};
          *
          */
         this.pivot = {};
+
+        this.getSuffixedEventId = function(name, datatype) {
+            var suffix = ( datatype in this.datatypeSuffixMapping) ? this.datatypeSuffixMapping[datatype] : "";
+            return name + suffix;
+        };
 
         this.addEvent = function(metadataObj, data) {
             var newEvent = new ed.OD_event(metadataObj);
@@ -344,8 +352,10 @@ var eventData = eventData || {};
 
             for (var datatype in groupedEvents) {
                 // pivot sort events within datatype
-                var suffix = this.datatypeSuffixMapping[datatype];
-                suffix = (suffix == null) ? "" : suffix;
+
+                // var suffix = this.datatypeSuffixMapping[datatype];
+                // suffix = (suffix == null) ? "" : suffix;
+
                 var orderedEvents = [];
 
                 // suffixed ids here
@@ -358,7 +368,8 @@ var eventData = eventData || {};
 
                 // add scored events in the datatype
                 for (var i = 0; i < pivotSortedEvents.length; i++) {
-                    var eventId = pivotSortedEvents[i] + suffix;
+                    // var eventId = pivotSortedEvents[i] + suffix;
+                    var eventId = this.getSuffixedEventId(pivotSortedEvents[i], datatype);
                     if (utils.isObjInArray(unorderedEvents, eventId)) {
                         orderedEvents.push(eventId);
                     }
@@ -573,7 +584,7 @@ var eventData = eventData || {};
                     var datatype = eventObj.metadata.datatype;
                     var scoredDatatype = eventObj.metadata.scoredDatatype;
 
-                    var datatypeSuffix = this.datatypeSuffixMapping[scoredDatatype];
+                    // var datatypeSuffix = this.datatypeSuffixMapping[scoredDatatype];
 
                     if (scoredDatatype == null) {
                         console.log("no scored datatype to sort");
@@ -597,7 +608,8 @@ var eventData = eventData || {};
                     var scoredEventSigWeightOverlap = [];
                     for (var c = 0; c < orderedGeneList.length; c++) {
                         var orderedGene = orderedGeneList[c];
-                        var orderedGene_eventId = orderedGene + datatypeSuffix;
+                        // var orderedGene_eventId = orderedGene + datatypeSuffix;
+                        var orderedGene_eventId = this.getSuffixedEventId(orderedGene, scoredDatatype);
                         var index = eventGroupEventIds.indexOf(orderedGene_eventId);
                         if (index >= 0) {
                             // events that are in signature weight vector AND datatype group
