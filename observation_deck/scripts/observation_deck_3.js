@@ -21,7 +21,7 @@
 u = utils;
 
 // expose observation_deck to meteor
-observation_deck = observation_deck || {};
+observation_deck = ( typeof observation_deck === "undefined") ? {} : observation_deck;
 (function(od) {"use strict";
 
     /**
