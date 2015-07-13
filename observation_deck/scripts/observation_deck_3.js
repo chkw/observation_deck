@@ -17,7 +17,12 @@
  * 7) typeahead <https://github.com/twitter/typeahead.js>
  */
 
+// expose utils to meteor
 u = utils;
+
+var observation_deck = observation_deck || {};
+(function(od) {"use strict";
+})(observation_deck);
 
 /**
  *  Build an observation deck!
@@ -31,7 +36,8 @@ buildObservationDeck = function(containerDivElem, config) {
     drawMatrix(containerDivElem, config);
 
     // set up dialog box
-    setupDialogBox(config);
+    setupDialogBox("hugoSearch", "HUGO symbol", config["geneQueryUrl"]);
+    setupDialogBox("sigSearch", "signature name", config["sigQueryUrl"]);
 
     // set up context menu should follow matrix drawing
     setupContextMenus(config);
@@ -235,7 +241,8 @@ createSuggestBoxDialog = function(suggestBoxConfig) {
     var buttonElem = document.createElement("button");
     divElem.appendChild(buttonElem);
     utils.setElemAttributes(buttonElem, {
-        "type" : "button"
+        "type" : "button",
+        "style" : "float: right"
     });
     buttonElem.innerHTML = "select";
     buttonElem.onclick = function() {
@@ -263,13 +270,12 @@ createSuggestBoxDialog = function(suggestBoxConfig) {
 /**
  * Set up a dialog boxes
  */
-setupDialogBox = function(config) {
-    var geneQueryUrl = config["geneQueryUrl"];
+setupDialogBox = function(elementTitle, placeholderText, queryUrl) {
     var queryVar = "%VALUE";
     var bodyElem = document.getElementsByTagName('body')[0];
     var dialogBox = createSuggestBoxDialog({
-        "title" : "hugoSearch",
-        "placeholderText" : "HUGO symbol",
+        "title" : elementTitle,
+        "placeholderText" : placeholderText,
         "bloodhoundObj" : new Bloodhound({
             "datumTokenizer" : Bloodhound.tokenizers.whitespace,
             "queryTokenizer" : Bloodhound.tokenizers.whitespace,
@@ -277,7 +283,7 @@ setupDialogBox = function(config) {
             "remote" : {
                 // "url" : "https://su2c-dev.ucsc.edu/wb/genes?q=%QUERY",
                 // "url" : "/genes?q=%VALUE",
-                "url" : geneQueryUrl + queryVar,
+                "url" : queryUrl + queryVar,
                 "wildcard" : queryVar,
                 "transform" : function(response) {
                     console.log("response", response);
@@ -651,7 +657,6 @@ setupTypeLabelContextMenu = function(config) {
                             "icon" : null,
                             "disabled" : false,
                             "callback" : function(key, opt) {
-                                console.log("key", key, "opt", opt);
                                 var dialogElem = document.getElementById('hugoSearch');
                                 dialogElem.style["display"] = "block";
 
@@ -660,13 +665,24 @@ setupTypeLabelContextMenu = function(config) {
                                     "buttons" : {
                                         "close" : function() {
                                             $(this).dialog("close");
+                                        }
+                                    }
+                                });
+                            }
+                        },
+                        "sigSearch" : {
+                            "name" : "signature search",
+                            "icon" : null,
+                            "disabled" : false,
+                            "callback" : function(key, opt) {
+                                var dialogElem = document.getElementById('sigSearch');
+                                dialogElem.style["display"] = "block";
 
-                                            // }, //this just closes it - doesn't clean it up!!
-                                            // "destroy" : function() {
-                                            // $(this).dialog("destroy");
-                                            // //this completely empties the dialog
-                                            // //and returns it to its initial state
-
+                                $(dialogElem).dialog({
+                                    'title' : 'signature search',
+                                    "buttons" : {
+                                        "close" : function() {
+                                            $(this).dialog("close");
                                         }
                                     }
                                 });
