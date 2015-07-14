@@ -315,6 +315,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                             var id = item["id"];
                             list.push(id);
                         }
+                        list = utils.eliminateDuplicates(list);
                         return list;
                     }
                 }
