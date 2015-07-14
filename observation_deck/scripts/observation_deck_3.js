@@ -24,6 +24,8 @@ u = utils;
 observation_deck = ( typeof observation_deck === "undefined") ? {} : observation_deck;
 (function(od) {"use strict";
 
+    var cookieKey = "od_config";
+
     /**
      *  Build an observation deck!
      */
@@ -36,8 +38,28 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
         drawMatrix(containerDivElem, config);
 
         // set up dialog box
-        setupDialogBox("hugoSearch", "HUGO symbol", config["geneQueryUrl"]);
-        setupDialogBox("sigSearch", "signature name", config["sigQueryUrl"]);
+        setupDialogBox("hugoSearch", "HUGO symbol", config["geneQueryUrl"], function(selectedString) {
+            var settings = getCookieVal();
+            var key = "hugoSearch";
+            if (!utils.hasOwnProperty(settings, key)) {
+                settings[key] = [];
+            }
+            settings[key].push(selectedString);
+            settings[key] = utils.eliminateDuplicates(settings[key]);
+            setCookieVal(settings);
+            console.log("button clicked in hugoSearch", selectedString);
+        });
+        setupDialogBox("sigSearch", "signature name", config["sigQueryUrl"], function(selectedString) {
+            var settings = getCookieVal();
+            var key = "sigSearch";
+            if (!utils.hasOwnProperty(settings, key)) {
+                settings[key] = [];
+            }
+            settings[key].push(selectedString);
+            settings[key] = utils.eliminateDuplicates(settings[key]);
+            setCookieVal(settings);
+            console.log("button clicked in sigSearch", selectedString);
+        });
 
         // set up context menu should follow matrix drawing
         setupContextMenus(config);
@@ -50,9 +72,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
      */
     var getConfiguration = function(config) {
         // look for od_config in cookies
-        var cookie = utils.getCookie('od_config');
-        // console.log('cookie', cookie);
-        var querySettings = utils.parseJson(cookie) || {};
+        var querySettings = getCookieVal();
         config['querySettings'] = querySettings;
 
         var od_eventAlbum = null;
@@ -191,7 +211,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
      */
     od.getCookieEvents = function() {
         var eventList = [];
-        var cookieObj = utils.parseJson(utils.getCookie('od_config'));
+        var cookieObj = getCookieVal();
         if (( typeof cookieObj === 'undefined') || (cookieObj == null) || ((utils.getKeys(cookieObj)).length == 0)) {
             return [];
         }
@@ -247,7 +267,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
         });
         buttonElem.innerHTML = "select";
         buttonElem.onclick = function() {
-            console.log("button clicked", inputElem.value);
+            suggestBoxConfig["selectionCallback"](inputElem.value);
             $(divElem).dialog("close");
         };
 
@@ -271,7 +291,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
     /**
      * Set up a dialog boxes
      */
-    var setupDialogBox = function(elementTitle, placeholderText, queryUrl) {
+    var setupDialogBox = function(elementTitle, placeholderText, queryUrl, selectionCallback) {
         var queryVar = "%VALUE";
         var bodyElem = document.getElementsByTagName('body')[0];
         var dialogBox = createSuggestBoxDialog({
@@ -298,7 +318,8 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                         return list;
                     }
                 }
-            })
+            }),
+            "selectionCallback" : selectionCallback
         });
         bodyElem.appendChild(dialogBox);
     };
@@ -338,6 +359,22 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
             }
         }
         console.log('remaining config', config);
+    };
+
+    /**
+     * Set the obs-deck cookie. Value is an object that is stringified for the cookie.
+     */
+    var setCookieVal = function(value) {
+        utils.setCookie(cookieKey, JSON.stringify(value));
+    };
+
+    /**
+     * Get the obs-deck cookie. Return empty object if no cookie.s
+     */
+    var getCookieVal = function() {
+        var cookie = utils.getCookie(cookieKey);
+        var parsedCookie = utils.parseJson(cookie) || {};
+        return parsedCookie;
     };
 
     /**
@@ -445,7 +482,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
         sortSteps.addStep(eventId, noReverse);
         querySettings[sortType] = sortSteps;
 
-        utils.setCookie('od_config', JSON.stringify(querySettings));
+        setCookieVal(querySettings);
     };
 
     /**
@@ -462,7 +499,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 setSession("pivotSettings", "");
 
                 var containerDivElem = document.getElementById(config['containerDivId']);
-                var newConfig = buildObservationDeck(containerDivElem, config);
+                var newConfig = od.buildObservationDeck(containerDivElem, config);
             }
         };
         return obj;
@@ -642,11 +679,11 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                                 hiddenDatatypes.push(datatype);
                             }
 
-                            utils.setCookie('od_config', JSON.stringify(config['querySettings']));
+                            setCookieVal(querySettings);
 
                             // trigger redrawing
                             var containerDivElem = document.getElementById(config['containerDivId']);
-                            buildObservationDeck(containerDivElem, config);
+                            od.buildObservationDeck(containerDivElem, config);
                         }
                     },
                     // TODO experimental features here
@@ -822,7 +859,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                                 datatypes.push('expression data');
                                 querySettings['pivot_sort_list'] = utils.eliminateDuplicates(datatypes);
 
-                                utils.setCookie('od_config', JSON.stringify(querySettings));
+                                setCookieVal(querySettings);
 
                                 addSortStepToCookies(eventId, config, "colSort", true);
 
@@ -836,13 +873,13 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                                     'id' : eventId,
                                     'datatype' : datatype
                                 };
-                                utils.setCookie('od_config', JSON.stringify(querySettings));
+                                setCookieVal(querySettings);
 
                                 addSortStepToCookies(eventId, config, "colSort", true);
 
                                 // trigger redrawing
                                 var containerDivElem = document.getElementById(config['containerDivId']);
-                                buildObservationDeck(containerDivElem, config);
+                                od.buildObservationDeck(containerDivElem, config);
                             }
                         }
                     },
@@ -857,7 +894,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                                     addSortStepToCookies(eventId, config, "colSort", false);
 
                                     var containerDivElem = document.getElementById(config['containerDivId']);
-                                    buildObservationDeck(containerDivElem, config);
+                                    od.buildObservationDeck(containerDivElem, config);
                                 }
                             }
                         }
@@ -873,10 +910,10 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                                     var querySettings = config['querySettings'];
                                     querySettings['required events'] = [eventId];
 
-                                    utils.setCookie('od_config', JSON.stringify(querySettings));
+                                    setCookieVal(querySettings);
 
                                     var containerDivElem = document.getElementById(config['containerDivId']);
-                                    buildObservationDeck(containerDivElem, config);
+                                    od.buildObservationDeck(containerDivElem, config);
                                 }
                             },
                             "hide_event" : {
@@ -889,10 +926,10 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                                     hiddenEvents.push(eventId);
                                     querySettings['hiddenEvents'] = utils.eliminateDuplicates(hiddenEvents);
 
-                                    utils.setCookie('od_config', JSON.stringify(querySettings));
+                                    setCookieVal(querySettings);
 
                                     var containerDivElem = document.getElementById(config['containerDivId']);
-                                    buildObservationDeck(containerDivElem, config);
+                                    od.buildObservationDeck(containerDivElem, config);
                                 }
                             }
                         }
@@ -954,10 +991,10 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                                         'method' : 'samplewiseMedianRescaling'
                                     };
 
-                                    utils.setCookie('od_config', JSON.stringify(querySettings));
+                                    setCookieVal(querySettings);
 
                                     var containerDivElem = document.getElementById(config['containerDivId']);
-                                    buildObservationDeck(containerDivElem, config);
+                                    od.buildObservationDeck(containerDivElem, config);
                                 }
                             },
                             "eventwise median rescaling" : {
@@ -971,10 +1008,10 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                                         'method' : 'eventwiseMedianRescaling'
                                     };
 
-                                    utils.setCookie('od_config', JSON.stringify(querySettings));
+                                    setCookieVal(querySettings);
 
                                     var containerDivElem = document.getElementById(config['containerDivId']);
-                                    buildObservationDeck(containerDivElem, config);
+                                    od.buildObservationDeck(containerDivElem, config);
                                 }
                                 // },
                                 // "eventwise z-score rescaling" : {
@@ -988,10 +1025,10 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                                 // 'method' : 'zScoreExpressionRescaling'
                                 // };
                                 //
-                                // utils.setCookie('od_config', JSON.stringify(querySettings));
+                                // setCookieVal(querySettings);
                                 //
                                 // var containerDivElem = document.getElementById(config['containerDivId']);
-                                // buildObservationDeck(containerDivElem, config);
+                                // od.buildObservationDeck(containerDivElem, config);
                                 // }
                             }
                         }
@@ -1064,10 +1101,10 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                                 'val' : val
                             };
 
-                            utils.setCookie('od_config', JSON.stringify(querySettings));
+                            setCookieVal(querySettings);
 
                             var containerDivElem = document.getElementById(config['containerDivId']);
-                            buildObservationDeck(containerDivElem, config);
+                            od.buildObservationDeck(containerDivElem, config);
                         }
                     },
                     "sep2" : "---------",
