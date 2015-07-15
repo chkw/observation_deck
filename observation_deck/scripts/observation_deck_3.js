@@ -237,6 +237,11 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
             }
         }
 
+        if (utils.hasOwnProperty(cookieObj, "hugoSearch")) {
+            var hugoIds = cookieObj["hugoSearch"];
+            geneList = geneList.concat(hugoIds);
+        }
+
         return utils.eliminateDuplicates(geneList);
     };
 
@@ -680,7 +685,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                                 hiddenDatatypes.push(datatype);
                             }
 
-                            setCookieVal(querySettings);
+                            setCookieVal(config['querySettings']);
 
                             // trigger redrawing
                             var containerDivElem = document.getElementById(config['containerDivId']);
@@ -1420,18 +1425,20 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 rowNames = utils.eliminateDuplicates(rowNames);
             } else {
                 // TODO need to insert the datatype label events in correct order when no pivot sort used
-                var datatypeLabels = [];
-                for (var i = 0, length = rowNames.length; i < length; i++) {
-                    var rowName = rowNames[i];
-                    if (utils.endsWith(rowName, "(+)") || utils.endsWith(rowName, "(-)")) {
-                        datatypeLabels.push(rowName);
-                    }
-                }
+                console.log('querySettings has NO pivot_sort_list of datatypes');
+                // var datatypeLabels = [];
+                // for (var i = 0, length = rowNames.length; i < length; i++) {
+                // var rowName = rowNames[i];
+                // if (utils.endsWith(rowName, "(+)") || utils.endsWith(rowName, "(-)")) {
+                // datatypeLabels.push(rowName);
+                // }
+                // }
+                //
+                // for (var i = 0, length = datatypeLabels.length; i < length; i++) {
+                // var datatypeLabel = datatypeLabels[i];
+                // utils.removeA(rowNames, datatypeLabel);
+                // }
 
-                for (var i = 0, length = datatypeLabels.length; i < length; i++) {
-                    var datatypeLabel = datatypeLabels[i];
-                    utils.removeA(rowNames, datatypeLabel);
-                }
             }
 
             // console.log("rowNames", rowNames);
