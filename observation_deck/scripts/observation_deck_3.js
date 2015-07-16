@@ -1623,6 +1623,9 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
         var rowLabels = svg.selectAll(".rowLabel").data(rowNames).enter().append("text").text(function(d) {
             var eventObj = eventAlbum.getEvent(d);
             var displayName = eventObj.metadata.displayName;
+            if (eventObj.metadata.datatype === "datatype label") {
+                displayName = displayName.toUpperCase();
+            }
             return displayName;
         }).attr({
             "x" : 0,
