@@ -1814,7 +1814,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 }
                 attributes['class'] = "datatype";
                 attributes['eventId'] = datatype;
-                attributes["fill"] = "black";
+                attributes["fill"] = rowLabelColorMapper(datatype);
                 var colNameIndex = colNameMapping[colName];
                 if (colNameIndex == 0) {
                     attributes["stroke-width"] = "0px";
@@ -1854,7 +1854,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                     icon.appendChild(arrow);
                 } else {
                     attributes["stroke-width"] = "0px";
-                    attributes["fill"] = "DarkSlateGray";
+                    attributes["fill"] = rowLabelColorMapper(datatype);
                     icon = utils.createSvgRectElement(x, (1 + y + (height / 2)), 0, 0, width, 2, attributes);
                 }
             }
