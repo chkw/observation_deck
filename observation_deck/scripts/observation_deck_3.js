@@ -24,7 +24,7 @@ u = utils;
 observation_deck = ( typeof observation_deck === "undefined") ? {} : observation_deck;
 (function(od) {"use strict";
 
-    var cookieKey = "od_config";
+    var cookieName = "od_config";
 
     /**
      *  Build an observation deck!
@@ -371,14 +371,14 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
      * Set the obs-deck cookie. Value is an object that is stringified for the cookie.
      */
     var setCookieVal = function(value) {
-        utils.setCookie(cookieKey, JSON.stringify(value));
+        utils.setCookie(cookieName, JSON.stringify(value));
     };
 
     /**
      * Get the obs-deck cookie. Return empty object if no cookie.s
      */
     var getCookieVal = function() {
-        var cookie = utils.getCookie(cookieKey);
+        var cookie = utils.getCookie(cookieName);
         var parsedCookie = utils.parseJson(cookie) || {};
         return parsedCookie;
     };
