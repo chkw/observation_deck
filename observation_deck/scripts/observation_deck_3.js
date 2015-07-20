@@ -47,6 +47,10 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
             settings[key].push(selectedString);
             settings[key] = utils.eliminateDuplicates(settings[key]);
             setCookieVal(settings);
+
+            // var sessionGeneList = getSession("geneList");
+            // console.log("sessionGeneList", sessionGeneList);
+
             console.log("button clicked in hugoSearch", selectedString);
         });
         setupDialogBox("sigSearch", "signature name", config["sigQueryUrl"], function(selectedString) {
@@ -429,6 +433,11 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
         }
     };
 
+    var getDevMode = function() {
+        var useDevMode = (utils.getQueryStringParameterByName('dev_mode').toLowerCase() === 'true');
+        return useDevMode;
+    };
+
     /**
      * Set session var for datatype paging
      */
@@ -695,6 +704,9 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                     // TODO experimental features here
                     "test_fold" : {
                         "name" : "dev_features",
+                        "disabled" : function() {
+                            return (!getDevMode());
+                        },
                         "items" : {
                             "hugoSearch" : {
                                 "name" : "HUGO search",
@@ -1311,6 +1323,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
         };
 
         var colSortSteps = getColSortSteps(querySettings);
+        console.log("colSortSteps", colSortSteps);
 
         var getRowSortSteps = function(querySettings) {
             var rowSortSteps = null;
