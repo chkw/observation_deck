@@ -807,6 +807,8 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
 
                 var pivotable = (eventObj.metadata.weightedGeneVector.length);
 
+                var pivotable_dataypes = ['expression signature', 'kinase target activity', "tf target activity"];
+
                 var items = {
                     'title' : {
                         name : displayName,
@@ -834,8 +836,13 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                         },
                         'icon' : null,
                         'disabled' : function(key, opt) {
+                            pivotable = false;
+                            if (utils.isObjInArray(pivotable_dataypes, datatype)) {
+                                pivotable = true;
+                            }
+
                             // if (pivotable) {
-                            if (utils.isObjInArray(['expression signature', 'kinase target activity', "tf target activity"], datatype)) {
+                            if (true) {
                                 return false;
                             } else {
                                 return true;
@@ -852,11 +859,20 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                                 // if (false) {
                                 var mName = eventId;
                                 var mVersion = '';
+                                // if (utils.isObjInArray(['expression signature', 'kinase target activity', "tf target activity"], datatype)) {
                                 if (utils.isObjInArray(['expression signature', 'kinase target activity', "tf target activity"], datatype)) {
                                     var names = mName.split('_v');
                                     mVersion = names.pop();
                                     mName = names.join('_v');
                                     datatype = 'signature';
+                                } else if (datatype === "expression data") {
+                                    mName = eventObj.metadata.displayName;
+                                    mVersion = 1;
+                                    datatype = "expression";
+                                } else if (datatype === "clinical data") {
+                                    mName = eventId;
+                                    mVersion = 1;
+                                    datatype = "clinical";
                                 }
 
                                 var pivotSessionSettings = {
