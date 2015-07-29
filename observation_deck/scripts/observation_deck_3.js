@@ -1724,7 +1724,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
             };
 
             var group = document.createElementNS(utils.svgNamespaceUri, "g");
-            group.setAttributeNS(null, "class", "cell");
+            group.setAttributeNS(null, "class", "cell unselectable");
 
             var colName = d['id'];
             if (! utils.hasOwnProperty(colNameMapping, colName)) {
@@ -1792,7 +1792,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 attributes['sampleId'] = d['id'];
                 attributes['val'] = d['val'];
                 icon = utils.createSvgRectElement(x, y, rx, ry, width, height, attributes);
-            } else if (eventAlbum.getEvent(d['eventId']).metadata.datatype === "datatype label") {
+            } else if (false & eventAlbum.getEvent(d['eventId']).metadata.datatype === "datatype label") {
                 // TODO datatype label cells
                 var eventId = d["eventId"];
                 var datatype;
@@ -1845,6 +1845,114 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                     icon.appendChild(bar);
                     icon.appendChild(arrow);
                 } else {
+                    attributes["stroke-width"] = "0px";
+                    attributes["fill"] = rowLabelColorMapper(datatype);
+                    icon = utils.createSvgRectElement(x, (1 + y + (height / 2)), 0, 0, width, 2, attributes);
+                }
+            } else if (true & eventAlbum.getEvent(d['eventId']).metadata.datatype === "datatype label") {
+                var eventId = d["eventId"];
+                var datatype;
+                var headOrTail;
+                if (utils.endsWith(eventId, "(+)")) {
+                    datatype = eventId.replace("(+)", "");
+                    headOrTail = "head";
+                } else {
+                    datatype = eventId.replace("(-)", "");
+                    headOrTail = "tail";
+                }
+
+                var glyphs = {
+                    "upArrow" : "\u2191",
+                    "downArrow" : "\u2193",
+                    "upArrowBar" : "\u2912",
+                    "downArrowBar" : "\u2913"
+                }
+
+                attributes['class'] = "datatype";
+                attributes['eventId'] = datatype;
+                attributes["fill"] = rowLabelColorMapper(datatype);
+                var colNameIndex = colNameMapping[colName];
+                if (colNameIndex == 0) {
+                    // up
+                    icon = document.createElementNS(utils.svgNamespaceUri, "g");
+                    attributes["stroke-width"] = "0px";
+                    group.onclick = function() {
+                        var upOrDown = (headOrTail === "head") ? "down" : "up";
+                        setDatatypePaging(datatype, headOrTail, upOrDown);
+                    };
+                    attributes["points"] = getUpArrowPointsList(x, y, width, height).join(" ");
+                    var polygon = utils.createSvgRectElement(x, y, 0, 0, width, height, attributes);
+
+                    var labelAttributes = {
+                        "font-size" : 16,
+                        "fill" : "black",
+                        "x" : x + 1.3,
+                        "y" : y + 13
+                    };
+
+                    var label = document.createElementNS(utils.svgNamespaceUri, "text");
+                    utils.setElemAttributes(label, labelAttributes)
+
+                    var textNode = document.createTextNode(glyphs.upArrow)
+                    label.appendChild(textNode);
+
+                    icon.appendChild(polygon);
+                    icon.appendChild(label);
+                } else if (colNameIndex == 1) {
+                    // down
+                    icon = document.createElementNS(utils.svgNamespaceUri, "g");
+                    attributes["stroke-width"] = "0px";
+                    group.onclick = function() {
+                        var upOrDown = (headOrTail === "head") ? "up" : "down";
+                        setDatatypePaging(datatype, headOrTail, upOrDown);
+                    };
+                    attributes["points"] = getDownArrowPointsList(x, y, width, height).join(" ");
+                    var polygon = utils.createSvgRectElement(x, y, 0, 0, width, height, attributes);
+
+                    var labelAttributes = {
+                        "font-size" : 16,
+                        "fill" : "black",
+                        "x" : x + 1.3,
+                        "y" : y + 12
+                    };
+
+                    var label = document.createElementNS(utils.svgNamespaceUri, "text");
+                    utils.setElemAttributes(label, labelAttributes)
+
+                    var textNode = document.createTextNode(glyphs.downArrow)
+                    label.appendChild(textNode);
+
+                    icon.appendChild(polygon);
+                    icon.appendChild(label);
+                } else if (colNameIndex == 2) {
+                    // top or bottom
+                    icon = document.createElementNS(utils.svgNamespaceUri, "g");
+                    attributes["stroke-width"] = "0px";
+                    group.onclick = function() {
+                        setDatatypePaging(datatype, headOrTail, "0");
+                    };
+                    var polygon = utils.createSvgRectElement(x, y, 0, 0, width, height, attributes);
+                    var textNode;
+                    if (headOrTail === "head") {
+                        textNode = document.createTextNode(glyphs.upArrowBar)
+                    } else {
+                        textNode = document.createTextNode(glyphs.downArrowBar)
+                    }
+
+                    var labelAttributes = {
+                        "font-size" : 16,
+                        "fill" : "black",
+                        "x" : x + 2.6,
+                        "y" : y + 12.5
+                    };
+
+                    var label = document.createElementNS(utils.svgNamespaceUri, "text");
+                    utils.setElemAttributes(label, labelAttributes)
+                    label.appendChild(textNode);
+                    icon.appendChild(polygon);
+                    icon.appendChild(label);
+                } else {
+                    // section lines
                     attributes["stroke-width"] = "0px";
                     attributes["fill"] = rowLabelColorMapper(datatype);
                     icon = utils.createSvgRectElement(x, (1 + y + (height / 2)), 0, 0, width, 2, attributes);
