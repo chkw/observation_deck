@@ -1214,6 +1214,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
 
         // get eventList
         var eventAlbum = config['eventAlbum'];
+        // eventAlbum.removeEmptyEvents(0.8);
         eventAlbum.fillInMissingSamples(null);
 
         eventAlbum.fillInDatatypeLabelEvents("black");
@@ -1561,7 +1562,13 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
         var gridSize = Math.floor(width / denom);
 
         var minGridSize = 13;
-        gridSize = (gridSize > minGridSize) ? gridSize : minGridSize;
+        // gridSize = (gridSize > minGridSize) ? gridSize : minGridSize;
+        // console.log('gridSize', gridSize, 'margin', (margin));
+
+        if (gridSize <= minGridSize) {
+            gridSize = minGridSize;
+            fullWidth = (gridSize * denom) + margin.left + margin.right;
+        }
         console.log('gridSize', gridSize, 'margin', (margin));
 
         // document.documentElement.clientHeight
@@ -1570,7 +1577,8 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
 
         // SVG canvas
         var svg = d3.select(thisElement).append("svg").attr({
-            "width" : fullWidth + 0,
+            // "width" : fullWidth + 0,
+            "width" : fullWidth,
             "height" : fullHeight,
             // "viewBox" : "42 0 " + (fullWidth) + " " + (fullHeight),
             "viewBox" : "0 0 " + (fullWidth) + " " + (fullHeight),
