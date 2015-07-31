@@ -133,6 +133,9 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
             if ('expression' in mongoData) {
                 dataLoader.mongoExpressionData(mongoData['expression'], od_eventAlbum);
             }
+            if ('mutation' in mongoData) {
+                dataLoader.mongoMutationData(mongoData['mutation'], od_eventAlbum);
+            }
         }
         // delete the data after it has been used to load events
         delete config['mongoData'];
@@ -1866,13 +1869,17 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                     "downArrow" : "\u2193",
                     "upArrowBar" : "\u2912",
                     "downArrowBar" : "\u2913"
-                }
+                };
 
                 attributes['class'] = "datatype";
                 attributes['eventId'] = datatype;
                 attributes["fill"] = rowLabelColorMapper(datatype);
                 var colNameIndex = colNameMapping[colName];
-                if (colNameIndex == 0) {
+                if (querySettings['pivot_event'] == null) {
+                    attributes["stroke-width"] = "0px";
+                    attributes["fill"] = rowLabelColorMapper(datatype);
+                    icon = utils.createSvgRectElement(x, (1 + y + (height / 2)), 0, 0, width, 2, attributes);
+                } else if (colNameIndex == 0) {
                     // up
                     icon = document.createElementNS(utils.svgNamespaceUri, "g");
                     attributes["stroke-width"] = "0px";
@@ -1885,15 +1892,15 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
 
                     var labelAttributes = {
                         "font-size" : 16,
-                        "fill" : "black",
+                        "fill" : "lightgray",
                         "x" : x + 1.3,
                         "y" : y + 13
                     };
 
                     var label = document.createElementNS(utils.svgNamespaceUri, "text");
-                    utils.setElemAttributes(label, labelAttributes)
+                    utils.setElemAttributes(label, labelAttributes);
 
-                    var textNode = document.createTextNode(glyphs.upArrow)
+                    var textNode = document.createTextNode(glyphs.upArrow);
                     label.appendChild(textNode);
 
                     icon.appendChild(polygon);
@@ -1911,7 +1918,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
 
                     var labelAttributes = {
                         "font-size" : 16,
-                        "fill" : "black",
+                        "fill" : "lightgray",
                         "x" : x + 1.3,
                         "y" : y + 12
                     };
@@ -1941,7 +1948,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
 
                     var labelAttributes = {
                         "font-size" : 16,
-                        "fill" : "black",
+                        "fill" : "lightgray",
                         "x" : x + 2.6,
                         "y" : y + 12.5
                     };
