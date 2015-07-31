@@ -810,7 +810,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
 
                 var pivotable = (eventObj.metadata.weightedGeneVector.length);
 
-                var pivotable_dataypes = ['expression signature', 'kinase target activity', "tf target activity"];
+                var pivotable_dataypes = ["clinical data", "expression data", 'expression signature', 'kinase target activity', "tf target activity"];
 
                 var items = {
                     'title' : {
@@ -818,7 +818,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                         icon : null,
                         disabled : function() {
                             var result = true;
-                            if ((titleCallback != null) && (utils.isObjInArray(['expression data', 'clinical data', 'expression signature', 'kinase target activity', "tf target activity"], datatype))) {
+                            if ((titleCallback != null) && (utils.isObjInArray(["mutation call", 'expression data', 'clinical data', 'expression signature', 'kinase target activity', "tf target activity"], datatype))) {
                                 result = false;
                             }
 
@@ -844,8 +844,8 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                                 pivotable = true;
                             }
 
-                            // if (pivotable) {
-                            if (true) {
+                            if (pivotable) {
+                                // if (true) {
                                 return false;
                             } else {
                                 return true;
