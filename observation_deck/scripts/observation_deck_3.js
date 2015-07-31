@@ -1789,7 +1789,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 attributes['sampleId'] = d['id'];
                 attributes['val'] = d['val'];
                 icon = utils.createSvgRectElement(x, y, rx, ry, width, height, attributes);
-            } else if (utils.isObjInArray(["expression signature", "kinase target activity", "tf target activity"], eventAlbum.getEvent(d['eventId']).metadata.datatype)) {
+            } else if (utils.isObjInArray(["expression signature", "kinase target activity", "tf target activity", "mutation call"], eventAlbum.getEvent(d['eventId']).metadata.datatype)) {
                 attributes['class'] = "signature";
                 attributes['eventId'] = d['eventId'];
                 attributes['sampleId'] = d['id'];
@@ -1924,9 +1924,9 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                     };
 
                     var label = document.createElementNS(utils.svgNamespaceUri, "text");
-                    utils.setElemAttributes(label, labelAttributes)
+                    utils.setElemAttributes(label, labelAttributes);
 
-                    var textNode = document.createTextNode(glyphs.downArrow)
+                    var textNode = document.createTextNode(glyphs.downArrow);
                     label.appendChild(textNode);
 
                     icon.appendChild(polygon);
@@ -1941,9 +1941,9 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                     var polygon = utils.createSvgRectElement(x, y, 0, 0, width, height, attributes);
                     var textNode;
                     if (headOrTail === "head") {
-                        textNode = document.createTextNode(glyphs.upArrowBar)
+                        textNode = document.createTextNode(glyphs.upArrowBar);
                     } else {
-                        textNode = document.createTextNode(glyphs.downArrowBar)
+                        textNode = document.createTextNode(glyphs.downArrowBar);
                     }
 
                     var labelAttributes = {
@@ -1954,7 +1954,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                     };
 
                     var label = document.createElementNS(utils.svgNamespaceUri, "text");
-                    utils.setElemAttributes(label, labelAttributes)
+                    utils.setElemAttributes(label, labelAttributes);
                     label.appendChild(textNode);
                     icon.appendChild(polygon);
                     icon.appendChild(label);
