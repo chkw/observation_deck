@@ -234,8 +234,8 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 eventList.push(step['name']);
             }
         }
-        if (utils.hasOwnProperty(cookieObj, 'required events')) {
-            eventList = eventList.concat(cookieObj['required events']);
+        if (utils.hasOwnProperty(cookieObj, 'hide_null_samples_event')) {
+            eventList = eventList.concat(cookieObj['hide_null_samples_event']);
         }
 
         var geneList = [];
@@ -941,18 +941,62 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                     'hide_fold' : {
                         'name' : 'hide...',
                         'items' : {
-                            "hide_null_samples" : {
-                                name : "null samples in this event",
-                                icon : null,
-                                disabled : false,
-                                callback : function(key, opt) {
-                                    var querySettings = config['querySettings'];
-                                    querySettings['required events'] = [eventId];
+                            "null_samples_fold" : {
+                                // We hide nulls for one event or one datatype, but not both at the same time.
+                                "name" : "null samples...",
+                                "items" : {
+                                    "hide_null_samples_event" : {
+                                        name : "in this event",
+                                        icon : null,
+                                        disabled : false,
+                                        callback : function(key, opt) {
+                                            var querySettings = config['querySettings'];
 
-                                    setCookieVal(querySettings);
+                                            if (!utils.hasOwnProperty(querySettings, "hide_null_samples_datatype")) {
+                                                if (querySettings['hide_null_samples_datatype'] === datatype) {
+                                                    delete querySettings['hide_null_samples_datatype'];
+                                                }
+                                            }
 
-                                    var containerDivElem = document.getElementById(config['containerDivId']);
-                                    od.buildObservationDeck(containerDivElem, config);
+                                            if (!utils.hasOwnProperty(querySettings, "hide_null_samples_event")) {
+                                                querySettings["hide_null_samples_event"] = eventId;
+                                                delete querySettings['hide_null_samples_datatype'];
+                                            } else if (querySettings["hide_null_samples_event"] === eventId) {
+                                                delete querySettings["hide_null_samples_event"];
+                                            } else {
+                                                querySettings["hide_null_samples_event"] = eventId;
+                                                delete querySettings['hide_null_samples_datatype'];
+                                            }
+
+                                            setCookieVal(querySettings);
+
+                                            var containerDivElem = document.getElementById(config['containerDivId']);
+                                            od.buildObservationDeck(containerDivElem, config);
+                                            return;
+                                        }
+                                    },
+                                    "hide_null_samples_datatype" : {
+                                        name : "in this datatype",
+                                        icon : null,
+                                        disabled : false,
+                                        callback : function(key, opt) {
+                                            var querySettings = config['querySettings'];
+                                            if (!utils.hasOwnProperty(querySettings, "hide_null_samples_datatype")) {
+                                                querySettings['hide_null_samples_datatype'] = datatype;
+                                                delete querySettings["hide_null_samples_event"];
+                                            } else {
+                                                if (querySettings['hide_null_samples_datatype'] === datatype) {
+                                                    delete querySettings['hide_null_samples_datatype'];
+                                                }
+                                            }
+
+                                            setCookieVal(querySettings);
+
+                                            var containerDivElem = document.getElementById(config['containerDivId']);
+                                            od.buildObservationDeck(containerDivElem, config);
+                                            return;
+                                        }
+                                    }
                                 }
                             },
                             "hide_event" : {
@@ -1377,16 +1421,16 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
 
             // TODO enforce required events in config['querySettings']['required events']
             var samplesToHide = [];
-            if ('required events' in querySettings) {
-                var requiredEventId = querySettings['required events'][0];
-                console.log("requiredEventId", requiredEventId);
+            if ('hide_null_samples_event' in querySettings) {
+                var hide_null_samples_event = querySettings['hide_null_samples_event'];
+                console.log("hide_null_samples_event", hide_null_samples_event);
 
                 try {
-                    var requiredEventObj = eventAlbum.getEvent(requiredEventId);
+                    var requiredEventObj = eventAlbum.getEvent(hide_null_samples_event);
                     var nullSamples = requiredEventObj.data.getNullSamples();
                     samplesToHide = samplesToHide.concat(nullSamples);
                 } catch(error) {
-                    console.log('ERROR while getting samples to hide in eventID:', requiredEventId, 'error.message ->', error.message);
+                    console.log('ERROR while getting samples to hide in eventID:', hide_null_samples_event, 'error.message ->', error.message);
                 } finally {
                     console.log('samplesToHide', samplesToHide);
                 }
@@ -1875,11 +1919,14 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 attributes['eventId'] = datatype;
                 attributes["fill"] = rowLabelColorMapper(datatype);
                 var colNameIndex = colNameMapping[colName];
-                if (querySettings['pivot_event'] == null) {
-                    attributes["stroke-width"] = "0px";
-                    attributes["fill"] = rowLabelColorMapper(datatype);
-                    icon = utils.createSvgRectElement(x, (1 + y + (height / 2)), 0, 0, width, 2, attributes);
-                } else if (colNameIndex == 0) {
+
+                // if (querySettings['pivot_event'] == null) {
+                // attributes["stroke-width"] = "0px";
+                // attributes["fill"] = rowLabelColorMapper(datatype);
+                // icon = utils.createSvgRectElement(x, (1 + y + (height / 2)), 0, 0, width, 2, attributes);
+                // } else
+
+                if (colNameIndex == 0) {
                     // up
                     icon = document.createElementNS(utils.svgNamespaceUri, "g");
                     attributes["stroke-width"] = "0px";
