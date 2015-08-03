@@ -987,6 +987,9 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                                             } else {
                                                 if (querySettings['hide_null_samples_datatype'] === datatype) {
                                                     delete querySettings['hide_null_samples_datatype'];
+                                                } else {
+                                                    querySettings['hide_null_samples_datatype'] = datatype;
+                                                    delete querySettings["hide_null_samples_event"];
                                                 }
                                             }
 
