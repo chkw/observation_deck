@@ -1419,18 +1419,43 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
 
             colNames = eventAlbum.multisortSamples(colSortSteps);
 
-            // TODO enforce required events in config['querySettings']['required events']
+            // find samples to hide
             var samplesToHide = [];
             if ('hide_null_samples_event' in querySettings) {
                 var hide_null_samples_event = querySettings['hide_null_samples_event'];
                 console.log("hide_null_samples_event", hide_null_samples_event);
 
                 try {
-                    var requiredEventObj = eventAlbum.getEvent(hide_null_samples_event);
-                    var nullSamples = requiredEventObj.data.getNullSamples();
+                    var hideNullsEventObj = eventAlbum.getEvent(hide_null_samples_event);
+                    var nullSamples = hideNullsEventObj.data.getNullSamples();
                     samplesToHide = samplesToHide.concat(nullSamples);
                 } catch(error) {
                     console.log('ERROR while getting samples to hide in eventID:', hide_null_samples_event, 'error.message ->', error.message);
+                } finally {
+                    console.log('samplesToHide', samplesToHide);
+                }
+            } else if ("hide_null_samples_datatype" in querySettings) {
+                var hide_null_samples_datatype = querySettings["hide_null_samples_datatype"];
+                console.log("hide_null_samples_datatype", hide_null_samples_datatype);
+
+                try {
+                    // get eventobjs in datatype
+                    var eventIdsByType = eventAlbum.getEventIdsByType();
+                    var eventTypes = utils.getKeys(eventIdsByType);
+                    if (utils.isObjInArray(eventTypes, hide_null_samples_datatype)) {
+                        // find samples that are null in all events of the datatype
+                        samplesToHide = eventAlbum.getAllSampleIds();
+                        var eventIds = eventIdsByType[hide_null_samples_datatype];
+                        for (var i = 0, length = eventIds.length; i < length; i++) {
+                            var eventId = eventIds[i];
+                            var eventObj = eventAlbum.getEvent(eventId);
+                            var nullSamples = eventObj.data.getNullSamples();
+                            samplesToHide = samplesToHide.concat(nullSamples);
+                            samplesToHide = utils.keepReplicates(samplesToHide);
+                        }
+                    }
+                } catch (error) {
+                    console.log('ERROR while getting samples to hide in datatype:', hide_null_samples_datatype, 'error.message ->', error.message);
                 } finally {
                     console.log('samplesToHide', samplesToHide);
                 }
