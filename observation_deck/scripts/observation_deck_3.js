@@ -706,6 +706,31 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                             od.buildObservationDeck(containerDivElem, config);
                         }
                     },
+                    "hide_null_samples_datatype" : {
+                        name : "hide null samples in this datatype",
+                        icon : null,
+                        disabled : false,
+                        callback : function(key, opt) {
+                            var querySettings = config['querySettings'];
+                            if (!utils.hasOwnProperty(querySettings, "hide_null_samples_datatype")) {
+                                querySettings['hide_null_samples_datatype'] = datatype;
+                                delete querySettings["hide_null_samples_event"];
+                            } else {
+                                if (querySettings['hide_null_samples_datatype'] === datatype) {
+                                    delete querySettings['hide_null_samples_datatype'];
+                                } else {
+                                    querySettings['hide_null_samples_datatype'] = datatype;
+                                    delete querySettings["hide_null_samples_event"];
+                                }
+                            }
+
+                            setCookieVal(querySettings);
+
+                            var containerDivElem = document.getElementById(config['containerDivId']);
+                            od.buildObservationDeck(containerDivElem, config);
+                            return;
+                        }
+                    },
                     // TODO experimental features here
                     "test_fold" : {
                         "name" : "dev_features",
@@ -941,65 +966,34 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                     'hide_fold' : {
                         'name' : 'hide...',
                         'items' : {
-                            "null_samples_fold" : {
-                                // We hide nulls for one event or one datatype, but not both at the same time.
-                                "name" : "null samples...",
-                                "items" : {
-                                    "hide_null_samples_event" : {
-                                        name : "in this event",
-                                        icon : null,
-                                        disabled : false,
-                                        callback : function(key, opt) {
-                                            var querySettings = config['querySettings'];
+                            "hide_null_samples_event" : {
+                                name : "hide null samples in this event",
+                                icon : null,
+                                disabled : false,
+                                callback : function(key, opt) {
+                                    var querySettings = config['querySettings'];
 
-                                            if (!utils.hasOwnProperty(querySettings, "hide_null_samples_datatype")) {
-                                                if (querySettings['hide_null_samples_datatype'] === datatype) {
-                                                    delete querySettings['hide_null_samples_datatype'];
-                                                }
-                                            }
-
-                                            if (!utils.hasOwnProperty(querySettings, "hide_null_samples_event")) {
-                                                querySettings["hide_null_samples_event"] = eventId;
-                                                delete querySettings['hide_null_samples_datatype'];
-                                            } else if (querySettings["hide_null_samples_event"] === eventId) {
-                                                delete querySettings["hide_null_samples_event"];
-                                            } else {
-                                                querySettings["hide_null_samples_event"] = eventId;
-                                                delete querySettings['hide_null_samples_datatype'];
-                                            }
-
-                                            setCookieVal(querySettings);
-
-                                            var containerDivElem = document.getElementById(config['containerDivId']);
-                                            od.buildObservationDeck(containerDivElem, config);
-                                            return;
-                                        }
-                                    },
-                                    "hide_null_samples_datatype" : {
-                                        name : "in this datatype",
-                                        icon : null,
-                                        disabled : false,
-                                        callback : function(key, opt) {
-                                            var querySettings = config['querySettings'];
-                                            if (!utils.hasOwnProperty(querySettings, "hide_null_samples_datatype")) {
-                                                querySettings['hide_null_samples_datatype'] = datatype;
-                                                delete querySettings["hide_null_samples_event"];
-                                            } else {
-                                                if (querySettings['hide_null_samples_datatype'] === datatype) {
-                                                    delete querySettings['hide_null_samples_datatype'];
-                                                } else {
-                                                    querySettings['hide_null_samples_datatype'] = datatype;
-                                                    delete querySettings["hide_null_samples_event"];
-                                                }
-                                            }
-
-                                            setCookieVal(querySettings);
-
-                                            var containerDivElem = document.getElementById(config['containerDivId']);
-                                            od.buildObservationDeck(containerDivElem, config);
-                                            return;
+                                    if (!utils.hasOwnProperty(querySettings, "hide_null_samples_datatype")) {
+                                        if (querySettings['hide_null_samples_datatype'] === datatype) {
+                                            delete querySettings['hide_null_samples_datatype'];
                                         }
                                     }
+
+                                    if (!utils.hasOwnProperty(querySettings, "hide_null_samples_event")) {
+                                        querySettings["hide_null_samples_event"] = eventId;
+                                        delete querySettings['hide_null_samples_datatype'];
+                                    } else if (querySettings["hide_null_samples_event"] === eventId) {
+                                        delete querySettings["hide_null_samples_event"];
+                                    } else {
+                                        querySettings["hide_null_samples_event"] = eventId;
+                                        delete querySettings['hide_null_samples_datatype'];
+                                    }
+
+                                    setCookieVal(querySettings);
+
+                                    var containerDivElem = document.getElementById(config['containerDivId']);
+                                    od.buildObservationDeck(containerDivElem, config);
+                                    return;
                                 }
                             },
                             "hide_event" : {
@@ -1441,27 +1435,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 var hide_null_samples_datatype = querySettings["hide_null_samples_datatype"];
                 console.log("hide_null_samples_datatype", hide_null_samples_datatype);
 
-                try {
-                    // get eventobjs in datatype
-                    var eventIdsByType = eventAlbum.getEventIdsByType();
-                    var eventTypes = utils.getKeys(eventIdsByType);
-                    if (utils.isObjInArray(eventTypes, hide_null_samples_datatype)) {
-                        // find samples that are null in all events of the datatype
-                        samplesToHide = eventAlbum.getAllSampleIds();
-                        var eventIds = eventIdsByType[hide_null_samples_datatype];
-                        for (var i = 0, length = eventIds.length; i < length; i++) {
-                            var eventId = eventIds[i];
-                            var eventObj = eventAlbum.getEvent(eventId);
-                            var nullSamples = eventObj.data.getNullSamples();
-                            samplesToHide = samplesToHide.concat(nullSamples);
-                            samplesToHide = utils.keepReplicates(samplesToHide);
-                        }
-                    }
-                } catch (error) {
-                    console.log('ERROR while getting samples to hide in datatype:', hide_null_samples_datatype, 'error.message ->', error.message);
-                } finally {
-                    console.log('samplesToHide', samplesToHide);
-                }
+                samplesToHide = eventAlbum.getDatatypeNullSamples(hide_null_samples_datatype);
             }
             samplesToHide = utils.eliminateDuplicates(samplesToHide);
 
