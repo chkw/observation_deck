@@ -626,60 +626,6 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                         }
                     },
                     "sep1" : "---------",
-                    // "pagingFold" : {
-                    // "name" : "paging",
-                    // "items" : {
-                    // "pagingHeadHome" : {
-                    // "name" : "most correlated",
-                    // "icon" : null,
-                    // "disabled" : false,
-                    // "callback" : function(key, opt) {
-                    // setDatatypePaging(datatype, "head", "0");
-                    // }
-                    // },
-                    // "pagingHeadDown" : {
-                    // "name" : "correlated ^",
-                    // "icon" : null,
-                    // "disabled" : false,
-                    // "callback" : function(key, opt) {
-                    // setDatatypePaging(datatype, "head", "down");
-                    // }
-                    // },
-                    // "pagingHeadUp" : {
-                    // "name" : "correlated v",
-                    // "icon" : null,
-                    // "disabled" : false,
-                    // "callback" : function(key, opt) {
-                    // setDatatypePaging(datatype, "head", "up");
-                    // }
-                    // },
-                    // "sep1" : "---------",
-                    // "pagingTailUp" : {
-                    // "name" : "anti-correlated ^",
-                    // "icon" : null,
-                    // "disabled" : false,
-                    // "callback" : function(key, opt) {
-                    // setDatatypePaging(datatype, "tail", "up");
-                    // }
-                    // },
-                    // "pagingTailDown" : {
-                    // "name" : "anti-correlated v",
-                    // "icon" : null,
-                    // "disabled" : false,
-                    // "callback" : function(key, opt) {
-                    // setDatatypePaging(datatype, "tail", "down");
-                    // }
-                    // },
-                    // "pagingTailEnd" : {
-                    // "name" : "most anti-correlated",
-                    // "icon" : null,
-                    // "disabled" : false,
-                    // "callback" : function(key, opt) {
-                    // setDatatypePaging(datatype, "tail", "0");
-                    // }
-                    // }
-                    // }
-                    // },
                     'toggle_datatype_visibility' : {
                         'name' : function() {
                             return 'toggle visibility';
@@ -707,7 +653,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                         }
                     },
                     "hide_null_samples_datatype" : {
-                        name : "hide null samples in this datatype",
+                        name : "(un)hide null samples in this datatype",
                         icon : null,
                         disabled : false,
                         callback : function(key, opt) {
@@ -967,7 +913,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                         'name' : 'hide...',
                         'items' : {
                             "hide_null_samples_event" : {
-                                name : "hide null samples in this event",
+                                name : "(un)hide null samples in this event",
                                 icon : null,
                                 disabled : false,
                                 callback : function(key, opt) {
