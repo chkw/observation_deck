@@ -1655,6 +1655,20 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
         });
         // rowLabels.on("click", config["rowClickback"]);
         // rowLabels.on("contextmenu", config["rowRightClickback"]);
+
+        var pivotScoresMap;
+        if (pivotEventId != null) {
+            pivotScoresMap = {};
+            var pivotSortedEvents = eventAlbum.getPivotSortedEvents(pivotEventId);
+            for (var i = 0, lengthi = pivotSortedEvents.length; i < lengthi; i++) {
+                var pivotObj = pivotSortedEvents[i];
+                var key = pivotObj["key"];
+                var val = pivotObj["val"];
+                pivotScoresMap[key] = val;
+                console.log(pivotEventId, key);
+            }
+        }
+
         rowLabels.append("title").text(function(d, i) {
             var eventObj = eventAlbum.getEvent(d);
             var datatype = eventObj.metadata.datatype;
@@ -1663,6 +1677,19 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
 
             if ((allowedValues === 'numeric') && (rescalingData != null) && (utils.hasOwnProperty(rescalingData, 'stats')) && ( typeof rescalingData['stats'][d] !== 'undefined')) {
                 s = s + '\nraw data stats: ' + utils.prettyJson(rescalingData['stats'][d]);
+            }
+
+            if ( typeof pivotScoresMap !== "undefined") {
+                var val = pivotScoresMap[d];
+                if ( typeof val === "undefined") {
+                    // try _mRNA suffix
+                    var key = d.replace(/_mRNA$/, "");
+                    val = pivotScoresMap[key];
+                }
+
+                if ( typeof val !== "undefined") {
+                    s = s + "\npivot score: " + val;
+                }
             }
 
             return s;
