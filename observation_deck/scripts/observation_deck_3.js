@@ -1434,8 +1434,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 var pivotSortedRowNames = [];
                 var pEventId = querySettings['pivot_event']['id'];
                 var pEventObj = eventAlbum.getEvent(pEventId);
-                var keepTailsOnly = true;
-                var groupedPivotSorts = eventAlbum.getGroupedPivotSorts(pEventId, keepTailsOnly);
+                var groupedPivotSorts = eventAlbum.getGroupedPivotSorts(pEventId);
 
                 for (var datatype in groupedPivotSorts) {
                     // section header rows
@@ -1456,22 +1455,6 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 }
                 rowNames = pivotSortedRowNames.concat(rowNames);
                 rowNames = utils.eliminateDuplicates(rowNames);
-            } else {
-                // TODO need to insert the datatype label events in correct order when no pivot sort used
-                console.log('querySettings has NO pivot_sort_list of datatypes');
-                // var datatypeLabels = [];
-                // for (var i = 0, length = rowNames.length; i < length; i++) {
-                // var rowName = rowNames[i];
-                // if (utils.endsWith(rowName, "(+)") || utils.endsWith(rowName, "(-)")) {
-                // datatypeLabels.push(rowName);
-                // }
-                // }
-                //
-                // for (var i = 0, length = datatypeLabels.length; i < length; i++) {
-                // var datatypeLabel = datatypeLabels[i];
-                // utils.removeA(rowNames, datatypeLabel);
-                // }
-
             }
 
             // console.log("rowNames", rowNames);
@@ -1482,6 +1465,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
             var shownNames = [];
 
             var albumEventIds = eventAlbum.getAllEventIds();
+            // console.log("albumEventIds", albumEventIds);
             for (var i = 0; i < rowNames.length; i++) {
                 var rowName = rowNames[i];
                 if (!utils.isObjInArray(albumEventIds, rowName)) {
@@ -1523,6 +1507,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
         };
 
         var rowNames = getRowNames(querySettings, eventAlbum, colSortSteps, rowSortSteps);
+        // console.log("rowNames", rowNames);
 
         // TODO hack
         var pivotEventId = null;
@@ -1665,7 +1650,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 var key = pivotObj["key"];
                 var val = pivotObj["val"];
                 pivotScoresMap[key] = val;
-                console.log(pivotEventId, key);
+                // console.log(pivotEventId, key);
             }
         }
 
