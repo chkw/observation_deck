@@ -1428,6 +1428,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
             // console.log("rowNames", rowNames);
 
             // groupedPivotSorts ... uses pivot scoring on server side
+            // TODO what about events that are in the album, but not in the pivot data?
             if (utils.hasOwnProperty(querySettings, 'pivot_sort_list')) {
                 console.log('querySettings has a pivot_sort_list of datatypes', querySettings['pivot_sort_list']);
                 rowNames = [];
@@ -1466,6 +1467,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
 
             var albumEventIds = eventAlbum.getAllEventIds();
             // console.log("albumEventIds", albumEventIds);
+
             for (var i = 0; i < rowNames.length; i++) {
                 var rowName = rowNames[i];
                 if (!utils.isObjInArray(albumEventIds, rowName)) {
@@ -1478,6 +1480,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 }
                 shownNames.push(rowName);
             }
+            // console.log("shownNames", shownNames);
             rowNames = shownNames;
 
             // move pivot event to top of matrix (1st row)
@@ -1616,9 +1619,22 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 } else {
                     s = "rowLabel mono axis unselectable";
                     if (d === pivotEventId) {
-                        s = s + " pivotEvent";
+                        s = s + " bold italic";
+                        // s = s + " pivotEvent";
                     }
                 }
+
+                // underline genes added via geneset control
+                if (pivotEventId != null) {
+                    if (datatype == "expression data") {
+                        var geneName = d.replace(/_mRNA$/, "");
+                        var geneSetControl = config["geneSetControl"] || [];
+                        if (utils.isObjInArray(geneSetControl, geneName)) {
+                            s = s + " underline";
+                        }
+                    }
+                }
+
                 return s;
             },
             'eventId' : function(d, i) {
@@ -1641,6 +1657,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
         // rowLabels.on("click", config["rowClickback"]);
         // rowLabels.on("contextmenu", config["rowRightClickback"]);
 
+        // map event to pivot score
         var pivotScoresMap;
         if (pivotEventId != null) {
             pivotScoresMap = {};
