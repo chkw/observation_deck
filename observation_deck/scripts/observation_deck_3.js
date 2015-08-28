@@ -1259,6 +1259,9 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 expressionColorMapper = utils.centeredRgbaColorMapper(false, 0, minExpVal, maxExpVal);
             }
 
+            var mutationsScoreVals = utils.getValues(eventAlbum.mutationImpactScoresMap);
+            var mutationImpactColorMapper = utils.centeredRgbaColorMapper(false, 0, jStat.min(mutationsScoreVals), jStat.max(mutationsScoreVals));
+
             // assign color mappers
             var colorMappers = {};
             for (var i = 0; i < eventList.length; i++) {
@@ -1291,6 +1294,9 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 } else if (allowedValues == 'expression') {
                     // shared expression color mapper
                     colorMappers[eventId] = expressionColorMapper;
+                } else if (allowedValues == 'mutation impact') {
+                    // mutation impact color mapper
+                    colorMappers[eventId] = mutationImpactColorMapper;
                 } else {
                     colorMappers[eventId] = d3.scale.category10();
                 }
@@ -1797,10 +1803,19 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
             var width = gridSize;
             var height = gridSize;
             var colorMapper = colorMappers[d['eventId']];
+
+            var getFill = function(d) {
+                if (eventAlbum.getEvent(d['eventId']).metadata.allowedValues === 'mutation impact') {
+                    var impactScore = eventAlbum.mutationImpactScoresMap[d["val"]];
+                    return colorMapper(impactScore);
+                } else {
+                    return colorMapper(d["val"]);
+                }
+            }
             var attributes = {
                 "stroke" : "#E6E6E6",
                 "stroke-width" : "2px",
-                "fill" : colorMapper(val)
+                "fill" : getFill(d)
             };
             var icon;
             if (eventAlbum.getEvent(d['eventId']).metadata.allowedValues === 'categoric') {
