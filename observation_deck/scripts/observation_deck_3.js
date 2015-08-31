@@ -1259,8 +1259,14 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 expressionColorMapper = utils.centeredRgbaColorMapper(false, 0, minExpVal, maxExpVal);
             }
 
-            var mutationsScoreVals = utils.getValues(eventAlbum.mutationImpactScoresMap);
-            var mutationImpactColorMapper = utils.centeredRgbaColorMapper(false, 0, jStat.min(mutationsScoreVals), jStat.max(mutationsScoreVals));
+            var ordinalColorMappers = {};
+            var ordinalTypes = utils.getKeys(eventAlbum.ordinalScoring);
+            for (var i = 0, length = ordinalTypes.length; i < length; i++) {
+                var allowedVals = ordinalTypes[i];
+                var scoreVals = utils.getValues(eventAlbum.ordinalScoring[allowedVals]);
+                var colorMapper = utils.centeredRgbaColorMapper(false, 0, jStat.min(scoreVals), jStat.max(scoreVals));
+                ordinalColorMappers[allowedVals] = colorMapper;
+            }
 
             // assign color mappers
             var colorMappers = {};
@@ -1294,9 +1300,9 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 } else if (allowedValues == 'expression') {
                     // shared expression color mapper
                     colorMappers[eventId] = expressionColorMapper;
-                } else if (allowedValues == 'mutation impact') {
-                    // mutation impact color mapper
-                    colorMappers[eventId] = mutationImpactColorMapper;
+                } else if (eventAlbum.ordinalScoring.hasOwnProperty(allowedValues)) {
+                    // ordinal data
+                    colorMappers[eventId] = ordinalColorMappers[allowedValues];
                 } else {
                     colorMappers[eventId] = d3.scale.category10();
                 }
@@ -1805,13 +1811,15 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
             var colorMapper = colorMappers[d['eventId']];
 
             var getFill = function(d) {
-                if (eventAlbum.getEvent(d['eventId']).metadata.allowedValues === 'mutation impact') {
-                    var impactScore = eventAlbum.mutationImpactScoresMap[d["val"]];
-                    return colorMapper(impactScore);
+                var allowed_values = eventAlbum.getEvent(d['eventId']).metadata.allowedValues;
+                if (eventAlbum.ordinalScoring.hasOwnProperty(allowed_values)) {
+                    var score = eventAlbum.ordinalScoring[allowed_values][d["val"]];
+                    return colorMapper(score);
                 } else {
                     return colorMapper(d["val"]);
                 }
-            }
+            };
+
             var attributes = {
                 "stroke" : "#E6E6E6",
                 "stroke-width" : "2px",
