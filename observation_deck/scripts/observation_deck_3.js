@@ -1838,11 +1838,19 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 attributes['sampleId'] = d['id'];
                 attributes['val'] = d['val'];
                 icon = utils.createSvgRectElement(x, y, rx, ry, width, height, attributes);
-            } else if (utils.isObjInArray(["expression signature", "kinase target activity", "tf target activity", "mutation call"], eventAlbum.getEvent(d['eventId']).metadata.datatype)) {
+            } else if (utils.isObjInArray(["expression signature", "kinase target activity", "tf target activity"], eventAlbum.getEvent(d['eventId']).metadata.datatype)) {
                 attributes['class'] = "signature";
                 attributes['eventId'] = d['eventId'];
                 attributes['sampleId'] = d['id'];
                 attributes['val'] = d['val'];
+                icon = utils.createSvgRectElement(x, y, rx, ry, width, height, attributes);
+            } else if (eventAlbum.getEvent(d['eventId']).metadata.datatype === 'mutation call') {
+                // TODO oncoprint-style icons
+                attributes['class'] = "signature";
+                attributes['eventId'] = d['eventId'];
+                attributes['sampleId'] = d['id'];
+                attributes['val'] = d['val'];
+                console.log("val", val);
                 icon = utils.createSvgRectElement(x, y, rx, ry, width, height, attributes);
             } else if (false & eventAlbum.getEvent(d['eventId']).metadata.datatype === "datatype label") {
                 // TODO datatype label cells
