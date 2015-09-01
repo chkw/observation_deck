@@ -1747,6 +1747,45 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 showDataList.push(dataListObj);
             }
         }
+
+        /**
+         * Create an SVG group element icon to put in the matrix cell.
+         * @param {Object} x
+         * @param {Object} y
+         * @param {Object} rx
+         * @param {Object} ry
+         * @param {Object} width
+         * @param {Object} height
+         * @param {Object} attributes
+         */
+        var createMutTypeSvg = function(x, y, rx, ry, width, height, attributes) {
+            var iconGroup = document.createElementNS(utils.svgNamespaceUri, "g");
+            utils.setElemAttributes(iconGroup, {
+                "class" : "mutTypeIconGroup"
+            });
+            delete attributes["fill"];
+            delete attributes["stroke-width"];
+
+            var types = attributes["val"];
+
+            if ((utils.isObjInArray(types, "ins")) || (utils.isObjInArray(types, "complex"))) {
+                attributes["fill"] = "red";
+                var topHalfIcon = utils.createSvgRectElement(x, y, rx, ry, width, height / 2, attributes);
+                iconGroup.appendChild(topHalfIcon);
+            }
+            if ((utils.isObjInArray(types, "del")) || (utils.isObjInArray(types, "complex"))) {
+                attributes["fill"] = "blue";
+                var bottomHalfIcon = utils.createSvgRectElement(x, y + height / 2, rx, ry, width, height / 2, attributes);
+                iconGroup.appendChild(bottomHalfIcon);
+            }
+            if ((utils.isObjInArray(types, "snp")) || (utils.isObjInArray(types, "complex"))) {
+                attributes["fill"] = "green";
+                var centeredCircleIcon = utils.createSvgCircleElement(x + width / 2, y + height / 2, height / 4, attributes);
+                iconGroup.appendChild(centeredCircleIcon);
+            }
+            return iconGroup;
+        };
+
         var heatMap = svg.selectAll(".cell").data(showDataList).enter().append(function(d, i) {
             var getUpArrowPointsList = function(x, y, width, height) {
                 var pointsList = [];
@@ -1849,9 +1888,13 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 attributes['class'] = "signature";
                 attributes['eventId'] = d['eventId'];
                 attributes['sampleId'] = d['id'];
-                attributes['val'] = d['val'];
-                console.log("val", val);
-                icon = utils.createSvgRectElement(x, y, rx, ry, width, height, attributes);
+                // val is a list of mutation types
+                attributes['val'] = d['val'].sort();
+                if (attributes['val'].length > 1) {
+                    console.log("sorted vals", attributes['val']);
+                }
+
+                icon = createMutTypeSvg(x, y, rx, ry, width, height, attributes);
             } else if (false & eventAlbum.getEvent(d['eventId']).metadata.datatype === "datatype label") {
                 // TODO datatype label cells
                 var eventId = d["eventId"];
