@@ -1893,9 +1893,6 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 attributes['sampleId'] = d['id'];
                 // val is a list of mutation types
                 attributes['val'] = d['val'].sort();
-                if (attributes['val'].length > 1) {
-                    console.log("sorted vals", attributes['val']);
-                }
 
                 icon = createMutTypeSvg(x, y, rx, ry, width, height, attributes);
             } else if (false & eventAlbum.getEvent(d['eventId']).metadata.datatype === "datatype label") {
