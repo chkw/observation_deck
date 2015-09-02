@@ -1763,10 +1763,13 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
             utils.setElemAttributes(iconGroup, {
                 "class" : "mutTypeIconGroup"
             });
-            delete attributes["fill"];
-            delete attributes["stroke-width"];
 
             var types = attributes["val"];
+
+            // background of cell
+            attributes["fill"] = "lightgrey";
+            iconGroup.appendChild(utils.createSvgRectElement(x, y, rx, ry, width, height, attributes));
+            delete attributes["stroke-width"];
 
             if ((utils.isObjInArray(types, "ins")) || (utils.isObjInArray(types, "complex"))) {
                 attributes["fill"] = "red";
