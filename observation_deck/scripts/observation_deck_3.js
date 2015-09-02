@@ -1964,11 +1964,19 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                     headOrTail = "tail";
                 }
 
+                // https://en.wikipedia.org/wiki/List_of_Unicode_characters
+                // http://www.fileformat.info/info/unicode/char/search.htm
+                // http://shapecatcher.com/
+                // http://www.charbase.com/block/miscellaneous-symbols-and-pictographs
+                // https://stackoverflow.com/questions/12036038/is-there-unicode-glyph-symbol-to-represent-search?lq=1
+                // use "C/C++/Java source code" from search results: http://www.fileformat.info/info/unicode/char/search.htm
                 var glyphs = {
                     "upArrow" : "\u2191",
                     "downArrow" : "\u2193",
                     "upArrowBar" : "\u2912",
-                    "downArrowBar" : "\u2913"
+                    "downArrowBar" : "\u2913",
+                    "magGlass" : "\uD83D\uDD0E",
+                    "ghost" : "\uD83D\uDC7B"
                 };
 
                 attributes['class'] = "datatype";
