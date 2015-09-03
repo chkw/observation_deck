@@ -345,7 +345,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
     var setupContextMenus = function(config) {
         // config['querySettings']
         // first destroy old contextMenus
-        var selectors = ['.typeLabel', '.colLabel', '.rowLabel', '.mrna_exp', '.categoric'];
+        var selectors = ['.typeLabel', '.colLabel', '.rowLabel', '.mrna_exp', '.categoric', ".signature"];
         for (var i = 0; i < selectors.length; i++) {
             var selector = selectors[i];
             $.contextMenu('destroy', selector);
