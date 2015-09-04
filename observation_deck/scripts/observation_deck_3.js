@@ -1231,7 +1231,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                     rescalingData = OD_eventAlbum.yuliaExpressionRescaling(rescalingSettings['eventId'], rescalingSettings['val']);
                 } else if (rescalingSettings['method'] === 'eventwiseMedianRescaling') {
                     // rescalingData = eventAlbum.zScoreExpressionRescaling();
-                    rescalingData = OD_eventAlbum.eventwiseMedianRescaling();
+                    rescalingData = OD_eventAlbum.eventwiseMedianRescaling(["expression data"]);
                 } else if (rescalingSettings['method'] === 'zScoreExpressionRescaling') {
                     rescalingData = OD_eventAlbum.zScoreExpressionRescaling();
                 } else if (rescalingSettings['method'] === 'samplewiseMedianRescaling') {
@@ -1240,7 +1240,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                     // no rescaling
                 }
             } else if (utils.hasOwnProperty(groupedEvents, 'expression data')) {
-                rescalingData = OD_eventAlbum.eventwiseMedianRescaling();
+                rescalingData = OD_eventAlbum.eventwiseMedianRescaling(["expression data"]);
             } else {
                 console.log('no expression data rescaling');
             }
@@ -1765,6 +1765,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
             });
 
             var types = attributes["val"];
+            // types.push("complex");
 
             // background of cell
             attributes["fill"] = "lightgrey";
