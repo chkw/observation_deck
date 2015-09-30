@@ -960,6 +960,21 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                             }
                         }
                     },
+                    "pathway_context" : {
+                        "name" : "view pathway context",
+                        "icon" : null,
+                        "disabled" : function() {
+                            var pathway_context_viewable = ["expression data", "mutation call"];
+                            var disabled = (_.contains(pathway_context_viewable, datatype)) ? false : true;
+                            return disabled;
+                        },
+                        "callback" : function(key, opt) {
+                            var geneSymbol = eventId.replace(/_mRNA$/, "").replace(/_mutation$/, "");
+                            var url = "/PatientCare/geneReport/" + geneSymbol;
+                            console.log("linking out to", url, "for pathway context");
+                            window.open(url, "_patientCare");
+                        }
+                    },
                     "sep2" : "---------",
                     "reset" : createResetContextMenuItem(config)
                 };
