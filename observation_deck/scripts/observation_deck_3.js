@@ -1539,7 +1539,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
         var rowNames = getRowNames(querySettings, eventAlbum, colSortSteps, rowSortSteps);
         // console.log("rowNames", rowNames);
 
-        // TODO hack
+        // bring pivot event to top the top
         var pivotEventId = null;
         if (querySettings['pivot_event'] != null) {
             pivotEventId = querySettings['pivot_event']['id'];
@@ -1652,9 +1652,13 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 }
 
                 // underline genes added via geneset control
+                // underline to indicate user-selected events
                 if (pivotEventId != null) {
-                    if (datatype == "expression data") {
-                        var geneName = d.replace(/_mRNA$/, "");
+                    var underlineableDatatypes = ["expression data", "mutation call"];
+                    if (_.contains(underlineableDatatypes, datatype)) {
+                        var suffix = eventAlbum.datatypeSuffixMapping[datatype];
+                        var regex = new RegExp(suffix + "$");
+                        var geneName = d.replace(regex, "");
                         var geneSetControl = config["geneSetControl"] || [];
                         if (utils.isObjInArray(geneSetControl, geneName)) {
                             s = s + " underline";
