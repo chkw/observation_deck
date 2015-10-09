@@ -1834,20 +1834,60 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 return group;
             }
 
+            var strokeWidth = 2;
             var x = (colNameMapping[d['id']] * gridSize);
             var y = (rowNameMapping[d['eventId']] * gridSize);
-            var rx = 4;
-            var ry = 4;
-            var width = gridSize;
-            var height = gridSize;
-            var attributes = {
-                // "fill" : "lightgrey",
-                "class" : "bordered"
-            };
+            var rx = 0;
+            var ry = rx;
+            var width = gridSize - (0.5 * strokeWidth);
+            var height = width;
+
             var type = d['eventId'];
+            var val = d['val'];
+            var colorMapper = colorMappers[d['eventId']];
+
+            var getFill = function(d) {
+                var allowed_values = eventAlbum.getEvent(d['eventId']).metadata.allowedValues;
+                if (eventAlbum.ordinalScoring.hasOwnProperty(allowed_values)) {
+                    var score = eventAlbum.ordinalScoring[allowed_values][d["val"]];
+                    return colorMapper(score);
+                } else {
+                    return colorMapper(d["val"]);
+                }
+            };
+
+            var pivotEventObj;
+            var pivotEventColorMapper;
+            if (pivotEventId != null) {
+                pivotEventObj = eventAlbum.getEvent(pivotEventId);
+                pivotEventColorMapper = colorMappers[pivotEventId];
+            }
+            var getStroke = function(d) {
+                var grey = "#E6E6E6";
+                var stroke;
+                if (pivotEventId == null || d["eventId"] === pivotEventId) {
+                    stroke = grey;
+                } else {
+                    // use fill for sample pivot event value
+                    var sampleId = d["id"];
+                    var data = pivotEventObj.data.getData([sampleId]);
+                    var val = data[0]["val"];
+                    if (val == null) {
+                        stroke = grey;
+                    } else {
+                        stroke = pivotEventColorMapper(val);
+                    }
+                }
+                return stroke;
+            };
+
             if ((type == null) || (d['val'] == null)) {
                 // final rectangle for null values
-                attributes["fill"] = "lightgrey";
+                var attributes = {
+                    "fill" : "lightgrey",
+                    "stroke" : getStroke(d),
+                    "stroke-width" : strokeWidth
+                };
                 group.appendChild(utils.createSvgRectElement(x, y, rx, ry, width, height, attributes));
             } else {
                 // draw over the primer rectangle instead of drawing a background for each cell
@@ -1862,29 +1902,9 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 return group;
             }
 
-            var val = d['val'];
-
-            var x = (colNameMapping[d['id']] * gridSize);
-            var y = (rowNameMapping[d['eventId']] * gridSize);
-            var rx = 4;
-            var ry = 4;
-            var width = gridSize;
-            var height = gridSize;
-            var colorMapper = colorMappers[d['eventId']];
-
-            var getFill = function(d) {
-                var allowed_values = eventAlbum.getEvent(d['eventId']).metadata.allowedValues;
-                if (eventAlbum.ordinalScoring.hasOwnProperty(allowed_values)) {
-                    var score = eventAlbum.ordinalScoring[allowed_values][d["val"]];
-                    return colorMapper(score);
-                } else {
-                    return colorMapper(d["val"]);
-                }
-            };
-
             var attributes = {
-                "stroke" : "#E6E6E6",
-                "stroke-width" : "2px",
+                "stroke" : getStroke(d),
+                "stroke-width" : strokeWidth,
                 "fill" : getFill(d)
             };
             var icon;
