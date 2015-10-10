@@ -1889,6 +1889,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                     "stroke-width" : strokeWidth
                 };
                 group.appendChild(utils.createSvgRectElement(x, y, rx, ry, width, height, attributes));
+                return group;
             } else {
                 // draw over the primer rectangle instead of drawing a background for each cell
                 // background for icons
@@ -1896,11 +1897,6 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 // attributes["fill"] = rowLabelColorMapper(eventAlbum.getEvent(d['eventId']).metadata.datatype)
             }
             // group.appendChild(utils.createSvgRectElement(x, y, rx, ry, width, height, attributes));
-
-            // draw icons .. possibly multiple ones
-            if ((type == null) || (d['val'] == null)) {
-                return group;
-            }
 
             var attributes = {
                 "stroke" : getStroke(d),
