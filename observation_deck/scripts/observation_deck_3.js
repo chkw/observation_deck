@@ -1858,9 +1858,11 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
 
             var pivotEventObj;
             var pivotEventColorMapper;
+            var strokeOpacity = 1;
             if (pivotEventId != null) {
                 pivotEventObj = eventAlbum.getEvent(pivotEventId);
                 pivotEventColorMapper = colorMappers[pivotEventId];
+                strokeOpacity = 0.4;
             }
             var getStroke = function(d) {
                 var grey = "#E6E6E6";
@@ -1886,7 +1888,8 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 var attributes = {
                     "fill" : "lightgrey",
                     "stroke" : getStroke(d),
-                    "stroke-width" : strokeWidth
+                    "stroke-width" : strokeWidth,
+                    "stroke-opacity" : strokeOpacity
                 };
                 group.appendChild(utils.createSvgRectElement(x, y, rx, ry, width, height, attributes));
                 return group;
@@ -1901,7 +1904,8 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
             var attributes = {
                 "stroke" : getStroke(d),
                 "stroke-width" : strokeWidth,
-                "fill" : getFill(d)
+                "fill" : getFill(d),
+                "stroke-opacity" : strokeOpacity
             };
             var icon;
             if (eventAlbum.getEvent(d['eventId']).metadata.allowedValues === 'categoric') {
