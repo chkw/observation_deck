@@ -1267,6 +1267,20 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
         var rescalingData = getRescalingData(eventAlbum, querySettings);
 
         var setColorMappers = function(rescalingData, eventAlbum) {
+
+            /**
+             * premap some colors
+             */
+            var premapColors = function(d3OrdinalColorMapper10) {
+                var preassignedVals = ["blue", "orange", "green", "red", "purple", "brown", "pink", "grey", "chartreuse", "cyan"];
+                preassignedVals = preassignedVals.concat(["small cell", "xyz1", "naive", "resistant", "xyz4", "xyz5", "xyz6", "exclude", "xyz8", "xyz9"]);
+                preassignedVals = preassignedVals.concat(["neg", "xyz11", "yes", "adeno", "xyz14", "xyz15", "xyz16", "xyz17", "xyz18", "xyz19"]);
+                preassignedVals = preassignedVals.concat(["xyz20", "xyz21", "xyz22", "no", "xyz24", "xyz25", "xyz26", "xyz27", "xyz28", "xyz29"]);
+                preassignedVals = preassignedVals.concat(["xyz30", "xyz31", "xyz32", "pos", "xyz34", "xyz35", "xyz36", "xyz37", "xyz38", "xyz39"]);
+                _.each(preassignedVals, function(value) {
+                    d3OrdinalColorMapper10(value);
+                });
+            };
             var expressionColorMapper = utils.centeredRgbaColorMapper(false);
             if (rescalingData != null) {
                 var minExpVal = rescalingData['minVal'];
@@ -1290,6 +1304,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 var allowedValues = eventAlbum.getEvent(eventId).metadata.allowedValues;
                 if (allowedValues == 'categoric') {
                     colorMappers[eventId] = d3.scale.category10();
+                    premapColors(colorMappers[eventId]);
                 } else if (allowedValues == 'numeric') {
                     // 0-centered color mapper
                     var eventObj = eventAlbum.getEvent(eventId);
@@ -1320,6 +1335,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                     colorMappers[eventId] = ordinalColorMappers[allowedValues];
                 } else {
                     colorMappers[eventId] = d3.scale.category10();
+                    premapColors(colorMappers[eventId]);
                 }
             }
             return colorMappers;
@@ -1848,12 +1864,17 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
 
             var getFill = function(d) {
                 var allowed_values = eventAlbum.getEvent(d['eventId']).metadata.allowedValues;
-                if (eventAlbum.ordinalScoring.hasOwnProperty(allowed_values)) {
-                    var score = eventAlbum.ordinalScoring[allowed_values][d["val"]];
-                    return colorMapper(score);
-                } else {
-                    return colorMapper(d["val"]);
+                var val = d["val"];
+                if (!_.isNumber(val)) {
+                    val = val.toLowerCase();
                 }
+                // if (eventAlbum.ordinalScoring.hasOwnProperty(allowed_values)) {
+                // var score = eventAlbum.ordinalScoring[allowed_values][val];
+                // return colorMapper(score);
+                // } else {
+                // return colorMapper(val);
+                // }
+                return colorMapper(val);
             };
 
             var pivotEventObj;
