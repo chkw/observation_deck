@@ -1277,6 +1277,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 preassignedVals = preassignedVals.concat(["neg", "xyz11", "yes", "adeno", "xyz14", "xyz15", "xyz16", "xyz17", "xyz18", "xyz19"]);
                 preassignedVals = preassignedVals.concat(["xyz20", "xyz21", "xyz22", "no", "xyz24", "xyz25", "xyz26", "xyz27", "xyz28", "xyz29"]);
                 preassignedVals = preassignedVals.concat(["xyz30", "xyz31", "xyz32", "pos", "xyz34", "xyz35", "xyz36", "xyz37", "xyz38", "xyz39"]);
+                preassignedVals = preassignedVals.concat(["xyz40", "xyz41", "xyz42", "xyz43", "xyz44", "xyz45", "xyz46", "xyz47", "xyz48", "xyz49"]);
                 _.each(preassignedVals, function(value) {
                     d3OrdinalColorMapper10(value);
                 });
