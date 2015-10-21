@@ -677,7 +677,6 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                             return;
                         }
                     },
-                    // TODO experimental features here
                     "test_fold" : {
                         "name" : "dev_features",
                         "disabled" : function() {
@@ -731,7 +730,6 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
         });
     };
 
-    // TODO setupRowLabelContextMenu
     /**
      *context menu uses http://medialize.github.io/jQuery-contextMenu
      */
@@ -1212,7 +1210,6 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
      * @param {Object} config
      */
     var drawMatrix = function(containingDiv, config) {
-        // TODO begin drawMatrix
         console.log("*** BEGIN DRAWMATRIX ***");
 
         var thisElement = utils.removeChildElems(containingDiv);
@@ -1271,17 +1268,85 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
             /**
              * premap some colors
              */
-            var premapColors = function(d3OrdinalColorMapper10) {
-                var preassignedVals = ["blue", "orange", "green", "red", "purple", "brown", "pink", "grey", "chartreuse", "cyan"];
-                preassignedVals = preassignedVals.concat(["small cell", "xyz1", "naive", "resistant", "xyz4", "xyz5", "xyz6", "exclude", "xyz8", "xyz9"]);
-                preassignedVals = preassignedVals.concat(["neg", "xyz11", "yes", "adeno", "xyz14", "xyz15", "xyz16", "xyz17", "xyz18", "xyz19"]);
-                preassignedVals = preassignedVals.concat(["not adeno", "xyz21", "xyz22", "no", "xyz24", "xyz25", "xyz26", "xyz27", "xyz28", "xyz29"]);
-                preassignedVals = preassignedVals.concat(["xyz30", "xyz31", "xyz32", "pos", "xyz34", "xyz35", "xyz36", "xyz37", "xyz38", "xyz39"]);
-                preassignedVals = preassignedVals.concat(["xyz40", "xyz41", "xyz42", "not small cell", "xyz44", "xyz45", "xyz46", "xyz47", "xyz48", "xyz49"]);
-                _.each(preassignedVals, function(value) {
-                    d3OrdinalColorMapper10(value);
+            var premapColors = function(d3OrdinalColorMapper10, mapping) {
+
+                var colorSets = {
+                    "exclude" : {
+                        "exclude" : "gray"
+                    },
+                    "small cell" : {
+                        "exclude" : "gray",
+                        "small cell" : "blue",
+                        "not small cell" : "red"
+                    },
+                    "resistance" : {
+                        "exclude" : "gray",
+                        "naive" : "green",
+                        "resistant" : "red"
+                    },
+                    "pos_neg" : {
+                        "exclude" : "gray",
+                        "pos" : "red",
+                        "neg" : "blue"
+                    },
+                    "yes_no" : {
+                        "exclude" : "gray",
+                        "yes" : "green",
+                        "no" : "red"
+                    },
+                    "adeno" : {
+                        "exclude" : "gray",
+                        "adeno" : "red",
+                        "not adeno" : "blue"
+                    }
+                };
+
+                // d3.scale.category10().range()
+                var colorNames = {
+                    "blue" : "#1f77b4",
+                    "orange" : "#ff7f0e",
+                    "green" : "#2ca02c",
+                    "red" : "#d62728",
+                    "purple" : "#9467bd",
+                    "brown" : "#8c564b",
+                    "pink" : "#e377c2",
+                    "gray" : "#7f7f7f",
+                    "chartreuse" : "#bcbd22",
+                    "cyan" : "#17becf"
+                };
+
+                mapping = {
+                    "exclude" : "gray"
+                };
+
+                // map named colors to color code
+                var inputMappings = {};
+                if (!_.isUndefined(mapping)) {
+                    _.each(mapping, function(value, key) {
+                        var color = (_.isUndefined(colorNames[value])) ? value : colorNames[value];
+                        inputMappings[key] = color;
+                    });
+                }
+
+                //  assign pre-mapped colors
+                var range = _.values(inputMappings);
+                var domain = _.keys(inputMappings);
+
+                // fill in remaining color range
+                _.each(_.values(colorNames), function(color) {
+                    if (!_.contains(range, color)) {
+                        range.push(color);
+                    }
                 });
+
+                // assign domain and range to color mapper
+                d3OrdinalColorMapper10.domain(domain);
+                d3OrdinalColorMapper10.range(range);
+
+                console.log("range", d3OrdinalColorMapper10.range());
+                console.log("domain", d3OrdinalColorMapper10.domain());
             };
+
             var expressionColorMapper = utils.centeredRgbaColorMapper(false);
             if (rescalingData != null) {
                 var minExpVal = rescalingData['minVal'];
@@ -1771,7 +1836,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
             return s;
         });
 
-        // TODO SVG elements for heatmap cells
+        // SVG elements for heatmap cells
         var dataList = eventAlbum.getAllDataAsList();
         var showDataList = [];
         for (var i = 0; i < dataList.length; i++) {
@@ -1878,6 +1943,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 return colorMapper(val);
             };
 
+            // TODO pivot background
             var pivotEventObj;
             var pivotEventColorMapper;
             var strokeOpacity = 1;
@@ -1885,6 +1951,10 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 pivotEventObj = eventAlbum.getEvent(pivotEventId);
                 pivotEventColorMapper = colorMappers[pivotEventId];
                 strokeOpacity = 0.4;
+
+                // var domain = pivotEventColorMapper.domain();
+                // console.log("domain", domain);
+
             }
             var getStroke = function(d) {
                 var grey = "#E6E6E6";
@@ -1949,7 +2019,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 attributes['val'] = d['val'];
                 icon = utils.createSvgRectElement(x, y, rx, ry, width, height, attributes);
             } else if (eventAlbum.getEvent(d['eventId']).metadata.datatype === 'mutation call') {
-                // TODO oncoprint-style icons
+                // oncoprint-style icons
                 attributes['class'] = "signature";
                 attributes['eventId'] = d['eventId'];
                 attributes['sampleId'] = d['id'];
@@ -1958,7 +2028,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
 
                 icon = createMutTypeSvg(x, y, rx, ry, width, height, attributes);
             } else if (false & eventAlbum.getEvent(d['eventId']).metadata.datatype === "datatype label") {
-                // TODO datatype label cells
+                // datatype label cells
                 var eventId = d["eventId"];
                 var datatype;
                 var headOrTail;
@@ -2147,7 +2217,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
             return group;
         });
 
-        // TODO heatmap click event
+        // heatmap click event
         // heatMap.on("click", config["cellClickback"]).on("contextmenu", config["cellRightClickback"]);
 
         // heatmap titles
@@ -2199,7 +2269,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
 
         console.log("*** END DRAWMATRIX ***");
         return config;
-        // TODO end drawMatrix
+        // end drawMatrix
     };
 
 })(observation_deck);
