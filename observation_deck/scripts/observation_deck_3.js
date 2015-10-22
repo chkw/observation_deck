@@ -1343,8 +1343,8 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 d3OrdinalColorMapper10.domain(domain);
                 d3OrdinalColorMapper10.range(range);
 
-                console.log("range", d3OrdinalColorMapper10.range());
-                console.log("domain", d3OrdinalColorMapper10.domain());
+                // console.log("range", d3OrdinalColorMapper10.range());
+                // console.log("domain", d3OrdinalColorMapper10.domain());
             };
 
             var expressionColorMapper = utils.centeredRgbaColorMapper(false);
@@ -1401,7 +1401,9 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                     // ordinal data
                     colorMappers[eventId] = ordinalColorMappers[allowedValues];
                 } else {
-                    colorMappers[eventId] = d3.scale.category10();
+                    var colorMapper = d3.scale.category10();
+                    // premapColors(colorMapper);
+                    colorMappers[eventId] = colorMapper;
                 }
             }
             return colorMappers;
@@ -1931,7 +1933,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
             var getFill = function(d) {
                 var allowed_values = eventAlbum.getEvent(d['eventId']).metadata.allowedValues;
                 var val = d["val"];
-                if (!_.isNumber(val)) {
+                if (_.isString(val)) {
                     val = val.toLowerCase();
                 }
                 // if (eventAlbum.ordinalScoring.hasOwnProperty(allowed_values)) {
@@ -1951,31 +1953,32 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 pivotEventObj = eventAlbum.getEvent(pivotEventId);
                 pivotEventColorMapper = colorMappers[pivotEventId];
                 strokeOpacity = 0.4;
-
-                // var domain = pivotEventColorMapper.domain();
-                // console.log("domain", domain);
-
             }
+
             var getStroke = function(d) {
                 var grey = "#E6E6E6";
                 var stroke;
-                if (pivotEventId == null || d["eventId"] === pivotEventId) {
+                if (_.isUndefined(pivotEventColorMapper) || d["eventId"] === pivotEventId) {
                     stroke = grey;
                 } else {
                     // use fill for sample pivot event value
                     var sampleId = d["id"];
                     var data = pivotEventObj.data.getData([sampleId]);
                     var val = data[0]["val"];
-                    if (val == null) {
+                    if (val === null) {
                         stroke = grey;
                     } else {
+                        // !!! colors are mapped to lowercase of strings !!!
+                        if (_.isString(val)) {
+                            val = val.toLowerCase();
+                        }
                         stroke = pivotEventColorMapper(val);
                     }
                 }
                 return stroke;
             };
 
-            if ((type == null) || (d['val'] == null)) {
+            if ((type === null) || (d['val'] === null)) {
                 // final rectangle for null values
                 var attributes = {
                     "fill" : "lightgrey",
