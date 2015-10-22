@@ -1269,7 +1269,6 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
              * premap some colors
              */
             var premapColors = function(d3OrdinalColorMapper10, mapping) {
-
                 var colorSets = {
                     "exclude" : {
                         "exclude" : "gray"
@@ -1315,9 +1314,10 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                     "cyan" : "#17becf"
                 };
 
-                mapping = {
-                    "exclude" : "gray"
-                };
+                // mapping = {
+                // "exclude" : "gray"
+                // };
+                mapping = colorSets["exclude"];
 
                 // map named colors to color code
                 var inputMappings = {};
@@ -1369,8 +1369,9 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 var eventId = eventList[i];
                 var allowedValues = eventAlbum.getEvent(eventId).metadata.allowedValues;
                 if (allowedValues == 'categoric') {
-                    colorMappers[eventId] = d3.scale.category10();
-                    premapColors(colorMappers[eventId]);
+                    var colorMapper = d3.scale.category10();
+                    premapColors(colorMapper);
+                    colorMappers[eventId] = colorMapper;
                 } else if (allowedValues == 'numeric') {
                     // 0-centered color mapper
                     var eventObj = eventAlbum.getEvent(eventId);
@@ -1401,7 +1402,6 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                     colorMappers[eventId] = ordinalColorMappers[allowedValues];
                 } else {
                     colorMappers[eventId] = d3.scale.category10();
-                    premapColors(colorMappers[eventId]);
                 }
             }
             return colorMappers;
