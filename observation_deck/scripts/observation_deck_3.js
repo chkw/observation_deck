@@ -1268,7 +1268,8 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
             /**
              * premap some colors
              */
-            var premapColors = function(d3OrdinalColorMapper10, mapping) {
+            // TODO premapColors
+            var premapColors = function(d3ScaleColormapper, colorSet) {
                 var colorSets = {
                     "exclude" : {
                         "exclude" : "gray"
@@ -1314,10 +1315,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                     "cyan" : "#17becf"
                 };
 
-                // mapping = {
-                // "exclude" : "gray"
-                // };
-                mapping = colorSets["exclude"];
+                var mapping = (_.isUndefined(colorSets[colorSet])) ? {} : colorSets[colorSet];
 
                 // map named colors to color code
                 var inputMappings = {};
@@ -1340,11 +1338,11 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 });
 
                 // assign domain and range to color mapper
-                d3OrdinalColorMapper10.domain(domain);
-                d3OrdinalColorMapper10.range(range);
+                d3ScaleColormapper.domain(domain);
+                d3ScaleColormapper.range(range);
 
-                // console.log("range", d3OrdinalColorMapper10.range());
-                // console.log("domain", d3OrdinalColorMapper10.domain());
+                // console.log("range", d3ScaleColormapper.range());
+                // console.log("domain", d3ScaleColormapper.domain());
             };
 
             var expressionColorMapper = utils.centeredRgbaColorMapper(false);
@@ -1370,7 +1368,22 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 var allowedValues = eventAlbum.getEvent(eventId).metadata.allowedValues;
                 if (allowedValues == 'categoric') {
                     var colorMapper = d3.scale.category10();
-                    premapColors(colorMapper);
+                    // TODO set a premapping color scheme dependent upon event
+                    // colorSets ["exclude", "small cell", "resistance", "pos_neg", "yes_no", "adeno"]
+                    var eventId_lc = eventId.toLowerCase();
+                    var colorSet;
+                    if (eventId_lc === "smallcell") {
+                        colorSet = "small cell";
+                    } else if (_.contains(["enzalutamide", "abiraterone", "docetaxel"], eventId_lc)) {
+                        colorSet = "resistance";
+                    } else if (_.contains(["mutations", "primary hr"], eventId_lc)) {
+                        colorSet = "yes_no";
+                    } else if (_.contains(["pten-ihc", "ar-fish"], eventId_lc)) {
+                        colorSet = "pos_neg";
+                    } else {
+                        colorSet = "exclude";
+                    }
+                    premapColors(colorMapper, colorSet);
                     colorMappers[eventId] = colorMapper;
                 } else if (allowedValues == 'numeric') {
                     // 0-centered color mapper
@@ -1402,7 +1415,6 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                     colorMappers[eventId] = ordinalColorMappers[allowedValues];
                 } else {
                     var colorMapper = d3.scale.category10();
-                    // premapColors(colorMapper);
                     colorMappers[eventId] = colorMapper;
                 }
             }
@@ -1945,7 +1957,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 return colorMapper(val);
             };
 
-            // TODO pivot background
+            // pivot background
             var pivotEventObj;
             var pivotEventColorMapper;
             var strokeOpacity = 1;
