@@ -973,6 +973,20 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                             window.open(url, "_patientCare");
                         }
                     },
+                    "pathway_genes" : {
+                        "name" : "add gene set",
+                        "icon" : null,
+                        "disabled" : function() {
+                            var pathway_context_viewable = ["kinase target activity", "tf target activity"];
+                            var disabled = (_.contains(pathway_context_viewable, datatype)) ? false : true;
+                            return disabled;
+                        },
+                        "callback" : function(key, opt) {
+                            var sigName = eventId.replace(/_v\d+$/, "");
+                            console.log("add gene set for", sigName);
+                            // TODO add gene set for signature
+                        }
+                    },
                     "sep2" : "---------",
                     "reset" : createResetContextMenuItem(config)
                 };
