@@ -1406,7 +1406,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                     // colorSets ["exclude", "small cell", "resistance", "pos_neg", "yes_no", "adeno"]
                     var eventId_lc = eventId.toLowerCase();
                     var colorSet;
-                    if (eventId_lc === "smallcell") {
+                    if (_.contains(["smallcell", "small_cell", "trichotomy"], eventId_lc)) {
                         colorSet = "small cell";
                     } else if (_.contains(["enzalutamide", "abiraterone", "docetaxel"], eventId_lc)) {
                         colorSet = "resistance";
