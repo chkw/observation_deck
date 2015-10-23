@@ -984,7 +984,28 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                         "callback" : function(key, opt) {
                             var sigName = eventId.replace(/_v\d+$/, "");
                             console.log("add gene set for", sigName);
-                            // TODO add gene set for signature
+                            // add gene set for signature
+                            var geneSetSelectElem = document.getElementById("geneset");
+                            if (_.isUndefined(geneSetSelectElem) || _.isNull(geneSetSelectElem)) {
+                                console.log("no geneSetSelectElem with ID", "geneset");
+                                return;
+                            }
+                            var geneSetOptions = geneSetSelectElem.getElementsByTagName("option");
+                            var foundMatch = false;
+                            _.each(geneSetOptions, function(option, index) {
+                                var text = option.innerHTML;
+                                text = text.replace(/ \(\d+\)$/, "").replace(/_targets_viper/, "_viper");
+                                // var val = option.getAttribute("value");
+                                // var geneList = val.split(/,/);
+                                if (text === sigName) {
+                                    option.selected = true;
+                                    $(geneSetSelectElem).trigger("change");
+                                    foundMatch = true;
+                                }
+                            });
+                            if (!foundMatch) {
+                                alert("No gene set found for " + sigName + ".");
+                            }
                         }
                     },
                     "sep2" : "---------",
