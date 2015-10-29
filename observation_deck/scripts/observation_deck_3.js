@@ -1008,6 +1008,27 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                             }
                         }
                     },
+                    "test_fold" : {
+                        "name" : "dev_features",
+                        "disabled" : function() {
+                            return (!getDevMode());
+                        },
+                        "items" : {
+                            "add_events_for_gene" : {
+                                "name" : "add events for gene",
+                                "icon" : null,
+                                "disabled" : function() {
+                                    return (datatype === "clinical data");
+                                },
+                                "callback" : function(key, opt) {
+                                    var gene = eventId.split(/_/)[0];
+                                    setSession("eventSearch", gene);
+                                    // TODO search for and add events related to this gene
+                                    console.log("search for and add events related to this gene", gene);
+                                }
+                            }
+                        }
+                    },
                     "sep2" : "---------",
                     "reset" : createResetContextMenuItem(config)
                 };
