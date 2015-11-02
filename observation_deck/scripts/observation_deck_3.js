@@ -1015,7 +1015,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                         },
                         "items" : {
                             "add_events_for_gene" : {
-                                "name" : "add events for gene",
+                                "name" : "see expression of targets",
                                 "icon" : null,
                                 "disabled" : function() {
                                     return (datatype === "clinical data");
