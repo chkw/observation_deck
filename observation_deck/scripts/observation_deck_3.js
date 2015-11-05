@@ -1710,8 +1710,10 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
             rowNames = utils.eliminateDuplicates(rowNames);
         }
 
-        // TODO determine boundaries between pos/neg-correlated events
-        if (!_.isNull(pivotEventId)) {
+        /**
+         * For each submatrix, find first index, last index, and row count.
+         */
+        var getBoundariesBetweenDatatypes = function() {
             var rowNames_copy = rowNames.slice();
             rowNames_copy.reverse();
             var boundaries = {};
@@ -1731,9 +1733,18 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                         boundaries[datatype]["last"] = index;
                     }
                 }
-                boundaries[datatype]["range"] = boundaries[datatype]["last"] - boundaries[datatype]["first"] + 1;
+                boundaries[datatype]["count"] = boundaries[datatype]["last"] - boundaries[datatype]["first"] + 1;
             });
-            console.log("boundaries", boundaries);
+            return boundaries;
+        };
+
+        // TODO determine boundaries between pos/neg-correlated events
+        if (!_.isNull(pivotEventId)) {
+            var pivotEventDatatype = eventAlbum.getEvent(pivotEventId).metadata.datatype;
+            // pivot results for clinical data give top 5 only due to ANOVA score
+            var pageSize = (pivotEventDatatype === "clinical data") ? 5 : 10;
+            var boundaries = getBoundariesBetweenDatatypes();
+            console.log("boundaries", pivotEventDatatype, pageSize, boundaries);
         }
 
         // assign row numbers to row names
