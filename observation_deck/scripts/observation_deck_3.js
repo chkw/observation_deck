@@ -974,7 +974,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                         }
                     },
                     "pathway_genes" : {
-                        "name" : "add gene set",
+                        "name" : "see expression of targets",
                         "icon" : null,
                         "disabled" : function() {
                             var pathway_context_viewable = ["kinase target activity", "tf target activity"];
@@ -1015,7 +1015,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                         },
                         "items" : {
                             "add_events_for_gene" : {
-                                "name" : "see expression of targets",
+                                "name" : "add events for gene",
                                 "icon" : null,
                                 "disabled" : function() {
                                     return (datatype === "clinical data");
