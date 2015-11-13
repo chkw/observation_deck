@@ -2172,7 +2172,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 attributes['sampleId'] = d['id'];
                 attributes['val'] = d['val'];
                 icon = utils.createSvgRectElement(x, y, rx, ry, width, height, attributes);
-            } else if (utils.isObjInArray(["expression signature", "kinase target activity", "tf target activity"], eventAlbum.getEvent(d['eventId']).metadata.datatype)) {
+            } else if (utils.isObjInArray(["expression signature", "kinase target activity", "tf target activity", "mvl drug sensitivity"], eventAlbum.getEvent(d['eventId']).metadata.datatype)) {
                 attributes['class'] = "signature";
                 attributes['eventId'] = d['eventId'];
                 attributes['sampleId'] = d['id'];
