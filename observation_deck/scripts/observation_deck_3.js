@@ -1860,9 +1860,22 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
         var rowLabels = svg.selectAll(".rowLabel").data(rowNames).enter().append("text").text(function(d) {
             var eventObj = eventAlbum.getEvent(d);
             var displayName = eventObj.metadata.displayName;
-            if (eventObj.metadata.datatype === "datatype label") {
+            var datatype = eventObj.metadata.datatype;
+            if (datatype === "datatype label") {
                 displayName = displayName.toUpperCase();
             }
+
+            // TODO hack to shorten signature names to remove type
+            if (datatype === "mvl drug sensitivity") {
+                displayName = d.replace("_mvl_drug_sensitivity", "");
+            } else if (datatype === "tf target activity") {
+                displayName = d.replace("_tf_viper", "");
+            } else if (datatype === "kinase target activity") {
+                displayName = d.replace("_kinase_viper", "");
+            }
+
+            // remove version number
+            displayName = displayName.replace(/_v\d+$/, "");
 
             if (!_.isUndefined(taggedEvents)) {
                 var tag = taggedEvents[d];
