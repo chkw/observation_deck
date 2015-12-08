@@ -1,278 +1,404 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>Observation Deck Prototype</title>
-		<meta charset="utf-8">
-		<noscript>
-			<div align="center">
-				<p style="color:black;background-color:red;font-size:18pt">
-					This website requires JavaScript.  Please turn on JavaScript and then <a href="">try it again</a>.
-				</p>
-			</div>
-		</noscript>
-		<link href="observation_deck/images/favicon.ico" rel="icon" type="image/x-icon">
-		<link rel="stylesheet" href="observation_deck/css/observation_deck.css" type="text/css" />
+  <head>
+    <title>Observation Deck Prototype</title>
+    <meta charset="utf-8">
+    <noscript>
+      <div align="center">
+        <p style="color:black;background-color:red;font-size:18pt">
+          This website requires JavaScript.  Please turn on JavaScript and then <a href="">try it again</a>.
+        </p>
+      </div>
+    </noscript>
+    <link href="observation_deck/images/favicon.ico" rel="icon" type="image/x-icon">
+    <link rel="stylesheet" href="observation_deck/css/observation_deck.css" type="text/css" />
 
-		<script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.js"></script>
-		<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
-		<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 
-		<script type="text/javascript" src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 
-		<script type="text/javascript" src="observation_deck/scripts/bower_components/jQuery-contextMenu/src/jquery.contextMenu.js"></script>
-		<link type="text/css" rel="stylesheet" href="observation_deck/scripts/bower_components/jQuery-contextMenu/src/jquery.contextmenu.css">
+    <script type="text/javascript" src="observation_deck/scripts/bower_components/jQuery-contextMenu/src/jquery.contextMenu.js"></script>
+    <link type="text/css" rel="stylesheet" href="observation_deck/scripts/bower_components/jQuery-contextMenu/src/jquery.contextmenu.css">
 
-		<script type="text/javascript" src="observation_deck/scripts/bower_components/typeahead.js/dist/typeahead.bundle.js	"></script>
+    <script type="text/javascript" src="observation_deck/scripts/bower_components/typeahead.js/dist/typeahead.bundle.js	"></script>
 
-		<script type="text/javascript" src="observation_deck/scripts/bower_components/underscore/underscore.js"></script>
+    <script type="text/javascript" src="observation_deck/scripts/bower_components/underscore/underscore.js"></script>
 
-		<script type="text/javascript" src="observation_deck/scripts/bower_components/jstat/dist/jstat.min.js"></script>
-		<script type="text/javascript" src="observation_deck/scripts/utils.js"></script>
-		<script type="text/javascript" src="observation_deck/scripts/eventData.js"></script>
-		<script type="text/javascript" src="observation_deck/scripts/medbook_data_load.js"></script>
-		<script type="text/javascript" src="observation_deck/scripts/a.js"></script>
-		<script type="text/javascript" src="observation_deck/scripts/b.js"></script>
-		<script type="text/javascript" src="observation_deck/scripts/c2.js"></script>
-		<script type="text/javascript" src="observation_deck/scripts/sigData.js"></script>
-		<script type="text/javascript" src="observation_deck/scripts/observation_deck_3.js"></script>
-		<!-- <script type="text/javascript" src="observation_deck/scripts/observation_deck_jqplugin.js"></script> -->
-	</head>
-	<body>
-		<div id='testDiv'></div>
-		<script>
-            var divElem = document.getElementById("testDiv");
+    <script type="text/javascript" src="observation_deck/scripts/bower_components/jstat/dist/jstat.min.js"></script>
+    <script type="text/javascript" src="observation_deck/scripts/utils.js"></script>
+    <script type="text/javascript" src="observation_deck/scripts/eventData.js"></script>
+    <script type="text/javascript" src="observation_deck/scripts/medbook_data_load.js"></script>
+    <script type="text/javascript" src="observation_deck/scripts/a.js"></script>
+    <script type="text/javascript" src="observation_deck/scripts/b.js"></script>
+    <script type="text/javascript" src="observation_deck/scripts/c2.js"></script>
+    <script type="text/javascript" src="observation_deck/scripts/sigData.js"></script>
+    <script type="text/javascript" src="observation_deck/scripts/observation_deck_3.js"></script>
+    <!-- <script type="text/javascript" src="observation_deck/scripts/observation_deck_jqplugin.js"></script> -->
+  </head>
+  <body>
+    <div id='testDiv'></div>
+    <script>
+      var divElem = document.getElementById("testDiv");
 
-            eventAlbum = new eventData.OD_eventAlbum();
-            // medbookDataLoader.getViperData('observation_deck/data/viper.tab', eventAlbum);
+      eventAlbum = new eventData.OD_eventAlbum ();
+      // medbookDataLoader.getViperData('observation_deck/data/viper.tab', eventAlbum);
 
-            mutDocs = [{
-                "_id" : {
-                    "_str" : "54d3d75f86fa7b6ebc1e001b"
-                },
-                "Hugo_Symbol" : "MDM4",
-                "Chromosome" : 1,
-                "Strand" : "+",
-                "Variant_Classification" : "Missense_Mutation",
-                "Variant_Type" : "SNP",
-                "Reference_Allele" : "G",
-                "Tumor_Seq_Allele1" : "T",
-                "sample" : "DTB-024Pro",
-                "ONCOTATOR_PROTEIN_CHANGE" : "p.D67Y",
-                "ONCOTATOR_PROTEIN_CHANGE_BEST_EFFECT" : "p.D67Y",
-                "ONCOTATOR_EXON_AFFECTED_BEST_EFFECT" : 4,
-                "MA_FImpact" : "medium",
-                "MA_FIS" : 2.365,
-                "MA_protein_change" : "D67Y",
-                "MA_link_MSA" : "getma.org/?cm=msa&ty=f&p=MDM4_HUMAN&rb=26&re=101&var=D67Y",
-                "MA_link_PDB" : "getma.org/pdb.php?prot=MDM4_HUMAN&from=26&to=101&var=D67Y",
-                "MA_link_var" : "getma.org/?cm=var&var=hg19,1,204499857,G,T&fts=all",
-                "Study_ID" : "prad_wcdt"
-            }, {
-                "_id" : {
-                    "_str" : "54d3d76086fa7b6ebc1e2137"
-                },
-                "Hugo_Symbol" : "TP53",
-                "Chromosome" : 17,
-                "Strand" : "+",
-                "Variant_Classification" : "Missense_Mutation",
-                "Variant_Type" : "SNP",
-                "Reference_Allele" : "G",
-                "Tumor_Seq_Allele1" : "A",
-                "sample" : "DTB-040",
-                "ONCOTATOR_PROTEIN_CHANGE" : "p.P190L",
-                "ONCOTATOR_PROTEIN_CHANGE_BEST_EFFECT" : "p.P190L",
-                "ONCOTATOR_EXON_AFFECTED_BEST_EFFECT" : 6,
-                "MA_FImpact" : "medium",
-                "MA_FIS" : 2.085,
-                "MA_protein_change" : "P190L",
-                "MA_link_MSA" : "getma.org/?cm=msa&ty=f&p=P53_HUMAN&rb=95&re=289&var=P190L",
-                "MA_link_PDB" : "getma.org/pdb.php?prot=P53_HUMAN&from=95&to=289&var=P190L",
-                "MA_link_var" : "getma.org/?cm=var&var=hg19,17,7578280,G,A&fts=all",
-                "Study_ID" : "prad_wcdt"
-            }, {
-                "_id" : {
-                    "_str" : "54d3d76086fa7b6ebc1e34de"
-                },
-                "Hugo_Symbol" : "TP53",
-                "Chromosome" : 17,
-                "Strand" : "+",
-                "Variant_Classification" : "Missense_Mutation",
-                "Variant_Type" : "SNP",
-                "Reference_Allele" : "A",
-                "Tumor_Seq_Allele1" : "C",
-                "sample" : "DTB-069",
-                "ONCOTATOR_PROTEIN_CHANGE" : "p.I195S",
-                "ONCOTATOR_PROTEIN_CHANGE_BEST_EFFECT" : "p.I195S",
-                "ONCOTATOR_EXON_AFFECTED_BEST_EFFECT" : 6,
-                "MA_FImpact" : "medium",
-                "MA_FIS" : 2.735,
-                "MA_protein_change" : "I195S",
-                "MA_link_MSA" : "getma.org/?cm=msa&ty=f&p=P53_HUMAN&rb=95&re=289&var=I195S",
-                "MA_link_PDB" : "getma.org/pdb.php?prot=P53_HUMAN&from=95&to=289&var=I195S",
-                "MA_link_var" : "getma.org/?cm=var&var=hg19,17,7578265,A,C&fts=all",
-                "Study_ID" : "prad_wcdt"
-            }, {
-                "_id" : {
-                    "_str" : "54d3d76186fa7b6ebc1e6b72"
-                },
-                "Hugo_Symbol" : "TP53",
-                "Chromosome" : 17,
-                "Strand" : "+",
-                "Variant_Classification" : "Missense_Mutation",
-                "Variant_Type" : "SNP",
-                "Reference_Allele" : "T",
-                "Tumor_Seq_Allele1" : "G",
-                "sample" : "DTB-071",
-                "ONCOTATOR_PROTEIN_CHANGE" : "p.D208A",
-                "ONCOTATOR_PROTEIN_CHANGE_BEST_EFFECT" : "p.D208A",
-                "ONCOTATOR_EXON_AFFECTED_BEST_EFFECT" : 6,
-                "MA_FImpact" : "medium",
-                "MA_FIS" : 2.775,
-                "MA_protein_change" : "D208A",
-                "MA_link_MSA" : "getma.org/?cm=msa&ty=f&p=P53_HUMAN&rb=95&re=289&var=D208A",
-                "MA_link_PDB" : "getma.org/pdb.php?prot=P53_HUMAN&from=95&to=289&var=D208A",
-                "MA_link_var" : "getma.org/?cm=var&var=hg19,17,7578226,T,G&fts=all",
-                "Study_ID" : "prad_wcdt"
-            }, {
-                "_id" : {
-                    "_str" : "54d3d76186fa7b6ebc1e85a5"
-                },
-                "Hugo_Symbol" : "TP53",
-                "Chromosome" : 17,
-                "Strand" : "+",
-                "Variant_Classification" : "Missense_Mutation",
-                "Variant_Type" : "SNP",
-                "Reference_Allele" : "T",
-                "Tumor_Seq_Allele1" : "A",
-                "sample" : "DTB-005",
-                "ONCOTATOR_PROTEIN_CHANGE" : "p.Y205F",
-                "ONCOTATOR_PROTEIN_CHANGE_BEST_EFFECT" : "p.Y205F",
-                "ONCOTATOR_EXON_AFFECTED_BEST_EFFECT" : 6,
-                "MA_FImpact" : "medium",
-                "MA_FIS" : 2.99,
-                "MA_protein_change" : "Y205F",
-                "MA_link_MSA" : "getma.org/?cm=msa&ty=f&p=P53_HUMAN&rb=95&re=289&var=Y205F",
-                "MA_link_PDB" : "getma.org/pdb.php?prot=P53_HUMAN&from=95&to=289&var=Y205F",
-                "MA_link_var" : "getma.org/?cm=var&var=hg19,17,7578235,T,A&fts=all",
-                "Study_ID" : "prad_wcdt"
-            }, {
-                "_id" : {
-                    "_str" : "54d3d76286fa7b6ebc1ea619"
-                },
-                "Hugo_Symbol" : "MDM2",
-                "Chromosome" : 12,
-                "Strand" : "+",
-                "Variant_Classification" : "Missense_Mutation",
-                "Variant_Type" : "SNP",
-                "Reference_Allele" : "G",
-                "Tumor_Seq_Allele1" : "A",
-                "sample" : "DTB-073",
-                "ONCOTATOR_PROTEIN_CHANGE" : "p.S408N",
-                "ONCOTATOR_PROTEIN_CHANGE_BEST_EFFECT" : "p.S408N",
-                "ONCOTATOR_EXON_AFFECTED_BEST_EFFECT" : 11,
-                "MA_FImpact" : "medium",
-                "MA_FIS" : 1.995,
-                "MA_protein_change" : "S402N",
-                "MA_link_MSA" : "getma.org/?cm=msa&ty=f&p=MDM2_HUMAN&rb=329&re=433&var=S402N",
-                "MA_link_PDB" : "NA",
-                "MA_link_var" : "getma.org/?cm=var&var=hg19,12,69233358,G,A&fts=all",
-                "Study_ID" : "prad_wcdt"
-            }, {
-                "_id" : {
-                    "_str" : "54d3d76286fa7b6ebc1ea96e"
-                },
-                "Hugo_Symbol" : "TP53",
-                "Chromosome" : 17,
-                "Strand" : "+",
-                "Variant_Classification" : "Missense_Mutation",
-                "Variant_Type" : "SNP",
-                "Reference_Allele" : "T",
-                "Tumor_Seq_Allele1" : "C",
-                "sample" : "DTB-073",
-                "ONCOTATOR_PROTEIN_CHANGE" : "p.Y205C",
-                "ONCOTATOR_PROTEIN_CHANGE_BEST_EFFECT" : "p.Y205C",
-                "ONCOTATOR_EXON_AFFECTED_BEST_EFFECT" : 6,
-                "MA_FImpact" : "medium",
-                "MA_FIS" : 2.99,
-                "MA_protein_change" : "Y205C",
-                "MA_link_MSA" : "getma.org/?cm=msa&ty=f&p=P53_HUMAN&rb=95&re=289&var=Y205C",
-                "MA_link_PDB" : "getma.org/pdb.php?prot=P53_HUMAN&from=95&to=289&var=Y205C",
-                "MA_link_var" : "getma.org/?cm=var&var=hg19,17,7578235,T,C&fts=all",
-                "Study_ID" : "prad_wcdt"
-            }, {
-                "_id" : {
-                    "_str" : "54d3d76286fa7b6ebc1eb913"
-                },
-                "Hugo_Symbol" : "TP53",
-                "Chromosome" : 17,
-                "Strand" : "+",
-                "Variant_Classification" : "Missense_Mutation",
-                "Variant_Type" : "SNP",
-                "Reference_Allele" : "C",
-                "Tumor_Seq_Allele1" : "A",
-                "sample" : "DTB-032",
-                "ONCOTATOR_PROTEIN_CHANGE" : "p.C176F",
-                "ONCOTATOR_PROTEIN_CHANGE_BEST_EFFECT" : "p.C176F",
-                "ONCOTATOR_EXON_AFFECTED_BEST_EFFECT" : 5,
-                "MA_FImpact" : "medium",
-                "MA_FIS" : 3.36,
-                "MA_protein_change" : "C176F",
-                "MA_link_MSA" : "getma.org/?cm=msa&ty=f&p=P53_HUMAN&rb=95&re=289&var=C176F",
-                "MA_link_PDB" : "getma.org/pdb.php?prot=P53_HUMAN&from=95&to=289&var=C176F",
-                "MA_link_var" : "getma.org/?cm=var&var=hg19,17,7578403,C,A&fts=all",
-                "Study_ID" : "prad_wcdt"
-            }];
+      mutDocs = [{
+        "_id": "277ZExwxRM9DGZEuk",
+        "sample_label": "DTB-125",
+        "chromosome": "chr17",
+        "start_position": 7579472,
+        "reference_allele": "G",
+        "variant_allele": ["C"],
+        "read_depth": 602,
+        "mutation_type": "snp",
+        "gene_label": "TP53",
+        "protein_change": "P72R",
+        "effect_impact": "MODERATE",
+        "functional_class": "MISSENSE",
+        "genotype": null,
+        "end_position": 7579473,
+        "study_label": "prad_wcdt",
+        "collaboration_label": "WCDT",
+        "biological_source": "rna_normal",
+        "mutation_impact_assessor": "VEP",
+        "sample": "DTB-125"
+      }, {
+        "_id": "29RTZTj4ovZKQxAWp",
+        "sample_label": "DTB-101",
+        "chromosome": "chr17",
+        "start_position": 7579801,
+        "reference_allele": "G",
+        "variant_allele": ["C"],
+        "mutation_type": "snp",
+        "gene_label": "TP53",
+        "effect_impact": "MODIFIER",
+        "end_position": 7579802
+      }, {
+        "_id": "2aav6ZDgmLo64sBHH",
+        "sample_label": "DTB-102",
+        "chromosome": "chr17",
+        "start_position": 7579472,
+        "reference_allele": "G",
+        "variant_allele": ["C"],
+        "read_depth": 499,
+        "mutation_type": "snp",
+        "gene_label": "TP53",
+        "protein_change": "P72R",
+        "effect_impact": "MODERATE",
+        "functional_class": "MISSENSE",
+        "genotype": null,
+        "end_position": 7579473,
+        "study_label": "prad_wcdt",
+        "collaboration_label": "WCDT",
+        "biological_source": "dna_tumor",
+        "mutation_impact_assessor": "snpEff"
+      }, {
+        "_id": "2gdcmXp3hz4TBgf6y",
+        "sample_label": "DTB-091",
+        "chromosome": "chr17",
+        "start_position": 7577130,
+        "reference_allele": "A",
+        "variant_allele": ["C"],
+        "mutation_type": "snp",
+        "gene_label": "TP53",
+        "effect_impact": "MODERATE",
+        "end_position": 7577131
+      }, {
+        "_id": "2vCfgcv7Z9T8K2GPR",
+        "sample_label": "DTB-127",
+        "chromosome": "chr17",
+        "start_position": 7579472,
+        "reference_allele": "G",
+        "variant_allele": ["C"],
+        "mutation_type": "snp",
+        "gene_label": "TP53",
+        "effect_impact": "MODERATE",
+        "end_position": 7579473
+      }, {
+        "_id": "39WbPuQXpdKqo94hh",
+        "sample_label": "DTB-095",
+        "chromosome": "chr17",
+        "start_position": 7579472,
+        "reference_allele": "G",
+        "variant_allele": ["C"],
+        "mutation_type": "snp",
+        "gene_label": "TP53",
+        "effect_impact": "MODERATE",
+        "end_position": 7579473
+      }, {
+        "_id": "3DBbzcbT7BEnXWD2q",
+        "sample_label": "DTB-046",
+        "chromosome": "chr17",
+        "start_position": 7579472,
+        "reference_allele": "G",
+        "variant_allele": ["C"],
+        "gene_label": "TP53",
+        "protein_change": "P72R",
+        "effect_impact": "MODERATE",
+        "functional_class": "MISSENSE",
+        "genotype": null,
+        "mutation_type": "snp",
+        "end_position": 7579473,
+        "study_label": "prad_wcdt",
+        "collaboration_label": "WCDT",
+        "biological_source": "dna_tumor",
+        "mutation_impact_assessor": "snpEff"
+      }, {
+        "_id": "3FfDnHhD3kHrdTyF8",
+        "sample_label": "DTB-122",
+        "chromosome": "chr17",
+        "start_position": 7579472,
+        "reference_allele": "G",
+        "variant_allele": ["C"],
+        "read_depth": 721,
+        "mutation_type": "snp",
+        "gene_label": "TP53",
+        "protein_change": "P72R",
+        "effect_impact": "MODERATE",
+        "functional_class": "MISSENSE",
+        "genotype": null,
+        "end_position": 7579473,
+        "study_label": "prad_wcdt",
+        "collaboration_label": "WCDT",
+        "biological_source": "dna_tumor",
+        "mutation_impact_assessor": "snpEff"
+      }, {
+        "_id": "3MeZi6CSjfjWX5XiR",
+        "sample_label": "DTB-020",
+        "chromosome": "chr17",
+        "start_position": 7579472,
+        "reference_allele": "G",
+        "variant_allele": ["C"],
+        "gene_label": "TP53",
+        "effect_impact": "MODERATE",
+        "mutation_type": "snp",
+        "end_position": 7579473
+      }, {
+        "_id": "3QMrWkwtkK8Jd9E45",
+        "sample_label": "DTB-094",
+        "chromosome": "chr17",
+        "start_position": 7579801,
+        "reference_allele": "G",
+        "variant_allele": ["C"],
+        "read_depth": 292,
+        "mutation_type": "snp",
+        "gene_label": "TP53",
+        "effect_impact": "MODIFIER",
+        "genotype": null,
+        "end_position": 7579802,
+        "study_label": "prad_wcdt",
+        "collaboration_label": "WCDT",
+        "biological_source": "dna_tumor",
+        "mutation_impact_assessor": "snpEff"
+      }, {
+        "_id": "3TPyQX58nkQ8GbThS",
+        "sample_label": "DTB-121",
+        "chromosome": "chr17",
+        "start_position": 7579801,
+        "reference_allele": "G",
+        "variant_allele": ["C"],
+        "read_depth": 182,
+        "mutation_type": "snp",
+        "gene_label": "TP53",
+        "effect_impact": "MODIFIER",
+        "genotype": null,
+        "end_position": 7579802,
+        "study_label": "prad_wcdt",
+        "collaboration_label": "WCDT",
+        "biological_source": "dna_tumor",
+        "mutation_impact_assessor": "snpEff"
+      }, {
+        "_id": "3tmD8heEcEZ6BSynL",
+        "sample_label": "DTB-010Pro",
+        "chromosome": "chr17",
+        "start_position": 7579472,
+        "reference_allele": "G",
+        "variant_allele": ["C"],
+        "mutation_type": "snp",
+        "gene_label": "TP53",
+        "effect_impact": "MODERATE",
+        "end_position": 7579473
+      }, {
+        "_id": "4FJQwoP24E6ZEN49M",
+        "sample_label": "DTB-059",
+        "chromosome": "chr17",
+        "start_position": 7579472,
+        "reference_allele": "G",
+        "variant_allele": ["C"],
+        "gene_label": "TP53",
+        "effect_impact": "MODERATE",
+        "mutation_type": "snp",
+        "end_position": 7579473,
+        "study_label": "prad_wcdt",
+        "collaboration_label": "WCDT",
+        "biological_source": "rna_normal",
+        "mutation_impact_assessor": "SNPEFF"
+      }, {
+        "_id": "4SqEBpDSdzhsYMSpJ",
+        "sample_label": "DTB-046",
+        "chromosome": "chr17",
+        "start_position": 7579472,
+        "reference_allele": "G",
+        "variant_allele": ["C"],
+        "gene_label": "TP53",
+        "effect_impact": "MODERATE",
+        "mutation_type": "snp",
+        "end_position": 7579473
+      }, {
+        "_id": "4sSRkKm7xLgDm5mwe",
+        "sample_label": "DTB-079",
+        "chromosome": "chr17",
+        "start_position": 7579472,
+        "reference_allele": "G",
+        "variant_allele": ["C"],
+        "read_depth": 790,
+        "mutation_type": "snp",
+        "gene_label": "TP53",
+        "protein_change": "P72R",
+        "effect_impact": "MODERATE",
+        "functional_class": "MISSENSE",
+        "genotype": null,
+        "end_position": 7579473,
+        "study_label": "prad_wcdt",
+        "collaboration_label": "WCDT",
+        "biological_source": "dna_tumor",
+        "mutation_impact_assessor": "snpEff"
+      }, {
+        "_id": "55YoBoi6JmkmcKN6N",
+        "sample_label": "DTB-096",
+        "chromosome": "chr17",
+        "start_position": 7579801,
+        "reference_allele": "G",
+        "variant_allele": ["C"],
+        "mutation_type": "snp",
+        "gene_label": "TP53",
+        "effect_impact": "MODIFIER",
+        "end_position": 7579802
+      }, {
+        "_id": "55u2F2MesMY7PptwE",
+        "sample_label": "DTB-039",
+        "chromosome": "chr17",
+        "start_position": 7579472,
+        "reference_allele": "G",
+        "variant_allele": ["C"],
+        "gene_label": "TP53",
+        "protein_change": "P72R",
+        "effect_impact": "MODERATE",
+        "functional_class": "MISSENSE",
+        "genotype": null,
+        "mutation_type": "snp",
+        "end_position": 7579473,
+        "study_label": "prad_wcdt",
+        "collaboration_label": "WCDT",
+        "biological_source": "dna_tumor",
+        "mutation_impact_assessor": "snpEff"
+      }, {
+        "_id": "5HGbuNMHCy7tffEMn",
+        "sample_label": "DTB-118",
+        "chromosome": "chr17",
+        "start_position": 7579472,
+        "reference_allele": "G",
+        "variant_allele": ["C"],
+        "read_depth": 625,
+        "mutation_type": "snp",
+        "gene_label": "TP53",
+        "protein_change": "P72R",
+        "effect_impact": "MODERATE",
+        "functional_class": "MISSENSE",
+        "genotype": null,
+        "end_position": 7579473,
+        "study_label": "prad_wcdt",
+        "collaboration_label": "WCDT",
+        "biological_source": "dna_tumor",
+        "mutation_impact_assessor": "snpEff"
+      }, {
+        "_id": "5JKTjTdC45bNb5Jzr",
+        "sample_label": "DTB-103Pro",
+        "chromosome": "chr17",
+        "start_position": 7579801,
+        "reference_allele": "G",
+        "variant_allele": ["C"],
+        "mutation_type": "snp",
+        "gene_label": "TP53",
+        "effect_impact": "MODIFIER",
+        "end_position": 7579802
+      }, {
+        "_id": "5RNwWdxfy7Kt6bgpG",
+        "sample_label": "DTB-128",
+        "chromosome": "chr17",
+        "start_position": 7579801,
+        "reference_allele": "G",
+        "variant_allele": ["C"],
+        "mutation_type": "snp",
+        "gene_label": "TP53",
+        "effect_impact": "MODIFIER",
+        "end_position": 7579802
+      }, {
+        "_id": "5anDv2h7cXrE5xku6",
+        "sample_label": "DTB-035",
+        "chromosome": "chr17",
+        "start_position": 7579472,
+        "reference_allele": "G",
+        "variant_allele": ["C"],
+        "gene_label": "TP53",
+        "effect_impact": "MODERATE",
+        "mutation_type": "snp",
+        "end_position": 7579473
+      }];
 
-            OD_config = obs_deck_config = observation_deck.buildObservationDeck(divElem, {
-                'eventAlbum' : eventAlbum,
-                'mongoData' : {
-                    'clinical' : aaa,
-                    'expression' : ccc,
-                    'mutation' : mutDocs
-                },
+      OD_config = obs_deck_config = observation_deck.buildObservationDeck(divElem, {
+        'eventAlbum': eventAlbum,
+        'mongoData': {
+          'clinical': aaa,
+          'expression': ccc,
+          'mutation': mutDocs
+        },
 
-                'signature' : {
-                    'expression' : {
-                        'object' : [sigScores]
-                    }
-                },
+        'signature': {
+          'expression': {
+            'object': [sigScores]
+          }
+        },
 
-                'signature_index' : {
-                    'expression' : {
-                        'object' : sigWeights
-                    }
-                },
-                'pivotScores' : {
-                    'object' : []
-                },
-                // 'deleteEvents' : ['Docetaxel'],
-                "rowTitleCallback" : function(eventId, config) {
-                    var eventObj = config['eventAlbum'].getEvent(eventId);
-                    var datatype = eventObj.metadata['datatype'];
-                    if (datatype === 'expression data') {
-                        // mRNA url: /wb/gene/<gene name>
-                        var gene = eventId.replace('_mRNA', '');
-                        var url = '/wb/gene/' + gene;
-                        window.open(url, "_self");
-                    } else if (datatype === 'clinical data') {
-                        // clinical url: /wb/clinical/<name>
-                        var feature = eventId;
-                        var url = '/wb/clinical/' + feature;
-                        window.open(url, "_self");
-                    }
-                },
-                "columnTitleCallback" : function(sampleId) {
-                    var url = '/wb/patient/' + sampleId;
-                    window.open(url, "_self");
-                }
-            });
+        'signature_index': {
+          'expression': {
+            'object': sigWeights
+          }
+        },
+        'pivotScores': {
+          'object': []
+        },
+        // 'deleteEvents' : ['Docetaxel'],
+        "rowTitleCallback": function (eventId, config) {
+          var eventObj = config['eventAlbum'].getEvent(eventId);
+          var datatype = eventObj.metadata['datatype'];
+          if (datatype === 'expression data') {
+            // mRNA url: /wb/gene/<gene name>
+            var gene = eventId.replace('_mRNA', '');
+            var url = '/wb/gene/' + gene;
+            window.open(url, "_self");
+          } else if (datatype === 'clinical data') {
+            // clinical url: /wb/clinical/<name>
+            var feature = eventId;
+            var url = '/wb/clinical/' + feature;
+            window.open(url, "_self");
+          }
+        },
+        "columnTitleCallback": function (sampleId) {
+          var url = '/wb/patient/' + sampleId;
+          window.open(url, "_self");
+        }
+      });
 
-            // buildObservationDeck(divElem, {
-            // 'mongoData' : {
-            // 'clinical' : a,
-            // 'expression' : b
-            // }
-            // });
-		</script>
-	</body>
+      // buildObservationDeck(divElem, {
+      // 'mongoData' : {
+      // 'clinical' : a,
+      // 'expression' : b
+      // }
+      // });
+    </script>
+  </body>
 </html>
