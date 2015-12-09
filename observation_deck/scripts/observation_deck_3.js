@@ -1988,7 +1988,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
 			});
 
 		} catch(err) {
-			console.log("ERROR drawing row labels:", err.name);
+			console.log("ERROR drawing row label for " + d + ":", err.name);
 			console.log(err.message);
 		} finally {
 			console.log("finished drawing row labels");
@@ -2022,7 +2022,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
 			});
 
 		} catch(err) {
-			console.log("ERROR drawing column labels:", err.name);
+			console.log("ERROR drawing column label for " + d + ":", err.name);
 			console.log(err.message);
 		} finally {
 			console.log("finished drawing column labels");
@@ -2462,7 +2462,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
 			});
 
 		} catch(err) {
-			console.log("ERROR drawing matrix cells:", err.name);
+			console.log("ERROR drawing matrix cell for " + d + ":", err.name);
 			console.log(err.message);
 		} finally {
 			console.log("finished drawing matrix cells");
