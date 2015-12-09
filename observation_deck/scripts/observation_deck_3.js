@@ -438,6 +438,19 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
 		}
 	};
 
+	/**
+	 * Clear session and cookies and then rebuild the obs-deck
+	 */
+	var resetObsDeck = function(config) {
+		console.log("!! RESETTING OBS DECK !!");
+		resetConfig(config);
+		resetSession(['pivotSettings', "subscriptionPaging", "geneList"]);
+		setSession("pivotSettings", "");
+
+		var containerDivElem = document.getElementById(config['containerDivId']);
+		var newConfig = od.buildObservationDeck(containerDivElem, config);
+	};
+
 	var getDevMode = function() {
 		var useDevMode = (utils.getQueryStringParameterByName('dev_mode').toLowerCase() === 'true');
 		return useDevMode;
@@ -514,12 +527,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
 			icon : null,
 			disabled : false,
 			callback : function(key, opt) {
-				resetConfig(config);
-				resetSession(['pivotSettings', "subscriptionPaging", "geneList"]);
-				setSession("pivotSettings", "");
-
-				var containerDivElem = document.getElementById(config['containerDivId']);
-				var newConfig = od.buildObservationDeck(containerDivElem, config);
+				resetObsDeck(config);
 			}
 		};
 		return obj;
@@ -1988,8 +1996,9 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
 			});
 
 		} catch(err) {
-			console.log("ERROR drawing row label for " + d + ":", err.name);
-			console.log(err.message);
+			console.log("ERROR drawing row labels:", err.name);
+			console.log("--", err.message);
+			resetObsDeck(config);
 		} finally {
 			console.log("finished drawing row labels");
 		}
@@ -2022,8 +2031,8 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
 			});
 
 		} catch(err) {
-			console.log("ERROR drawing column label for " + d + ":", err.name);
-			console.log(err.message);
+			console.log("ERROR drawing column labels:", err.name);
+			console.log("--", err.message);
 		} finally {
 			console.log("finished drawing column labels");
 		}
@@ -2462,8 +2471,8 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
 			});
 
 		} catch(err) {
-			console.log("ERROR drawing matrix cell for " + d + ":", err.name);
-			console.log(err.message);
+			console.log("ERROR drawing matrix cells:", err.name);
+			console.log("--", err.message);
 		} finally {
 			console.log("finished drawing matrix cells");
 		}
