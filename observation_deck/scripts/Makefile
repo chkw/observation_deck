@@ -15,7 +15,7 @@ CLOSURE_COMPILER_JAR = ~/git/closure-compiler/build/compiler.jar
 COMPILATION_LEVEL = SIMPLE_OPTIMIZATIONS
 #COMPILATION_LEVEL = ADVANCED_OPTIMIZATIONS
 
-METEOR_PACKAGE_DIR = ~/workspace/MedBook-Workbench/packages/observation-deck
+METEOR_PACKAGE_DIR = ~/workspace/MedBook-Packages/observation-deck
 
 test:
 
