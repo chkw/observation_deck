@@ -1030,9 +1030,11 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                                 },
                                 "callback" : function(key, opt) {
                                     var gene = eventId.split(/_/)[0];
-                                    setSession("eventSearch", gene);
+                                    var focusGenes = getSession("focusGenes") || [];
+                                    focusGenes.push(gene);
+                                    setSession("focusGenes", _.uniq(focusGenes));
                                     // TODO search for and add events related to this gene
-                                    console.log("search for and add events related to this gene", gene);
+                                    console.log("search for and add events related to these genes", focusGenes);
                                 }
                             }
                         }
