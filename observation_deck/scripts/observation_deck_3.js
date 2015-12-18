@@ -1870,6 +1870,10 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
 
         // row labels
         try {
+            var sessionGeneLists = config["sessionGeneLists"] || {};
+            var nonCorrGeneList = _.union.apply(this, (_.values(sessionGeneLists)));
+            var nonUnderlineableDatatypes = ["datatype label"];
+
             var translateX = -6;
             var translateY = gridSize / 1.5;
             var rowLabels = svg.selectAll(".rowLabel").data(rowNames).enter().append("text").text(function(d) {
@@ -1923,14 +1927,17 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                     // underline genes added via geneset control
                     // underline to indicate user-selected events
                     if (pivotEventId != null) {
-                        var underlineableDatatypes = ["expression data", "mutation call"];
-                        if (_.contains(underlineableDatatypes, datatype)) {
+                        if (! _.contains(nonUnderlineableDatatypes, datatype)) {
                             var suffix = eventAlbum.datatypeSuffixMapping[datatype];
                             var regex = new RegExp(suffix + "$");
                             var geneName = d.replace(regex, "");
-                            var geneSetControl = config["geneSetControl"] || [];
-                            if (utils.isObjInArray(geneSetControl, geneName)) {
+                            if (_.contains(nonCorrGeneList, geneName)) {
                                 s = s + " underline";
+                            } else {
+                                var qq = d.split("_",1)[0];
+                                if (_.contains(nonCorrGeneList, qq)) {
+                                    s = s + " underline";
+                                }
                             }
                         }
                     }
