@@ -1760,9 +1760,11 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
             var cohort_tab_genelist_widget = getSession("cohort_tab_genelist_widget") || [];
             sessionGeneList = sessionGeneList.concat(cohort_tab_genelist_widget);
 
+            // get +/- tags for row labels
             var rowNames_copy = rowNames.slice();
             rowNames_copy.reverse();
             var taggedEvents = {};
+            var scoredEvents = _.pluck(eventAlbum.getPivotSortedEvents(pivotEventId), "key");
             _.each(_.keys(boundaries), function(datatype) {
                 if (datatype !== "clinical data" && datatype !== "mutation call") {
                     var data = boundaries[datatype];
@@ -1779,9 +1781,14 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                     _.each(corrEvents.slice(0, pageSize), function(posEvent) {
                         taggedEvents[posEvent] = "+";
                     });
-                    _.each(corrEvents.slice(pageSize), function(negEvent) {
-                        taggedEvents[negEvent] = "-";
-                    });
+                    // fix: wrong tagging when there are user-added events
+                    if (pivotEventDatatype !== "clinical data") {
+                        _.each(corrEvents.slice(pageSize), function(negEvent) {
+                            if (_.contains(scoredEvents, negEvent.replace(suffix, ""))) {
+                                taggedEvents[negEvent] = "-";
+                            }
+                        });
+                    }
                 }
             });
 

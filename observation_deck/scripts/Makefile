@@ -30,6 +30,8 @@ bower_clean:
 sync_meteor: observation_deck_plugin_dev.js
 	rsync -avP $< $(METEOR_PACKAGE_DIR)/observation_deck_plugin.js ;
 	\
+	date ;
+	\
 
 observation_deck_plugin.js: $(SCRIPTS)
 	java -jar $(CLOSURE_COMPILER_JAR) --compilation_level $(COMPILATION_LEVEL) --js_output_file=$@ $(SCRIPTS) ;
