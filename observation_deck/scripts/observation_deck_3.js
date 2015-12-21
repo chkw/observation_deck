@@ -1944,8 +1944,8 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                             if (_.contains(nonCorrGeneList, geneName)) {
                                 s = s + " underline";
                             } else {
-                                var qq = d.split("_",1)[0];
-                                if (_.contains(nonCorrGeneList, qq)) {
+                                var editedLabel = d.split("_",1)[0];
+                                if (_.contains(nonCorrGeneList, editedLabel)) {
                                     s = s + " underline";
                                 }
                             }
