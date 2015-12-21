@@ -899,20 +899,15 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                             }
                         }
                     },
-                    'sort_fold' : {
-                        'name' : 'sort...',
-                        'items' : {
-                            "sort" : {
-                                name : "samples by this event",
-                                icon : null,
-                                disabled : false,
-                                callback : function(key, opt) {
-                                    addSortStepToCookies(eventId, config, "colSort", false);
+                    "sort" : {
+                        name : "sort samples by this event",
+                        icon : null,
+                        disabled : false,
+                        callback : function(key, opt) {
+                            addSortStepToCookies(eventId, config, "colSort", false);
 
-                                    var containerDivElem = document.getElementById(config['containerDivId']);
-                                    od.buildObservationDeck(containerDivElem, config);
-                                }
-                            }
+                            var containerDivElem = document.getElementById(config['containerDivId']);
+                            od.buildObservationDeck(containerDivElem, config);
                         }
                     },
                     'hide_fold' : {
@@ -966,6 +961,62 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                             }
                         }
                     },
+                    "add_fold" : {
+                        "name" : "add...",
+                        "items" : {
+                            "add_events_for_gene" : {
+                                "name" : "events for gene",
+                                "icon" : null,
+                                "disabled" : function() {
+                                    return (datatype === "clinical data");
+                                },
+                                "callback" : function(key, opt) {
+                                    var gene = eventId.split(/_/)[0];
+                                    var focusGenes = getSession("focusGenes") || [];
+                                    focusGenes.push(gene);
+                                    setSession("focusGenes", _.uniq(focusGenes));
+                                    // TODO search for and add events related to this gene
+                                    console.log("search for and add events related to these genes", getSession("focusGenes"));
+                                }
+                            },
+                            "pathway_genes" : {
+                                "name" : "expression of targets",
+                                "icon" : null,
+                                "disabled" : function() {
+                                    var pathway_context_viewable = ["kinase target activity", "tf target activity"];
+                                    var disabled = (_.contains(pathway_context_viewable, datatype)) ? false : true;
+                                    return disabled;
+                                },
+                                "callback" : function(key, opt) {
+                                    var sigName = eventId.replace(/_v\d+$/, "");
+                                    console.log("add gene set for", sigName);
+                                    // add gene set for signature
+                                    var geneSetSelectElem = document.getElementById("geneset");
+                                    if (_.isUndefined(geneSetSelectElem) || _.isNull(geneSetSelectElem)) {
+                                        console.log("no geneSetSelectElem with ID", "geneset");
+                                        return;
+                                    }
+                                    var geneSetOptions = geneSetSelectElem.getElementsByTagName("option");
+                                    var foundMatch = false;
+                                    _.each(geneSetOptions, function(option, index) {
+                                        var text = option.innerHTML;
+                                        text = text.replace(/ \(\d+\)$/, "").replace(/_targets_viper/, "_viper");
+                                        // var val = option.getAttribute("value");
+                                        // var geneList = val.split(/,/);
+                                        if (text === sigName) {
+                                            option.selected = true;
+                                            $(geneSetSelectElem).trigger("change");
+                                            foundMatch = true;
+                                        }
+                                    });
+                                    if (!foundMatch) {
+                                        alert("No gene set found for " + sigName + ".");
+                                    }
+                                }
+                            }
+                        }
+                    },
+
                     "pathway_context" : {
                         "name" : "view pathway context",
                         "icon" : null,
@@ -981,62 +1032,14 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                             window.open(url, "_patientCare");
                         }
                     },
-                    "pathway_genes" : {
-                        "name" : "see expression of targets",
-                        "icon" : null,
-                        "disabled" : function() {
-                            var pathway_context_viewable = ["kinase target activity", "tf target activity"];
-                            var disabled = (_.contains(pathway_context_viewable, datatype)) ? false : true;
-                            return disabled;
-                        },
-                        "callback" : function(key, opt) {
-                            var sigName = eventId.replace(/_v\d+$/, "");
-                            console.log("add gene set for", sigName);
-                            // add gene set for signature
-                            var geneSetSelectElem = document.getElementById("geneset");
-                            if (_.isUndefined(geneSetSelectElem) || _.isNull(geneSetSelectElem)) {
-                                console.log("no geneSetSelectElem with ID", "geneset");
-                                return;
-                            }
-                            var geneSetOptions = geneSetSelectElem.getElementsByTagName("option");
-                            var foundMatch = false;
-                            _.each(geneSetOptions, function(option, index) {
-                                var text = option.innerHTML;
-                                text = text.replace(/ \(\d+\)$/, "").replace(/_targets_viper/, "_viper");
-                                // var val = option.getAttribute("value");
-                                // var geneList = val.split(/,/);
-                                if (text === sigName) {
-                                    option.selected = true;
-                                    $(geneSetSelectElem).trigger("change");
-                                    foundMatch = true;
-                                }
-                            });
-                            if (!foundMatch) {
-                                alert("No gene set found for " + sigName + ".");
-                            }
-                        }
-                    },
+
                     "test_fold" : {
                         "name" : "dev_features",
                         "disabled" : function() {
                             return (!getDevMode());
                         },
                         "items" : {
-                            "add_events_for_gene" : {
-                                "name" : "add events for gene",
-                                "icon" : null,
-                                "disabled" : function() {
-                                    return (datatype === "clinical data");
-                                },
-                                "callback" : function(key, opt) {
-                                    var gene = eventId.split(/_/)[0];
-                                    var focusGenes = getSession("focusGenes") || [];
-                                    focusGenes.push(gene);
-                                    setSession("focusGenes", _.uniq(focusGenes));
-                                    // TODO search for and add events related to this gene
-                                    console.log("search for and add events related to these genes", focusGenes);
-                                }
-                            }
+                            // TODO UI controls for dev features go here
                         }
                     },
                     "sep2" : "---------",
