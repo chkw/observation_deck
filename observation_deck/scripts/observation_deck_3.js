@@ -127,6 +127,10 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
         // data passed in as mongo documents
         if ('mongoData' in config) {
             var mongoData = config['mongoData'];
+            // TODO load contrast data
+            if ("contrast" in mongoData) {
+                dataLoader.mongoContrastData(mongoData['contrast'], od_eventAlbum);
+            }
             if ('clinical' in mongoData) {
                 dataLoader.mongoClinicalData(mongoData['clinical'], od_eventAlbum);
             }
