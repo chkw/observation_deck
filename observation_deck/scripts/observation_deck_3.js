@@ -127,7 +127,10 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
         // data passed in as mongo documents
         if ('mongoData' in config) {
             var mongoData = config['mongoData'];
-            // TODO load contrast data
+            // TODO load gene annotation data
+            if ("geneAnnotation" in mongoData) {
+                dataLoader.mongoGeneAnnotationData(mongoData['geneAnnotation'], od_eventAlbum);
+            }
             if ("contrast" in mongoData) {
                 dataLoader.mongoContrastData(mongoData['contrast'], od_eventAlbum);
             }
@@ -2309,64 +2312,14 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                     attributes['val'] = d['val'].sort();
 
                     icon = createMutTypeSvg(x, y, rx, ry, width, height, attributes);
-                } else if (false & eventAlbum.getEvent(d['eventId']).metadata.datatype === "datatype label") {
-                    // datatype label cells
-                    var eventId = d["eventId"];
-                    var datatype;
-                    var headOrTail;
-                    if (utils.endsWith(eventId, "(+)")) {
-                        datatype = eventId.replace("(+)", "");
-                        headOrTail = "head";
-                    } else {
-                        datatype = eventId.replace("(-)", "");
-                        headOrTail = "tail";
-                    }
-                    attributes['class'] = "datatype";
-                    attributes['eventId'] = datatype;
-                    attributes["fill"] = rowLabelColorMapper(datatype);
-                    var colNameIndex = colNameMapping[colName];
-                    if (colNameIndex == 0) {
-                        attributes["stroke-width"] = "0px";
-                        group.onclick = function() {
-                            var upOrDown = (headOrTail === "head") ? "down" : "up";
-                            setDatatypePaging(datatype, headOrTail, upOrDown);
-                        };
-                        attributes["points"] = getUpArrowPointsList(x, y, width, height).join(" ");
-
-                        icon = utils.createSVGPolygonElement(attributes);
-                    } else if (colNameIndex == 1) {
-                        attributes["stroke-width"] = "0px";
-                        group.onclick = function() {
-                            var upOrDown = (headOrTail === "head") ? "up" : "down";
-                            setDatatypePaging(datatype, headOrTail, upOrDown);
-                        };
-                        attributes["points"] = getDownArrowPointsList(x, y, width, height).join(" ");
-                        icon = utils.createSVGPolygonElement(attributes);
-                    } else if (colNameIndex == 2) {
-                        icon = document.createElementNS(utils.svgNamespaceUri, "g");
-                        attributes["stroke-width"] = "0px";
-                        group.onclick = function() {
-                            setDatatypePaging(datatype, headOrTail, "0");
-                        };
-                        var bar;
-                        var arrow;
-                        if (headOrTail === "head") {
-                            bar = utils.createSvgRectElement(x, y, 0, 0, width, 2, attributes);
-                            attributes["points"] = getUpArrowPointsList(x, y, width, height).join(" ");
-                            arrow = utils.createSVGPolygonElement(attributes);
-                        } else {
-                            bar = utils.createSvgRectElement(x, y + height - 3, 0, 0, width, 2, attributes);
-                            attributes["points"] = getDownArrowPointsList(x, y + 1, width, height - 2).join(" ");
-                            arrow = utils.createSVGPolygonElement(attributes);
-                        }
-                        icon.appendChild(bar);
-                        icon.appendChild(arrow);
-                    } else {
-                        attributes["stroke-width"] = "0px";
-                        attributes["fill"] = rowLabelColorMapper(datatype);
-                        icon = utils.createSvgRectElement(x, (1 + y + (height / 2)), 0, 0, width, 2, attributes);
-                    }
-                } else if (true & eventAlbum.getEvent(d['eventId']).metadata.datatype === "datatype label") {
+                } else if (eventAlbum.getEvent(d['eventId']).metadata.datatype !== "datatype label") {
+                    // for generalized numeric datatype
+                    attributes['class'] = eventAlbum.getEvent(d['eventId']).metadata.datatype;
+                    attributes['eventId'] = d['eventId'];
+                    attributes['sampleId'] = d['id'];
+                    attributes['val'] = d['val'];
+                    icon = utils.createSvgRectElement(x, y, rx, ry, width, height, attributes);
+                } else if (eventAlbum.getEvent(d['eventId']).metadata.datatype === "datatype label") {
                     var eventId = d["eventId"];
                     var datatype;
                     var headOrTail;
