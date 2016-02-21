@@ -802,7 +802,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                         icon : null,
                         disabled : function() {
                             var result = true;
-                            if ((titleCallback != null) && (utils.isObjInArray(["mutation call", 'expression data', 'clinical data', 'expression signature', 'kinase target activity', "tf target activity"], datatype))) {
+                            if ((titleCallback != null) && (utils.isObjInArray(["mutation impact score", "gistic_copy_number", "mutation call", 'expression data', 'clinical data', 'expression signature', 'kinase target activity', "tf target activity"], datatype))) {
                                 result = false;
                             }
 
@@ -1552,10 +1552,14 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 } else if (allowedValues == 'expression') {
                     // shared expression color mapper
                     colorMappers[eventId] = expressionColorMapper;
+                } else if (allowedValues === "chasm") {
+                    // -log p-val color mapping
+                    colorMappers[eventId] = utils.centeredRgbaColorMapper(false, 0.5, 0, 1);
                 } else if (eventAlbum.ordinalScoring.hasOwnProperty(allowedValues)) {
                     // ordinal data
                     colorMappers[eventId] = ordinalColorMappers[allowedValues];
                 } else {
+                    // default to categoric mapping
                     var colorMapper = d3.scale.category10();
                     colorMappers[eventId] = colorMapper;
                 }
