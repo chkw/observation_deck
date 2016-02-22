@@ -794,7 +794,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
 
                 var pivotable = (eventObj.metadata.weightedGeneVector.length);
 
-                var pivotable_dataypes = ["clinical data", "expression data", 'expression signature', 'kinase target activity', "tf target activity"];
+                var pivotable_dataypes = ["clinical data", "expression data", 'expression signature', 'kinase target activity', "tf target activity", "mutation call"];
 
                 var items = {
                     'title' : {
@@ -802,7 +802,8 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                         icon : null,
                         disabled : function() {
                             var result = true;
-                            if ((titleCallback != null) && (utils.isObjInArray(["mutation impact score", "gistic_copy_number", "mutation call", 'expression data', 'clinical data', 'expression signature', 'kinase target activity', "tf target activity"], datatype))) {
+                            var enableDatatypes = ["mutation impact score", "gistic_copy_number", "mutation call", 'expression data', 'clinical data', 'expression signature', 'kinase target activity', "tf target activity"];
+                            if ((titleCallback != null) && (_.contains(enableDatatypes, datatype))) {
                                 result = false;
                             }
 
@@ -860,6 +861,10 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                                     mName = eventId;
                                     mVersion = 1;
                                     datatype = "clinical";
+                                } else if (datatype === "mutation call") {
+                                    mName = eventObj.metadata.displayName;
+                                    mVersion = 1;
+                                    datatype = "mutation";
                                 }
 
                                 var pivotSessionSettings = {
@@ -1836,7 +1841,8 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
             var taggedEvents = {};
             var scoredEvents = _.pluck(eventAlbum.getPivotSortedEvents(pivotEventId), "key");
             _.each(_.keys(boundaries), function(datatype) {
-                if (datatype !== "clinical data" && datatype !== "mutation call") {
+                var skippedDatatypes = ["clinical data", "mutation call", "mutation impact score", "gistic_copy_number"];
+                if (! _.contains(skippedDatatypes, datatype)) {
                     var data = boundaries[datatype];
                     var datatypeNames = [];
                     var suffix = eventAlbum.datatypeSuffixMapping[datatype];
@@ -2046,13 +2052,12 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
             if (pivotEventId != null) {
                 pivotScoresMap = {};
                 var pivotSortedEvents = eventAlbum.getPivotSortedEvents(pivotEventId);
-                for (var i = 0, lengthi = pivotSortedEvents.length; i < lengthi; i++) {
-                    var pivotObj = pivotSortedEvents[i];
+                _.each(pivotSortedEvents, function(pivotObj) {
                     var key = pivotObj["key"];
                     var val = pivotObj["val"];
                     pivotScoresMap[key] = val;
-                    // console.log(pivotEventId, key);
-                }
+                    // console.log(val, key, pivotEventId);
+                });
             }
 
             rowLabels.append("title").text(function(d, i) {
