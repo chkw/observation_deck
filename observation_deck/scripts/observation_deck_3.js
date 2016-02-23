@@ -2165,17 +2165,17 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
             iconGroup.appendChild(utils.createSvgRectElement(x, y, rx, ry, width, height, attributes));
             delete attributes["stroke-width"];
 
-            if ((utils.isObjInArray(types, "ins")) || (utils.isObjInArray(types, "complex"))) {
+            if ((utils.isObjInArray(types, "sg")) || (utils.isObjInArray(types, "ins")) || (utils.isObjInArray(types, "complex"))) {
                 attributes["fill"] = "red";
                 var topHalfIcon = utils.createSvgRectElement(x, y, rx, ry, width, height / 2, attributes);
                 iconGroup.appendChild(topHalfIcon);
             }
-            if ((utils.isObjInArray(types, "del")) || (utils.isObjInArray(types, "complex"))) {
+            if ((utils.isObjInArray(types, "ss")) || (utils.isObjInArray(types, "del")) || (utils.isObjInArray(types, "complex"))) {
                 attributes["fill"] = "blue";
                 var bottomHalfIcon = utils.createSvgRectElement(x, y + height / 2, rx, ry, width, height / 2, attributes);
                 iconGroup.appendChild(bottomHalfIcon);
             }
-            if ((utils.isObjInArray(types, "snp")) || (utils.isObjInArray(types, "complex"))) {
+            if ((utils.isObjInArray(types, "ms")) || (utils.isObjInArray(types, "snp")) || (utils.isObjInArray(types, "complex"))) {
                 attributes["fill"] = "green";
                 var centeredCircleIcon = utils.createSvgCircleElement(x + width / 2, y + height / 2, height / 4, attributes);
                 iconGroup.appendChild(centeredCircleIcon);
@@ -2506,7 +2506,21 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                     return s;
                 } else {
                     // var s = "r:" + d['eventId'] + "\n\nc:" + d['id'] + "\n\nval:" + d['val'] + "\n\nval_orig:" + d['val_orig'];
-                    var s = "event: " + d['eventId'] + "\nsample: " + d['id'] + "\nvalue: " + d['val'];
+                    var eventId = d["eventId"];
+                    var id = d["id"];
+                    var val = d["val"];
+                    if (datatype === "mutation call" && !_.isNull(val)) {
+                        _.each(val, function(code, index) {
+                            if (code === "ms") {
+                                val[index] = "missense";
+                            } else if (code === "sg") {
+                                val[index] = "stop gained";
+                            } else if (code === "ss") {
+                                val[index] = "ss";
+                            }
+                        });
+                    }
+                    var s = "event: " + eventId + "\nsample: " + id + "\nvalue: " + val;
                     return s;
                 }
             });
