@@ -2510,15 +2510,19 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                     var id = d["id"];
                     var val = d["val"];
                     if (datatype === "mutation call" && !_.isNull(val)) {
+                        var mutList = [];
                         _.each(val, function(code, index) {
                             if (code === "ms") {
-                                val[index] = "missense";
+                                mutList.push("missense");
                             } else if (code === "sg") {
-                                val[index] = "stop gained";
+                                mutList.push("stop gained");
                             } else if (code === "ss") {
-                                val[index] = "ss";
+                                mutList.push("ss");
+                            } else {
+                                mutList.push(code);
                             }
                         });
+                        val = mutList;
                     }
                     var s = "event: " + eventId + "\nsample: " + id + "\nvalue: " + val;
                     return s;
