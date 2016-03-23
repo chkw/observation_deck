@@ -143,6 +143,12 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
             if ('mutation' in mongoData) {
                 dataLoader.mongoMutationData(mongoData['mutation'], od_eventAlbum);
             }
+            if ("testedSamples" in mongoData) {
+                var testedSamplesObj = mongoData["testedSamples"];
+                _.each(_.keys(testedSamplesObj), function(datatype) {
+                    dataLoader.setTestedSamples(datatype, testedSamplesObj[datatype], od_eventAlbum);
+                });
+            }
         }
         // delete the data after it has been used to load events
         delete config['mongoData'];
@@ -217,6 +223,8 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 config['eventAlbum'].deleteEvent(deleteEvents[i]);
             }
         }
+
+        console.log("***config", config);
 
         return config;
     };
@@ -2158,24 +2166,37 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
             });
 
             var types = attributes["val"];
-            // types.push("complex");
+
+            var sampleId = attributes["sampleId"];
 
             // background of cell
             attributes["fill"] = "lightgrey";
             iconGroup.appendChild(utils.createSvgRectElement(x, y, rx, ry, width, height, attributes));
             delete attributes["stroke-width"];
 
-            if ((utils.isObjInArray(types, "sg")) || (utils.isObjInArray(types, "ins")) || (utils.isObjInArray(types, "complex"))) {
+            // white square for "no call"
+            if (_.size(_.intersection(types, ["no call"])) > 0) {
+                attributes["fill"] = "white";
+                var boxIcon = utils.createSvgRectElement(x, y, rx, ry, width, height, attributes);
+                iconGroup.appendChild(boxIcon);
+            }
+
+            // red half square
+            if (_.size(_.intersection(types, ["sg", "ins", "complex"])) > 0) {
                 attributes["fill"] = "red";
                 var topHalfIcon = utils.createSvgRectElement(x, y, rx, ry, width, height / 2, attributes);
                 iconGroup.appendChild(topHalfIcon);
             }
-            if ((utils.isObjInArray(types, "ss")) || (utils.isObjInArray(types, "del")) || (utils.isObjInArray(types, "complex"))) {
+
+            // blue half square
+            if (_.size(_.intersection(types, ["ss", "del", "complex"])) > 0) {
                 attributes["fill"] = "blue";
                 var bottomHalfIcon = utils.createSvgRectElement(x, y + height / 2, rx, ry, width, height / 2, attributes);
                 iconGroup.appendChild(bottomHalfIcon);
             }
-            if ((utils.isObjInArray(types, "ms")) || (utils.isObjInArray(types, "snp")) || (utils.isObjInArray(types, "complex"))) {
+
+            // green dot
+            if (_.size(_.intersection(types, ["ms", "snp", "complex"])) > 0) {
                 attributes["fill"] = "green";
                 var centeredCircleIcon = utils.createSvgCircleElement(x + width / 2, y + height / 2, height / 4, attributes);
                 iconGroup.appendChild(centeredCircleIcon);
@@ -2317,7 +2338,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                     attributes['class'] = "signature";
                     attributes['eventId'] = d['eventId'];
                     attributes['sampleId'] = d['id'];
-                    // val is a list of mutation types
+                    // val should be a list of mutation types
                     attributes['val'] = d['val'].sort();
 
                     icon = createMutTypeSvg(x, y, rx, ry, width, height, attributes);
