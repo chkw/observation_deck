@@ -8,7 +8,7 @@ BOWER_DIR = bower_components
 #SCRIPTS = $(BOWER_DIR)/jQuery-contextMenu/src/jquery.contextMenu.js $(BOWER_DIR)/d3/d3.min.js $(BOWER_DIR)/jstat/dist/jstat.min.js utils.js OD_eventData.js medbook_data_load.js observation_deck_3.js signatures.js
 #SCRIPTS = $(BOWER_DIR)/typeahead.js/dist/typeahead.bundle.js $(BOWER_DIR)/jQuery-contextMenu/src/jquery.contextMenu.js $(BOWER_DIR)/d3/d3.min.js $(BOWER_DIR)/jstat/dist/jstat.min.js utils.js eventData.js medbook_data_load.js observation_deck_3.js
 # move some 3rd party dependencies... medbook will get them from atmosphere
-SCRIPTS = $(BOWER_DIR)/jstat/dist/jstat.min.js utils.js eventData.js medbook_data_load.js observation_deck_3.js
+SCRIPTS = $(BOWER_DIR)/jstat/dist/jstat.min.js utils.js eventData.js medbook_data_load.js bmeg_data_load.js observation_deck_3.js
 
 TARGETS = observation_deck_plugin.js
 
@@ -17,7 +17,7 @@ CLOSURE_COMPILER_JAR = ~/git/closure-compiler/build/compiler.jar
 COMPILATION_LEVEL = SIMPLE_OPTIMIZATIONS
 #COMPILATION_LEVEL = ADVANCED_OPTIMIZATIONS
 
-METEOR_PACKAGE_DIR = ~/workspace/MedBook-Packages/observation-deck
+METEOR_PACKAGE_DIR = ~/workspace/limax_observation_deck
 
 test:
 
@@ -29,7 +29,8 @@ bower_clean:
 	rm -rf $(BOWER_DIR) ;
 	\
 
-sync_meteor: observation_deck_plugin_dev.js
+#sync_meteor: observation_deck_plugin_dev.js
+sync_meteor: observation_deck_plugin.js
 	rsync -avP $< $(METEOR_PACKAGE_DIR)/observation_deck_plugin.js ;
 	\
 	date ;

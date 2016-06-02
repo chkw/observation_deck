@@ -100,13 +100,15 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
             config['eventAlbum'] = od_eventAlbum;
         }
 
-        // data to be retrieved via url
-        var dataLoader = medbookDataLoader;
+        if ("bmeg" in config) {
+            var gaeaEventDataList = config["bmeg"];
+            bmegDataLoader.loadGaeaEventData(gaeaEventDataList, od_eventAlbum);
+        }
 
         if ('pivotScores' in config) {
             var pivotScoresData = config['pivotScores'];
             if ('object' in pivotScoresData) {
-                dataLoader.loadPivotScores(pivotScoresData['object'], od_eventAlbum);
+                medbookDataLoader.loadPivotScores(pivotScoresData['object'], od_eventAlbum);
             }
         }
         delete config['pivotScores'];
@@ -114,13 +116,13 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
         if ('dataUrl' in config) {
             var dataUrlConfig = config['dataUrl'];
             if ('clinicalUrl' in dataUrlConfig) {
-                dataLoader.getClinicalData(dataUrlConfig['clinicalUrl'], od_eventAlbum);
+                medbookDataLoader.getClinicalData(dataUrlConfig['clinicalUrl'], od_eventAlbum);
             }
             if ('expressionUrl' in dataUrlConfig) {
-                dataLoader.getExpressionData(dataUrlConfig['expressionUrl'], od_eventAlbum);
+                medbookDataLoader.getExpressionData(dataUrlConfig['expressionUrl'], od_eventAlbum);
             }
             if ('mutationUrl' in dataUrlConfig) {
-                dataLoader.getMutationData(dataUrlConfig['mutationUrl'], od_eventAlbum);
+                medbookDataLoader.getMutationData(dataUrlConfig['mutationUrl'], od_eventAlbum);
             }
         }
 
@@ -129,24 +131,24 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
             var mongoData = config['mongoData'];
             // TODO load gene annotation data
             if ("geneAnnotation" in mongoData) {
-                dataLoader.mongoGeneAnnotationData(mongoData['geneAnnotation'], od_eventAlbum);
+                medbookDataLoader.mongoGeneAnnotationData(mongoData['geneAnnotation'], od_eventAlbum);
             }
             if ("contrast" in mongoData) {
-                dataLoader.mongoContrastData(mongoData['contrast'], od_eventAlbum);
+                medbookDataLoader.mongoContrastData(mongoData['contrast'], od_eventAlbum);
             }
             if ('clinical' in mongoData) {
-                dataLoader.mongoClinicalData(mongoData['clinical'], od_eventAlbum);
+                medbookDataLoader.mongoClinicalData(mongoData['clinical'], od_eventAlbum);
             }
             if ('expression' in mongoData) {
-                dataLoader.mongoExpressionData(mongoData['expression'], od_eventAlbum);
+                medbookDataLoader.mongoExpressionData(mongoData['expression'], od_eventAlbum);
             }
             if ('mutation' in mongoData) {
-                dataLoader.mongoMutationData(mongoData['mutation'], od_eventAlbum);
+                medbookDataLoader.mongoMutationData(mongoData['mutation'], od_eventAlbum);
             }
             if ("testedSamples" in mongoData) {
                 var testedSamplesObj = mongoData["testedSamples"];
                 _.each(_.keys(testedSamplesObj), function(datatype) {
-                    dataLoader.setTestedSamples(datatype, testedSamplesObj[datatype], od_eventAlbum);
+                    medbookDataLoader.setTestedSamples(datatype, testedSamplesObj[datatype], od_eventAlbum);
                 });
             }
         }
@@ -163,14 +165,14 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                     for (var i = 0; i < fileNames.length; i++) {
                         var fileName = fileNames[i];
                         console.log(fileName);
-                        dataLoader.getSignature(fileName, od_eventAlbum);
+                        medbookDataLoader.getSignature(fileName, od_eventAlbum);
                     }
                 }
                 if ('object' in expressionSigConfig) {
                     var objects = expressionSigConfig['object'];
                     for (var i = 0; i < objects.length; i++) {
                         var object = objects[i];
-                        dataLoader.loadSignatureObj(object, od_eventAlbum);
+                        medbookDataLoader.loadSignatureObj(object, od_eventAlbum);
                     }
                 }
             }
@@ -187,7 +189,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                     var objects = expressionSigIdxConfig['object'];
                     for (var i = 0; i < objects.length; i++) {
                         var object = objects[i];
-                        dataLoader.loadSignatureWeightsObj(object, od_eventAlbum);
+                        medbookDataLoader.loadSignatureWeightsObj(object, od_eventAlbum);
                     }
                 }
             }
@@ -198,7 +200,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
         // 'bmegSigServiceData' : bmegSigServiceData
         if ('bmegSigServiceData' in config) {
             console.log('bmegSigServiceData in config');
-            dataLoader.loadBmegSignatureWeightsAsSamples(config['bmegSigServiceData'], od_eventAlbum);
+            medbookDataLoader.loadBmegSignatureWeightsAsSamples(config['bmegSigServiceData'], od_eventAlbum);
         }
         // delete the data after it has been used to load events
         delete config['bmegSigServiceData'];
