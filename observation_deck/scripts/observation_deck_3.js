@@ -1669,8 +1669,8 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
             }
 
             // always hide clinical null samples
-            var clinicalNullSamples = eventAlbum.getDatatypeNullSamples("clinical data");
-            samplesToHide = samplesToHide.concat(clinicalNullSamples);
+            // var clinicalNullSamples = eventAlbum.getDatatypeNullSamples("clinical data");
+            // samplesToHide = samplesToHide.concat(clinicalNullSamples);
 
             samplesToHide = utils.eliminateDuplicates(samplesToHide);
 
@@ -2305,10 +2305,12 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                 } else {
                     // draw over the primer rectangle instead of drawing a background for each cell
                     // background for icons
+                    var attributes = {};
                     // attributes["fill"] = "white";
-                    // attributes["fill"] = rowLabelColorMapper(eventAlbum.getEvent(d['eventId']).metadata.datatype)
+                    // attributes["fill"] = rowLabelColorMapper(eventAlbum.getEvent(d['eventId']).metadata.datatype);
+                    // group.appendChild(utils.createSvgRectElement(x, y, rx, ry, width, height, attributes));
+
                 }
-                // group.appendChild(utils.createSvgRectElement(x, y, rx, ry, width, height, attributes));
 
                 var attributes = {
                     "stroke" : getStroke(d),

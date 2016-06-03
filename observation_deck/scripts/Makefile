@@ -29,8 +29,8 @@ bower_clean:
 	rm -rf $(BOWER_DIR) ;
 	\
 
-#sync_meteor: observation_deck_plugin_dev.js
-sync_meteor: observation_deck_plugin.js
+sync_meteor: observation_deck_plugin_dev.js
+#sync_meteor: observation_deck_plugin.js
 	rsync -avP $< $(METEOR_PACKAGE_DIR)/observation_deck_plugin.js ;
 	\
 	date ;
