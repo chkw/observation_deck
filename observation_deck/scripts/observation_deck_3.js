@@ -760,6 +760,8 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
      */
     var setupRowLabelContextMenu = function(config) {
 
+        var useBmegMode = ("bmeg" in config);
+
         /**
          * This is a callback for medbook-workbench.
          */
@@ -804,7 +806,12 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
 
                 var pivotable = (eventObj.metadata.weightedGeneVector.length);
 
-                var pivotable_dataypes = ["clinical data", "expression data", 'expression signature', 'kinase target activity', "tf target activity", "mutation call"];
+                var medbook_pivotable_types = ["clinical data", "expression data", 'expression signature', 'kinase target activity', "tf target activity", "mutation call"];
+                var bmeg_pivotable_types = ["drug sensitivity score"];
+
+                var pivotable_dataypes = [];
+                Array.prototype.push.apply(pivotable_dataypes, medbook_pivotable_types);
+                Array.prototype.push.apply(pivotable_dataypes, bmeg_pivotable_types);
 
                 var items = {
                     'title' : {
@@ -834,6 +841,10 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                         },
                         'icon' : null,
                         'disabled' : function(key, opt) {
+                            if (useBmegMode) {
+                                return true;
+                            }
+
                             pivotable = false;
                             if (utils.isObjInArray(pivotable_dataypes, datatype)) {
                                 pivotable = true;
@@ -985,6 +996,13 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                     },
                     "add_fold" : {
                         "name" : "add...",
+                        "disabled" : function() {
+                            if (useBmegMode) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        },
                         "items" : {
                             "add_events_for_gene" : {
                                 "name" : "events for gene",
@@ -1045,6 +1063,9 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                         "disabled" : function() {
                             var pathway_context_viewable = ["expression data", "mutation call", "kinase target activity", "tf target activity"];
                             var disabled = (_.contains(pathway_context_viewable, datatype)) ? false : true;
+                            if (useBmegMode) {
+                                disabled = true;
+                            }
                             return disabled;
                         },
                         "callback" : function(key, opt) {
