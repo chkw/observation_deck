@@ -819,7 +819,9 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
                         icon : null,
                         disabled : function() {
                             var result = true;
-                            var enableDatatypes = ["mutation impact score", "gistic_copy_number", "mutation call", 'expression data', 'clinical data', 'expression signature', 'kinase target activity', "tf target activity"];
+                            var bmeg_enabled_types = ["expression data"];
+                            var medbook_enabled_types = ["mutation impact score", "gistic_copy_number", "mutation call", 'expression data', 'clinical data', 'expression signature', 'kinase target activity', "tf target activity"];
+                            var enableDatatypes = (useBmegMode) ? bmeg_enabled_types : medbook_enabled_types;
                             if ((titleCallback != null) && (_.contains(enableDatatypes, datatype))) {
                                 result = false;
                             }
