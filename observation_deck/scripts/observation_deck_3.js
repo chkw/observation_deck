@@ -1924,10 +1924,18 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
             rowNameMapping[name] = i;
         }
 
+        var rowDisplayNames = [];
+        _.each(rowNames, function(rowName) {
+            var eventObj = eventAlbum.getEvent(rowName);
+            var displayName = eventObj.metadata.displayName;
+            rowDisplayNames.push(displayName);
+        });
+
         // setup margins
 
         var longestColumnName = utils.lengthOfLongestString(colNames);
-        var longestRowName = utils.lengthOfLongestString(rowNames);
+        // var longestRowName = utils.lengthOfLongestString(rowNames);
+        var longestRowName = utils.lengthOfLongestString(rowDisplayNames);
 
         console.log('longestRowName', longestRowName);
 
