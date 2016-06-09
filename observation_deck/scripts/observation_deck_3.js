@@ -25,6 +25,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
 (function(od) {"use strict";
 
     var cookieName = "od_config";
+    var meteorSession = null;
 
     /**
      *  Build an observation deck!
@@ -82,6 +83,10 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
         config['querySettings'] = querySettings;
 
         var od_eventAlbum = null;
+
+        if ("meteorSession" in config) {
+            meteorSession = config["meteorSession"];
+        }
 
         // pivot_event is passed to OD from medbook-workbench via session property
         // session property may be null
@@ -379,7 +384,7 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
      * delete cookie and reset config
      */
     var resetConfig = function(config) {
-        var persistentKeys = ['dataUrl', 'eventAlbum', 'mongoData', 'containerDivId', 'signature', "rowTitleCallback", "columnTitleCallback"];
+        var persistentKeys = ["meteorSession", 'dataUrl', 'eventAlbum', 'mongoData', 'containerDivId', 'signature', "rowTitleCallback", "columnTitleCallback"];
         utils.deleteCookie('od_config');
         var keys = utils.getKeys(config);
         for (var i = 0; i < keys.length; i++) {
@@ -413,7 +418,8 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
      * If session object exists, set the key/value pair.
      */
     var setSession = function(key, value) {
-        if ( typeof Session !== "undefined") {
+        var Session = meteorSession;
+        if (! _.isNull(Session)) {
             if (key) {
                 Session.set(key, value);
             }
@@ -429,7 +435,8 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
      */
     var getSession = function(key) {
         var value = null;
-        if ( typeof Session !== "undefined") {
+        var Session = meteorSession;
+        if (! _.isNull(Session)) {
             if (key) {
                 value = Session.get(key);
             }
@@ -444,7 +451,8 @@ observation_deck = ( typeof observation_deck === "undefined") ? {} : observation
      *
      */
     var resetSession = function(keys) {
-        if ( typeof Session !== "undefined") {
+        var Session = meteorSession;
+        if (! _.isNull(Session)) {
             for (var i = 0, length = keys.length; i < length; i++) {
                 delete Session.keys[keys[i]];
             }
